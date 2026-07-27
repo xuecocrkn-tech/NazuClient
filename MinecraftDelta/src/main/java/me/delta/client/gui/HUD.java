@@ -24,14 +24,13 @@ public class HUD {
         return visible;
     }
 
-    public void render(DrawContext context, float tickDelta) {
+    public void render(DrawContext context) {
         if (!visible) return;
         if (MinecraftClient.getInstance().player == null) return;
         if (MinecraftClient.getInstance().options.hudHidden) return;
 
         // Watermark
         String watermark = "Delta Client v1.0";
-        int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(watermark);
         context.drawText(
                 MinecraftClient.getInstance().textRenderer,
                 watermark,
