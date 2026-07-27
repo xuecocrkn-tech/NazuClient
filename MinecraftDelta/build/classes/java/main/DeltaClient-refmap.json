@@ -1,0 +1,60 @@
+{
+  "mappings": {
+    "me/delta/client/mixin/ClientPlayerEntityMixin": {
+      "Lnet/minecraft/entity/player/PlayerEntity;setStepHeight(F)V": "Lnet/minecraft/class_1657;setStepHeight(F)V",
+      "canStartSprinting": "Lnet/minecraft/class_746;method_48300()Z",
+      "sendMovementPackets": "Lnet/minecraft/class_746;method_3136()V",
+      "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
+    },
+    "me/delta/client/mixin/ClientPlayerInteractionManagerMixin": {
+      "attackEntity": "Lnet/minecraft/class_636;method_2918(Lnet/minecraft/class_1657;Lnet/minecraft/class_1297;)V",
+      "updateBlockBreakingProgress": "Lnet/minecraft/class_636;method_2902(Lnet/minecraft/class_2338;Lnet/minecraft/class_2350;)Z"
+    },
+    "me/delta/client/mixin/GameRendererMixin": {
+      "tick": "Lnet/minecraft/class_757;method_3182()V"
+    },
+    "me/delta/client/mixin/InGameHudMixin": {
+      "render": "Lnet/minecraft/class_329;method_1753(Lnet/minecraft/class_332;Lnet/minecraft/class_9779;)V"
+    },
+    "me/delta/client/mixin/LivingEntityRendererMixin": {
+      "hasLabel": "Lnet/minecraft/class_922;method_4055(Lnet/minecraft/class_1309;D)Z",
+      "isVisible": "Lnet/minecraft/class_922;method_4056(Lnet/minecraft/class_10042;)Z"
+    },
+    "me/delta/client/mixin/MinecraftClientMixin": {
+      "tick": "Lnet/minecraft/class_310;method_1574()V"
+    },
+    "me/delta/client/mixin/WorldRendererMixin": {
+      "render": "Lnet/minecraft/class_761;method_22710(Lnet/minecraft/class_9922;Lnet/minecraft/class_9779;ZLnet/minecraft/class_4184;Lnet/minecraft/class_757;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "me/delta/client/mixin/ClientPlayerEntityMixin": {
+        "Lnet/minecraft/entity/player/PlayerEntity;setStepHeight(F)V": "Lnet/minecraft/class_1657;setStepHeight(F)V",
+        "canStartSprinting": "Lnet/minecraft/class_746;method_48300()Z",
+        "sendMovementPackets": "Lnet/minecraft/class_746;method_3136()V",
+        "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
+      },
+      "me/delta/client/mixin/ClientPlayerInteractionManagerMixin": {
+        "attackEntity": "Lnet/minecraft/class_636;method_2918(Lnet/minecraft/class_1657;Lnet/minecraft/class_1297;)V",
+        "updateBlockBreakingProgress": "Lnet/minecraft/class_636;method_2902(Lnet/minecraft/class_2338;Lnet/minecraft/class_2350;)Z"
+      },
+      "me/delta/client/mixin/GameRendererMixin": {
+        "tick": "Lnet/minecraft/class_757;method_3182()V"
+      },
+      "me/delta/client/mixin/InGameHudMixin": {
+        "render": "Lnet/minecraft/class_329;method_1753(Lnet/minecraft/class_332;Lnet/minecraft/class_9779;)V"
+      },
+      "me/delta/client/mixin/LivingEntityRendererMixin": {
+        "hasLabel": "Lnet/minecraft/class_922;method_4055(Lnet/minecraft/class_1309;D)Z",
+        "isVisible": "Lnet/minecraft/class_922;method_4056(Lnet/minecraft/class_10042;)Z"
+      },
+      "me/delta/client/mixin/MinecraftClientMixin": {
+        "tick": "Lnet/minecraft/class_310;method_1574()V"
+      },
+      "me/delta/client/mixin/WorldRendererMixin": {
+        "render": "Lnet/minecraft/class_761;method_22710(Lnet/minecraft/class_9922;Lnet/minecraft/class_9779;ZLnet/minecraft/class_4184;Lnet/minecraft/class_757;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
+      }
+    }
+  }
+}

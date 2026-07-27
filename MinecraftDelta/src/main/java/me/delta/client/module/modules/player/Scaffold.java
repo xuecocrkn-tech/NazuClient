@@ -3,15 +3,14 @@ package me.delta.client.module.modules.player;
 import me.delta.client.module.Category;
 import me.delta.client.module.Module;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 public class Scaffold extends Module {
     private final me.delta.client.settings.ModeSetting placeMode = createMode("Place Mode", "Block placement mode", "Normal", "Normal", "Expand", "Sprint");
@@ -57,34 +56,29 @@ public class Scaffold extends Module {
         }
 
         // Place the block
-        BlockPos placePos = pos;
-        Direction facing = Direction.UP;
-        Vec3d hitPos = Vec3d.ofCenter(placePos);
-
-        // Find adjacent block to click on
-        BlockPos neighborPos = findNeighborPos(placePos);
+        BlockPos neighborPos = findNeighborPos(pos);
         if (neighborPos != null) {
-            Direction dir = Direction.fromVector(
-                    placePos.getX() - neighborPos.getX(),
-                    placePos.getY() - neighborPos.getY(),
-                    placePos.getZ() - neighborPos.getZ()
+            Vec3i diff = new Vec3i(
+                    pos.getX() - neighborPos.getX(),
+                    pos.getY() - neighborPos.getY(),
+                    pos.getZ() - neighborPos.getZ()
             );
-            if (dir != null) {
-                BlockHitResult hit = new BlockHitResult(
-                        Vec3d.ofCenter(neighborPos).add(
-                                dir.getOffsetX() * 0.5,
-                                dir.getOffsetY() * 0.5,
-                                dir.getOffsetZ() * 0.5
-                        ),
-                        dir,
-                        neighborPos,
-                        false
-                );
-                try {
-                    mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, hit);
-                    mc.player.swingHand(Hand.MAIN_HAND);
-                } catch (Exception ignored) {}
-            }
+            Direction dir = Direction.fromVector(diff, Direction.UP);
+
+            BlockHitResult hit = new BlockHitResult(
+                    Vec3d.ofCenter(neighborPos).add(
+                            diff.getX() * 0.5,
+                            diff.getY() * 0.5,
+                            diff.getZ() * 0.5
+                    ),
+                    dir,
+                    neighborPos,
+                    false
+            );
+            try {
+                mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, hit);
+                mc.player.swingHand(Hand.MAIN_HAND);
+            } catch (Exception ignored) {}
         }
     }
 
@@ -92,9 +86,7 @@ public class Scaffold extends Module {
         Vec3d pos = mc.player.getPos();
         BlockPos below = BlockPos.ofFloored(pos.x, pos.y - 1, pos.z);
 
-        // Check if there's already a block below
         if (!mc.world.getBlockState(below).isReplaceable()) return null;
-
         return below;
     }
 
@@ -117,10 +109,6 @@ public class Scaffold extends Module {
             if (stack.getItem() instanceof BlockItem) {
                 return i;
             }
-        }
-        // Check offhand
-        if (mc.player.getOffHandStack().getItem() instanceof BlockItem) {
-            return mc.player.getInventory().selectedSlot; // Return current, since we use offhand
         }
         return -1;
     }

@@ -11,6 +11,6 @@ public class Step extends Module {
     }
 
     public float getStepHeight() {
-        return isEnabled() ? (float) height.getValue() : 0.6f;
+        return isEnabled() ? height.getValue().floatValue() : 0.6f;
     }
 }

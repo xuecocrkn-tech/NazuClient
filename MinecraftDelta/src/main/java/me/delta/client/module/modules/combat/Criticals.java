@@ -18,22 +18,22 @@ public class Criticals extends Module {
 
         switch (mode.getValue()) {
             case "Packet" -> {
-                // Standard NCP-compatible packet criticals
                 double posX = mc.player.getX();
                 double posY = mc.player.getY();
                 double posZ = mc.player.getZ();
 
+                // 1.21.4 PositionAndOnGround: (x, y, z, onGround, changeLook)
                 mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(
-                        posX, posY + 0.0625, posZ, false
+                        posX, posY + 0.0625, posZ, false, false
                 ));
                 mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(
-                        posX, posY + 0.0, posZ, false
+                        posX, posY + 0.0, posZ, false, false
                 ));
                 mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(
-                        posX, posY + 1.1E-5, posZ, false
+                        posX, posY + 1.1E-5, posZ, false, false
                 ));
                 mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(
-                        posX, posY + 0.0, posZ, false
+                        posX, posY + 0.0, posZ, false, false
                 ));
             }
             case "MiniJump" -> {

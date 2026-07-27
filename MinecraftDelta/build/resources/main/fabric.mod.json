@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "deltaclient",
+  "version": "1.0.0",
+  "name": "Delta Client",
+  "description": "Advanced utility client for Minecraft anarchy servers",
+  "authors": ["delta-dev"],
+  "contact": {},
+  "license": "All Rights Reserved",
+  "icon": "assets/delta/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["me.delta.client.DeltaClient"]
+  },
+  "mixins": ["delta.mixins.json"],
+  "accessWidener": "delta.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "1.21.4",
+    "java": ">=21"
+  },
+  "breaks": {
+    "fabric-api": "<0.109.0"
+  }
+}

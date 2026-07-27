@@ -20,7 +20,7 @@ public class ESP extends Module {
     public boolean showMonsters() { return monsters.getValue(); }
     public boolean showAnimals() { return animals.getValue(); }
     public double getRange() { return range.getValue(); }
-    public float getLineWidth() { return (float) lineWidth.getValue(); }
+    public float getLineWidth() { return lineWidth.getValue().floatValue(); }
 
     public boolean shouldRender() {
         return isEnabled() && !"None".equals(mode.getValue());

@@ -6,7 +6,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -20,7 +19,7 @@ public class KillAura extends Module {
     private final me.delta.client.settings.BooleanSetting animals = createBoolean("Animals", "Attack animals", false);
     private final me.delta.client.settings.BooleanSetting monsters = createBoolean("Monsters", "Attack monsters", false);
     private final me.delta.client.settings.BooleanSetting invisibles = createBoolean("Invisibles", "Attack invisible entities", false);
-    private final me.delta.client.settings.BooleanSetting autoBlock = createBoolean("Auto Block", "Block with shield/ sword", false);
+    private final me.delta.client.settings.BooleanSetting autoBlock = createBoolean("Auto Block", "Block with shield/sword", false);
     private final me.delta.client.settings.BooleanSetting rotate = createBoolean("Rotate", "Smooth rotation to target", true);
 
     private Entity target;
@@ -61,11 +60,18 @@ public class KillAura extends Module {
     }
 
     private Entity findTarget() {
-        return mc.world.getEntities()
-                .by(entity -> isValidTarget(entity))
-                .stream()
-                .min(Comparator.comparingDouble(e -> mc.player.squaredDistanceTo(e)))
-                .orElse(null);
+        Entity bestTarget = null;
+        double bestDist = Double.MAX_VALUE;
+
+        for (Entity entity : mc.world.getEntities()) {
+            if (!isValidTarget(entity)) continue;
+            double dist = mc.player.squaredDistanceTo(entity);
+            if (dist < bestDist) {
+                bestDist = dist;
+                bestTarget = entity;
+            }
+        }
+        return bestTarget;
     }
 
     private boolean isValidTarget(Entity entity) {
