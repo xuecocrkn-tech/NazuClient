@@ -10,8 +10,7 @@
     "LivingEntityRendererMixin",
     "WorldRendererMixin",
     "GameRendererMixin",
-    "InGameHudMixin",
-    "EntityRenderDispatcherMixin"
+    "InGameHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1
