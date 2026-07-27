@@ -34,8 +34,8 @@ package shame.nazuna.api.commands.impl;
              }).executes(context -> {
                String player = (String)context.getArgument("player", String.class);
                
-               if (!astra.INSTANCE.friendStorage.isFriend(player)) {
-                 astra.INSTANCE.friendStorage.add(player);
+               if (!NazunaClient.INSTANCE.friendStorage.isFriend(player)) {
+                 NazunaClient.INSTANCE.friendStorage.add(player);
                  
                  ChatUtils.sendMessage("Игрок " + player + " добавлен в друзья!");
                } else {
@@ -49,14 +49,14 @@ package shame.nazuna.api.commands.impl;
                Objects.requireNonNull(builder1);
  
                
-               astra.INSTANCE.friendStorage.getFriends().stream().sorted(String::compareTo).filter(()).forEach(builder1::suggest);
+               NazunaClient.INSTANCE.friendStorage.getFriends().stream().sorted(String::compareTo).filter(x -> true).forEach(builder1::suggest);
                
                return builder1.buildFuture();
              }).executes(context -> {
                String player = (String)context.getArgument("player", String.class);
                
-               if (astra.INSTANCE.friendStorage.isFriend(player)) {
-                 astra.INSTANCE.friendStorage.remove(player);
+               if (NazunaClient.INSTANCE.friendStorage.isFriend(player)) {
+                 NazunaClient.INSTANCE.friendStorage.remove(player);
                  
                  ChatUtils.sendMessage("Игрок " + player + " удалён из друзей!");
                } else {
@@ -66,14 +66,14 @@ package shame.nazuna.api.commands.impl;
                return 1;
              })))).then(literal("list")
          .executes(context -> {
-             if (astra.INSTANCE.friendStorage.getFriends().isEmpty()) {
+             if (NazunaClient.INSTANCE.friendStorage.getFriends().isEmpty()) {
                ChatUtils.sendMessage("Список друзей пуст!");
              } else {
                StringBuilder builder1 = new StringBuilder();
                
-               for (int i = 0; i < astra.INSTANCE.friendStorage.getFriends().size(); i++) {
-                 builder1.append(astra.INSTANCE.friendStorage.getFriends().get(i));
-                 if (i < astra.INSTANCE.friendStorage.getFriends().size() - 1) {
+               for (int i = 0; i < NazunaClient.INSTANCE.friendStorage.getFriends().size(); i++) {
+                 builder1.append(NazunaClient.INSTANCE.friendStorage.getFriends().get(i));
+                 if (i < NazunaClient.INSTANCE.friendStorage.getFriends().size() - 1) {
                    builder1.append(", ");
                  }
                } 
@@ -82,8 +82,8 @@ package shame.nazuna.api.commands.impl;
              return 1;
            }))).then(literal("clear")
          .executes(context -> {
-             if (!astra.INSTANCE.friendStorage.isEmpty()) {
-               astra.INSTANCE.friendStorage.clear();
+             if (!NazunaClient.INSTANCE.friendStorage.isEmpty()) {
+               NazunaClient.INSTANCE.friendStorage.clear();
                ChatUtils.sendMessage("Список друзей очищен!");
              } else {
                ChatUtils.sendMessage("Список друзей пуст!");

@@ -55,7 +55,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    }
    
    private int getStaticThemeColor() {
-     int[] colors = astra.INSTANCE.themeStorage.getThemes().getTheme().getColor();
+     int[] colors = NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getColor();
      if (colors == null || colors.length == 0) {
        return -1;
      }
@@ -77,8 +77,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      int colorTheme;
      float baseX = this.draggable.getX(), y = this.draggable.getY();
      
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       colorTheme = (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       colorTheme = (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      } else {
        colorTheme = ColorUtils.getThemeColor();
      } 
@@ -159,8 +159,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      this.draggable.setHeight(height);
    }
    private int getStableThemeColor() {
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       return (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       return (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      }
      return ColorUtils.getThemeColor();
    }

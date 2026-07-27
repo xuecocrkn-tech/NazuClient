@@ -136,7 +136,7 @@ package shame.nazuna.client.modules.impl.render;
    
    private int getPlayerColor(AbstractClientPlayerEntity player) {
      String name = player.method_5477().getString();
-     boolean isFriend = (astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage.isFriend(name));
+     boolean isFriend = (NazunaClient.INSTANCE.friendStorage != null && NazunaClient.INSTANCE.friendStorage.isFriend(name));
      return isFriend ? ColorUtils.rgb(80, 170, 255) : ColorUtils.getThemeColor();
    }
    

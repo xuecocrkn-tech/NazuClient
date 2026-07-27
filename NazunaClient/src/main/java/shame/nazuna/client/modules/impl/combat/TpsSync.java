@@ -13,10 +13,10 @@ package shame.nazuna.client.modules.impl.combat;
    }
    
    public float getCurrentTPS() {
-     if (astra.INSTANCE == null || astra.INSTANCE.tpsCalc == null) {
+     if (NazunaClient.INSTANCE == null || NazunaClient.INSTANCE.tpsCalc == null) {
        return 20.0F;
      }
-     float tps = astra.INSTANCE.tpsCalc.getTPS();
+     float tps = NazunaClient.INSTANCE.tpsCalc.getTPS();
      return MathHelper.method_15363(tps, 0.1F, 20.0F);
    }
    

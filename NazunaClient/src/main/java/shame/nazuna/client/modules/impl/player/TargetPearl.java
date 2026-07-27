@@ -343,7 +343,7 @@ package shame.nazuna.client.modules.impl.player;
      if (this.ignoreFriends.isState() && owner instanceof PlayerEntity) { player = (PlayerEntity)owner; }
      else { return false; }
      
-     return (astra.INSTANCE != null && astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage
+     return (NazunaClient.INSTANCE != null && NazunaClient.INSTANCE.friendStorage != null && NazunaClient.INSTANCE.friendStorage
        
        .isFriend(player.method_5477().getString()));
    }

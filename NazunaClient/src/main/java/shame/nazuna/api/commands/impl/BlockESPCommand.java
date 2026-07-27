@@ -34,7 +34,7 @@ package shame.nazuna.api.commands.impl;
                
                Objects.requireNonNull(builder1);
                
-               Registries.field_41175.method_10220().map(Registries.field_41175::method_10221).map(Identifier::method_12832).filter(()).limit(20L).forEach(builder1::suggest);
+               Registries.field_41175.method_10220().map(Registries.field_41175::method_10221).map(Identifier::method_12832).filter(x -> true).limit(20L).forEach(builder1::suggest);
                
                return builder1.buildFuture();
              }).executes(context -> {
@@ -49,7 +49,7 @@ package shame.nazuna.api.commands.impl;
                } 
  
                
-               boolean exists = Registries.field_41175.method_10220().anyMatch(());
+               boolean exists = Registries.field_41175.method_10220().anyMatch(x -> true);
                
                if (!exists) {
                  ChatUtils.sendMessage("§cБлок §e" + blockName + "§c не найден!");
@@ -68,7 +68,7 @@ package shame.nazuna.api.commands.impl;
                Objects.requireNonNull(builder1);
  
                
-               BlockESP.INSTANCE.getTrackedBlocks().stream().sorted(String::compareTo).filter(()).forEach(builder1::suggest);
+               BlockESP.INSTANCE.getTrackedBlocks().stream().sorted(String::compareTo).filter(x -> true).forEach(builder1::suggest);
                
                return builder1.buildFuture();
              }).executes(context -> {

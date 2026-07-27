@@ -30,7 +30,7 @@ package shame.nazuna.api.commands.impl;
                
                Objects.requireNonNull(suggestionsBuilder);
                
-               ModuleClass.INSTANCE.getObject().stream().map(Module::getName).filter(()).forEach(suggestionsBuilder::suggest);
+               ModuleClass.INSTANCE.getObject().stream().map(Module::getName).filter(x -> true).forEach(suggestionsBuilder::suggest);
                
                return suggestionsBuilder.buildFuture();
              }).then(arg("key", (ArgumentType)StringArgumentType.word())
@@ -89,14 +89,14 @@ package shame.nazuna.api.commands.impl;
                return 1;
              })));
      builder.then(literal("clear").executes(ctx -> {
-             ModuleClass.INSTANCE.getObject().forEach(());
+             ModuleClass.INSTANCE.getObject().forEach(x -> x);
              
              ChatUtils.sendMessage("Все привязки клавиш удалены");
              return 1;
            }));
      builder.then(literal("list").executes(ctx -> {
              StringBuilder bindingsList = new StringBuilder("Список привязанных модулей: ");
-             boolean hasBinds = ModuleClass.INSTANCE.getObject().stream().filter(()).peek(()).findAny().isPresent();
+             boolean hasBinds = ModuleClass.INSTANCE.getObject().stream().filter(x -> true).peek(x -> x).findAny().isPresent();
              if (!hasBinds) {
                ChatUtils.sendMessage("Нет привязанных модулей");
              } else {

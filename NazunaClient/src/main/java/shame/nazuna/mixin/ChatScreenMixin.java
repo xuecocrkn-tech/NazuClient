@@ -59,7 +59,7 @@ package shame.nazuna.mixin;
        draggable.onRelease(0);
      }
      try {
-       astra.INSTANCE.configStorage.saveConfig(astra.INSTANCE.configStorage.currentConfig);
+       NazunaClient.INSTANCE.configStorage.saveConfig(NazunaClient.INSTANCE.configStorage.currentConfig);
      } catch (Exception e) {
        e.printStackTrace();
      } 

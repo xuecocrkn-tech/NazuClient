@@ -92,7 +92,7 @@ package shame.nazuna.client.modules.impl.misc;
      }
      
      String name = player.method_5477().getString();
-     if (astra.INSTANCE != null && astra.INSTANCE.staffStorage != null && astra.INSTANCE.staffStorage.isStaff(name)) {
+     if (NazunaClient.INSTANCE != null && NazunaClient.INSTANCE.staffStorage != null && NazunaClient.INSTANCE.staffStorage.isStaff(name)) {
        return true;
      }
      

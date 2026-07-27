@@ -16,20 +16,20 @@ package shame.nazuna.api.storages;
  
    
    public void initStorages() {
-     astra.INSTANCE.moduleStorage = new ModuleStorage();
-     astra.INSTANCE.themeStorage = new ThemeStorage();
-     astra.INSTANCE.tpsCalc = new TPSCalc();
-     EventInvoker.register(astra.INSTANCE.tpsCalc);
-     astra.INSTANCE.localizationStorage = new LocalizationStorage();
-     astra.INSTANCE.freeLookStorage = new FreeLookStorage();
-     astra.INSTANCE.rotationStorage = new RotationStorage();
+     NazunaClient.INSTANCE.moduleStorage = new ModuleStorage();
+     NazunaClient.INSTANCE.themeStorage = new ThemeStorage();
+     NazunaClient.INSTANCE.tpsCalc = new TPSCalc();
+     EventInvoker.register(NazunaClient.INSTANCE.tpsCalc);
+     NazunaClient.INSTANCE.localizationStorage = new LocalizationStorage();
+     NazunaClient.INSTANCE.freeLookStorage = new FreeLookStorage();
+     NazunaClient.INSTANCE.rotationStorage = new RotationStorage();
      
-     astra.INSTANCE.friendStorage = new FriendStorage();
-     astra.INSTANCE.macroStorage = new MacroStorage();
-     astra.INSTANCE.staffStorage = new StaffStorage();
-     astra.INSTANCE.waypointStorage = new WaypointStorage();
-     astra.INSTANCE.commandStorage = new CommandStorage();
-     astra.INSTANCE.configStorage = new ConfigStorage();
+     NazunaClient.INSTANCE.friendStorage = new FriendStorage();
+     NazunaClient.INSTANCE.macroStorage = new MacroStorage();
+     NazunaClient.INSTANCE.staffStorage = new StaffStorage();
+     NazunaClient.INSTANCE.waypointStorage = new WaypointStorage();
+     NazunaClient.INSTANCE.commandStorage = new CommandStorage();
+     NazunaClient.INSTANCE.configStorage = new ConfigStorage();
    }
  }
 

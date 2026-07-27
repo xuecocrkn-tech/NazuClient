@@ -511,7 +511,7 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private boolean isFriend(PlayerEntity player) {
-     return (astra.INSTANCE != null && astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage
+     return (NazunaClient.INSTANCE != null && NazunaClient.INSTANCE.friendStorage != null && NazunaClient.INSTANCE.friendStorage
        
        .isFriend(player.method_5477().getString()));
    }

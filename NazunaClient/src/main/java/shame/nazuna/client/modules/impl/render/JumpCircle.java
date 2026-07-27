@@ -195,15 +195,15 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private int getStableThemeColor() {
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       return (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       return (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      }
      return ColorUtils.getThemeColor();
    }
    
    private int getStableThemeSecondaryColor() {
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       return (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       return (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      }
      return ColorUtils.getThemeColor(180);
    }

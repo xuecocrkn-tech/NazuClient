@@ -86,7 +86,7 @@ package shame.nazuna.client.modules.impl.combat;
      
      if (entity instanceof PlayerEntity) {
        if (!this.targetTypes.is("Игроки")) return false; 
-       if (astra.INSTANCE.friendStorage.isFriend(entity.method_5477().getString())) return false;
+       if (NazunaClient.INSTANCE.friendStorage.isFriend(entity.method_5477().getString())) return false;
        
        boolean hasArmor = false;
        PlayerEntity player = (PlayerEntity)entity;

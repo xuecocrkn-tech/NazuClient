@@ -22,7 +22,7 @@ package shame.nazuna.client.modules.settings;
    }
    
    public String displayName() {
-     return (astra.INSTANCE.localizationStorage == null) ? this.name : astra.INSTANCE.localizationStorage.translate(this.name);
+     return (NazunaClient.INSTANCE.localizationStorage == null) ? this.name : NazunaClient.INSTANCE.localizationStorage.translate(this.name);
    }
  }
 

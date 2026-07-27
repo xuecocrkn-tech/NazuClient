@@ -63,7 +63,7 @@ package shame.nazuna.client.modules.impl.render;
      this.fireworks.entrySet().removeIf(entry -> {
            Entity entity = mc.field_1687.method_8469(((Integer)entry.getKey()).intValue());
            boolean isDead = (entity == null || !entity.method_5805());
-           ((FireworkData)entry.getValue()).points.removeIf(());
+           ((FireworkData)entry.getValue()).points.removeIf(x -> true);
            return (isDead && ((FireworkData)entry.getValue()).points.isEmpty());
          });
      

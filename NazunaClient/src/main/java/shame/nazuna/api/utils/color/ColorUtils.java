@@ -106,17 +106,17 @@ package shame.nazuna.api.utils.color;
  
    
    public static int getThemeColor() {
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       return (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       return (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      }
      return getThemeColor(0);
    }
    
    public static int getThemeColor(int index) {
-     return astra.INSTANCE.themeStorage.getThemes().getTheme().getColor(index);
+     return NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getColor(index);
    }
    public static int getThemeStaticColor() {
-     return (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     return (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
    }
    public static int rainbow(int speed, int index, float saturation, float brightness, float opacity) {
      int angle = (int)((System.currentTimeMillis() / speed + index) % 360L);

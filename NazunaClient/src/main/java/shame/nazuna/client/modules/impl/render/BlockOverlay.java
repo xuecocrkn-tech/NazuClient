@@ -344,13 +344,13 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private void updateCachedThemeColors() {
-     if (astra.INSTANCE == null || astra.INSTANCE.themeStorage == null || astra.INSTANCE.themeStorage.getThemes() == null) {
+     if (NazunaClient.INSTANCE == null || NazunaClient.INSTANCE.themeStorage == null || NazunaClient.INSTANCE.themeStorage.getThemes() == null) {
        this.cachedThemeColor1 = ColorUtils.getThemeColor(0);
        this.cachedThemeColor2 = ColorUtils.getThemeColor(180);
        
        return;
      } 
-     Theme theme = astra.INSTANCE.themeStorage.getThemes().getTheme();
+     Theme theme = NazunaClient.INSTANCE.themeStorage.getThemes().getTheme();
      if (theme == null) {
        this.cachedThemeColor1 = ColorUtils.getThemeColor(0);
        this.cachedThemeColor2 = ColorUtils.getThemeColor(180);

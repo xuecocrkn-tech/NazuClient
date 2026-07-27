@@ -77,11 +77,11 @@ package shame.nazuna.api.storages.implement;
        
        return;
      } 
-     String prefix = astra.INSTANCE.commandStorage.getPrefix();
+     String prefix = NazunaClient.INSTANCE.commandStorage.getPrefix();
      if (prefix != null && !prefix.isEmpty() && command.startsWith(prefix)) {
        try {
-         astra.INSTANCE.commandStorage.getDispatcher().execute(command
-             .substring(prefix.length()), astra.INSTANCE.commandStorage
+         NazunaClient.INSTANCE.commandStorage.getDispatcher().execute(command
+             .substring(prefix.length()), NazunaClient.INSTANCE.commandStorage
              .getSource());
        }
        catch (CommandSyntaxException ignored) {

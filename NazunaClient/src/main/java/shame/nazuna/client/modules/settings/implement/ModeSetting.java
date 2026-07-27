@@ -37,7 +37,7 @@ package shame.nazuna.client.modules.settings.implement;
    }
    
    public String displayMode(String mode) {
-     return (astra.INSTANCE.localizationStorage == null) ? mode : astra.INSTANCE.localizationStorage.translate(mode);
+     return (NazunaClient.INSTANCE.localizationStorage == null) ? mode : NazunaClient.INSTANCE.localizationStorage.translate(mode);
    }
    
    public String displayCurrent() {

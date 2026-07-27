@@ -30,13 +30,13 @@ package shame.nazuna.mixin;
    
    @Inject(method = {"method_23934"}, at = {@At(value = "INVOKE", target = "Lcom/mojang/brigadier/StringReader;canRead()Z", remap = false)}, cancellable = true)
    public void refresh(CallbackInfo ci, @Local StringReader reader) {
-     String prefix = astra.INSTANCE.commandStorage.getPrefix();
+     String prefix = NazunaClient.INSTANCE.commandStorage.getPrefix();
      
      if (reader.canRead(prefix.length()) && reader.getString().startsWith(prefix, reader.getCursor())) {
        
        reader.setCursor(reader.getCursor() + prefix.length());
-       CommandDispatcher<CommandSource> dispatcher = astra.INSTANCE.commandStorage.getDispatcher();
-       if (this.field_21610 == null) this.field_21610 = dispatcher.parse(reader, astra.INSTANCE.commandStorage.getSource());  int cursor;
+       CommandDispatcher<CommandSource> dispatcher = NazunaClient.INSTANCE.commandStorage.getDispatcher();
+       if (this.field_21610 == null) this.field_21610 = dispatcher.parse(reader, NazunaClient.INSTANCE.commandStorage.getSource());  int cursor;
        if ((cursor = this.field_21599.method_1881()) >= 1 && (this.field_21612 == null || !this.field_21614)) {
          this.field_21611 = dispatcher.getCompletionSuggestions(this.field_21610, cursor);
          this.field_21611.thenRun(() -> {

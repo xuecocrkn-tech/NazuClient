@@ -35,8 +35,8 @@ package shame.nazuna.api.commands.impl;
              }).executes(context -> {
                String player = (String)context.getArgument("player", String.class);
                
-               if (!astra.INSTANCE.staffStorage.isStaff(player)) {
-                 astra.INSTANCE.staffStorage.add(player);
+               if (!NazunaClient.INSTANCE.staffStorage.isStaff(player)) {
+                 NazunaClient.INSTANCE.staffStorage.add(player);
                  
                  ChatUtils.sendMessage("Игрок " + player + " добавлен в список стаффов!");
                } else {
@@ -50,14 +50,14 @@ package shame.nazuna.api.commands.impl;
                Objects.requireNonNull(builder1);
  
                
-               astra.INSTANCE.staffStorage.getStaffs().stream().sorted(String::compareTo).filter(()).forEach(builder1::suggest);
+               NazunaClient.INSTANCE.staffStorage.getStaffs().stream().sorted(String::compareTo).filter(x -> true).forEach(builder1::suggest);
                
                return builder1.buildFuture();
              }).executes(context -> {
                String player = (String)context.getArgument("player", String.class);
                
-               if (astra.INSTANCE.staffStorage.isStaff(player)) {
-                 astra.INSTANCE.staffStorage.remove(player);
+               if (NazunaClient.INSTANCE.staffStorage.isStaff(player)) {
+                 NazunaClient.INSTANCE.staffStorage.remove(player);
                  
                  ChatUtils.sendMessage("Игрок " + player + " удалён из списка стаффов!");
                } else {
@@ -69,13 +69,13 @@ package shame.nazuna.api.commands.impl;
          .executes(context -> {
              StringBuilder builder1 = new StringBuilder();
              
-             if (astra.INSTANCE.staffStorage.getStaffs().isEmpty()) {
+             if (NazunaClient.INSTANCE.staffStorage.getStaffs().isEmpty()) {
                ChatUtils.sendMessage("Список стаффов пуст!");
              } else {
-               for (int i = 0; i < astra.INSTANCE.staffStorage.getStaffs().size(); i++) {
-                 builder1.append(astra.INSTANCE.staffStorage.getStaffs().get(i));
+               for (int i = 0; i < NazunaClient.INSTANCE.staffStorage.getStaffs().size(); i++) {
+                 builder1.append(NazunaClient.INSTANCE.staffStorage.getStaffs().get(i));
                  
-                 if (i < astra.INSTANCE.staffStorage.getStaffs().size() - 1) {
+                 if (i < NazunaClient.INSTANCE.staffStorage.getStaffs().size() - 1) {
                    builder1.append(", ");
                  }
                } 
@@ -85,8 +85,8 @@ package shame.nazuna.api.commands.impl;
              return 1;
            }))).then(literal("clear")
          .executes(context -> {
-             if (!astra.INSTANCE.staffStorage.isEmpty()) {
-               astra.INSTANCE.staffStorage.clear();
+             if (!NazunaClient.INSTANCE.staffStorage.isEmpty()) {
+               NazunaClient.INSTANCE.staffStorage.clear();
                ChatUtils.sendMessage("Список стаффов очищен!");
              } else {
                ChatUtils.sendMessage("Список стаффов пуст!");

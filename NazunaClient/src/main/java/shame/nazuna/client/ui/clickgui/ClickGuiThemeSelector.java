@@ -15,7 +15,7 @@ package shame.nazuna.client.ui.clickgui;
        return;
      }
      
-     ObjectArrayList<ThemeStorage.Themes> objectArrayList = astra.INSTANCE.themeStorage.getThemeList();
+     ObjectArrayList<ThemeStorage.Themes> objectArrayList = NazunaClient.INSTANCE.themeStorage.getThemeList();
      if (objectArrayList == null || objectArrayList.isEmpty()) {
        return;
      }
@@ -42,7 +42,7 @@ package shame.nazuna.client.ui.clickgui;
        RenderUtils.drawRoundedRect(context.method_51448(), panelX, panelY, panelWidth, 15.0F, 3.5F, shadeColor);
      }
      
-     ThemeStorage.Themes selected = astra.INSTANCE.themeStorage.getThemes();
+     ThemeStorage.Themes selected = NazunaClient.INSTANCE.themeStorage.getThemes();
      for (int i = 0; i < objectArrayList.size(); i++) {
        ThemeStorage.Themes theme = objectArrayList.get(i);
        float boxX = startX + i * 12.0F;
@@ -75,7 +75,7 @@ package shame.nazuna.client.ui.clickgui;
        return false;
      }
      
-     ObjectArrayList<ThemeStorage.Themes> objectArrayList = astra.INSTANCE.themeStorage.getThemeList();
+     ObjectArrayList<ThemeStorage.Themes> objectArrayList = NazunaClient.INSTANCE.themeStorage.getThemeList();
      if (objectArrayList == null || objectArrayList.isEmpty()) {
        return false;
      }
@@ -95,7 +95,7 @@ package shame.nazuna.client.ui.clickgui;
        float boxX = startX + i * 12.0F;
        float boxY = startY;
        if (HoveringUtils.isHovered(mouseX, mouseY, boxX, boxY, 8.0D, 8.0D)) {
-         astra.INSTANCE.themeStorage.setThemes(objectArrayList.get(i));
+         NazunaClient.INSTANCE.themeStorage.setThemes(objectArrayList.get(i));
          return true;
        } 
      } 

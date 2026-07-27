@@ -100,8 +100,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      float baseY = this.draggable.getY();
  
      
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       colorTheme = (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       colorTheme = (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      } else {
        colorTheme = ColorUtils.getThemeColor();
      } 

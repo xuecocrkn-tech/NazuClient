@@ -44,8 +44,8 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    public int getFogColor() {
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       return (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       return (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      }
      return ColorUtils.getThemeColor();
    }

@@ -294,7 +294,7 @@ package shame.nazuna.client.modules.impl.render;
      String hpText = "" + Math.round(hp) + " hp";
      String rightBracket = "";
      
-     boolean isFriend = (astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage.isFriend(player.method_5477().getString()));
+     boolean isFriend = (NazunaClient.INSTANCE.friendStorage != null && NazunaClient.INSTANCE.friendStorage.isFriend(player.method_5477().getString()));
      String friendSuffix = isFriend ? " [F]" : "";
      
      float donateWidth = 0.0F;
@@ -447,7 +447,7 @@ package shame.nazuna.client.modules.impl.render;
      if (name != null) {
        int[] discoveredColor = { 0 };
        boolean[] found = { false };
-       name.method_27658((style, string) -> { if (!found[0] && style != null && style.method_10973() != null) { discoveredColor[0] = 0xFF000000 | style.method_10973().method_27716(); found[0] = true; }  return found[0] ? Optional.<String>of(string) : Optional.empty(); }Style.field_24360);
+       name.method_27658((style, string) -> { if (!found[0] && style != null && style.method_10973() != null) { discoveredColor[0] = 0xFF000000 | style.method_10973().method_27716(); found[0] = true; }  return found[0] ? Optional.<String>of(string) : Optional.empty(); }, Style.field_24360);
  
  
  
@@ -590,7 +590,7 @@ package shame.nazuna.client.modules.impl.render;
      String[] nameVariants = getNameVariants(player);
      boolean[] foundName = { false };
      
-     displayName.method_27658((style, string) -> { if (foundName[0] || string == null || string.isEmpty()) return Optional.empty();  String part = string.replace('\n', ' ').replace('\r', ' '); int nameIndex = findAnyNameIndex(part, nameVariants); String donatePart = (nameIndex >= 0) ? part.substring(0, nameIndex) : part; if (!donatePart.isEmpty()) { int baseColor = (style.method_10973() != null) ? style.method_10973().method_27716() : 16777215; appendColoredSegments(segments, donatePart, baseColor); }  if (nameIndex >= 0) foundName[0] = true;  return Optional.empty(); }Style.field_24360);
+     displayName.method_27658((style, string) -> { if (foundName[0] || string == null || string.isEmpty()) return Optional.empty();  String part = string.replace('\n', ' ').replace('\r', ' '); int nameIndex = findAnyNameIndex(part, nameVariants); String donatePart = (nameIndex >= 0) ? part.substring(0, nameIndex) : part; if (!donatePart.isEmpty()) { int baseColor = (style.method_10973() != null) ? style.method_10973().method_27716() : 16777215; appendColoredSegments(segments, donatePart, baseColor); }  if (nameIndex >= 0) foundName[0] = true;  return Optional.empty(); }, Style.field_24360);
  
  
  
@@ -669,7 +669,7 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private void appendTextSegments(List<DonateSegment> out, Text text) {
-     text.method_27658((style, string) -> { if (string == null || string.isEmpty()) return Optional.empty();  int baseColor = (style.method_10973() != null) ? style.method_10973().method_27716() : 16777215; appendColoredSegments(out, string.replace('\n', ' ').replace('\r', ' '), baseColor); return Optional.empty(); }Style.field_24360);
+     text.method_27658((style, string) -> { if (string == null || string.isEmpty()) return Optional.empty();  int baseColor = (style.method_10973() != null) ? style.method_10973().method_27716() : 16777215; appendColoredSegments(out, string.replace('\n', ' ').replace('\r', ' '), baseColor); return Optional.empty(); }, Style.field_24360);
    }
  
  
@@ -1125,10 +1125,10 @@ package shame.nazuna.client.modules.impl.render;
      //   122: aload_2
      //   123: checkcast net/minecraft/PlayerEntity
      //   126: astore #13
-     //   128: getstatic shame/astra/astra.INSTANCE : Lshame/astra/astra;
+     //   128: getstatic shame/astra/NazunaClient.INSTANCE : Lshame/astra/astra;
      //   131: getfield friendStorage : Lshame/astra/api/storages/implement/FriendStorage;
      //   134: ifnull -> 163
-     //   137: getstatic shame/astra/astra.INSTANCE : Lshame/astra/astra;
+     //   137: getstatic shame/astra/NazunaClient.INSTANCE : Lshame/astra/astra;
      //   140: getfield friendStorage : Lshame/astra/api/storages/implement/FriendStorage;
      //   143: aload #13
      //   145: invokevirtual method_5477 : ()Lnet/minecraft/Text;
@@ -1565,18 +1565,18 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private boolean isRainbowTheme() {
-     if (astra.INSTANCE == null || astra.INSTANCE.themeStorage == null || astra.INSTANCE.themeStorage.getThemes() == null) {
+     if (NazunaClient.INSTANCE == null || NazunaClient.INSTANCE.themeStorage == null || NazunaClient.INSTANCE.themeStorage.getThemes() == null) {
        return false;
      }
-     Theme theme = astra.INSTANCE.themeStorage.getThemes().getTheme();
+     Theme theme = NazunaClient.INSTANCE.themeStorage.getThemes().getTheme();
      return (theme != null && "Rainbow".equals(theme.getName()));
    }
    
    private int getStableThemeColor() {
-     if (astra.INSTANCE == null || astra.INSTANCE.themeStorage == null || astra.INSTANCE.themeStorage.getThemes() == null) {
+     if (NazunaClient.INSTANCE == null || NazunaClient.INSTANCE.themeStorage == null || NazunaClient.INSTANCE.themeStorage.getThemes() == null) {
        return ColorUtils.getThemeColor(0);
      }
-     Theme theme = astra.INSTANCE.themeStorage.getThemes().getTheme();
+     Theme theme = NazunaClient.INSTANCE.themeStorage.getThemes().getTheme();
      if (theme == null || theme.color == null || theme.color.length == 0) {
        return ColorUtils.getThemeColor(0);
      }

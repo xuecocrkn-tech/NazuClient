@@ -51,8 +51,8 @@ package shame.nazuna.client.modules.impl.misc;
      String out = text;
      String replacement = getReplacementName();
      out = replaceIgnoreCase(out, mc.method_1548().method_1676(), replacement);
-     if (this.friends.isState() && astra.INSTANCE != null && astra.INSTANCE.friendStorage != null) {
-       for (String friend : astra.INSTANCE.friendStorage.getFriends()) {
+     if (this.friends.isState() && NazunaClient.INSTANCE != null && NazunaClient.INSTANCE.friendStorage != null) {
+       for (String friend : NazunaClient.INSTANCE.friendStorage.getFriends()) {
          out = replaceIgnoreCase(out, friend, replacement);
        }
      }
@@ -77,8 +77,8 @@ package shame.nazuna.client.modules.impl.misc;
      Text output = text;
      String replacement = getReplacementName();
      output = ReplaceUtils.replace(output, mc.method_1548().method_1676(), replacement);
-     if (this.friends.isState() && astra.INSTANCE != null && astra.INSTANCE.friendStorage != null) {
-       for (String friend : astra.INSTANCE.friendStorage.getFriends()) {
+     if (this.friends.isState() && NazunaClient.INSTANCE != null && NazunaClient.INSTANCE.friendStorage != null) {
+       for (String friend : NazunaClient.INSTANCE.friendStorage.getFriends()) {
          output = ReplaceUtils.replace(output, friend, replacement);
        }
      }
@@ -138,8 +138,8 @@ package shame.nazuna.client.modules.impl.misc;
    private String getPatchCacheKey(String text) {
      String username = (mc != null && mc.method_1548() != null) ? mc.method_1548().method_1676() : "";
      int friendsHash = 0;
-     if (this.friends.isState() && astra.INSTANCE != null && astra.INSTANCE.friendStorage != null) {
-       List<String> friendList = astra.INSTANCE.friendStorage.getFriends();
+     if (this.friends.isState() && NazunaClient.INSTANCE != null && NazunaClient.INSTANCE.friendStorage != null) {
+       List<String> friendList = NazunaClient.INSTANCE.friendStorage.getFriends();
        friendsHash = friendList.hashCode();
      } 
      return username + "\002" + username + "\002" + 
@@ -172,7 +172,7 @@ package shame.nazuna.client.modules.impl.misc;
      String normalized = input.trim().toLowerCase();
  
      
-     String prefix = (astra.INSTANCE != null && astra.INSTANCE.commandStorage != null) ? astra.INSTANCE.commandStorage.getPrefix().toLowerCase() : ".";
+     String prefix = (NazunaClient.INSTANCE != null && NazunaClient.INSTANCE.commandStorage != null) ? NazunaClient.INSTANCE.commandStorage.getPrefix().toLowerCase() : ".";
      return normalized.startsWith(prefix + "friend remove");
    }
  }

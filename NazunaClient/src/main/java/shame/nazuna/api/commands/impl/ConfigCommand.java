@@ -26,15 +26,15 @@ package shame.nazuna.api.commands.impl;
        .then(literal("save")
          .then(arg("config", (ArgumentType)StringArgumentType.word())
            .suggests((context, builder1) -> {
-               if (astra.INSTANCE.configsDir.exists() && astra.INSTANCE.configsDir.isDirectory()) {
-                 File[] files = astra.INSTANCE.configsDir.listFiles(());
+               if (NazunaClient.INSTANCE.configsDir.exists() && NazunaClient.INSTANCE.configsDir.isDirectory()) {
+                 File[] files = NazunaClient.INSTANCE.configsDir.listFiles();
  
                  
                  if (files != null) {
                    Objects.requireNonNull(builder1);
  
                    
-                   Arrays.<File>stream(files).map(File::getName).map(()).forEach(builder1::suggest);
+                   Arrays.<File>stream(files).map(File::getName).map(x -> x).forEach(builder1::suggest);
                  } 
                } 
                
@@ -42,7 +42,7 @@ package shame.nazuna.api.commands.impl;
              }).executes(context -> {
                String config = (String)context.getArgument("config", String.class);
                try {
-                 astra.INSTANCE.configStorage.saveConfig(config);
+                 NazunaClient.INSTANCE.configStorage.saveConfig(config);
                  ChatUtils.sendMessage("Конфиг " + config + " успешно сохранён!");
                } catch (Exception e) {
                  ChatUtils.sendMessage("Ошибка при сохранении конфига " + config + "!");
@@ -56,15 +56,15 @@ package shame.nazuna.api.commands.impl;
              })))).then(literal("load")
          .then(arg("config", (ArgumentType)StringArgumentType.word())
            .suggests((context, builder1) -> {
-               if (astra.INSTANCE.configsDir.exists() && astra.INSTANCE.configsDir.isDirectory()) {
-                 File[] files = astra.INSTANCE.configsDir.listFiles(());
+               if (NazunaClient.INSTANCE.configsDir.exists() && NazunaClient.INSTANCE.configsDir.isDirectory()) {
+                 File[] files = NazunaClient.INSTANCE.configsDir.listFiles();
  
                  
                  if (files != null) {
                    Objects.requireNonNull(builder1);
  
                    
-                   Arrays.<File>stream(files).map(File::getName).map(()).forEach(builder1::suggest);
+                   Arrays.<File>stream(files).map(File::getName).map(x -> x).forEach(builder1::suggest);
                  } 
                } 
                
@@ -72,7 +72,7 @@ package shame.nazuna.api.commands.impl;
              }).executes(context -> {
                String config = (String)context.getArgument("config", String.class);
                try {
-                 astra.INSTANCE.configStorage.loadConfig(config);
+                 NazunaClient.INSTANCE.configStorage.loadConfig(config);
                  ChatUtils.sendMessage("Конфиг " + config + " успешно загружен!");
                } catch (Exception e) {
                  ChatUtils.sendMessage("Ошибка при загрузке конфига " + config + "!");
@@ -85,7 +85,7 @@ package shame.nazuna.api.commands.impl;
                return 1;
              })))).then(literal("list")
          .executes(context -> {
-             File[] files = astra.INSTANCE.configsDir.listFiles(());
+             File[] files = NazunaClient.INSTANCE.configsDir.listFiles();
              
              if (files == null || files.length == 0) {
                ChatUtils.sendMessage("Список конфигов пуст!");
@@ -105,7 +105,7 @@ package shame.nazuna.api.commands.impl;
            }))).then(literal("dir")
          .executes(context -> {
              try {
-               File configsDir = new File(astra.INSTANCE.globalsDir, "configs");
+               File configsDir = new File(NazunaClient.INSTANCE.globalsDir, "configs");
                
                if (!configsDir.exists()) {
                  configsDir.mkdirs();

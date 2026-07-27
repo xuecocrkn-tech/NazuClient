@@ -249,7 +249,7 @@ package shame.nazuna.client.modules.impl.combat;
      if (entity instanceof PlayerEntity) { PlayerEntity player = (PlayerEntity)entity;
        if (!this.targets.is("Игроки")) return false; 
        if (player.method_6059(StatusEffects.field_5905) && !this.targets.is("Невидимки")) return false; 
-       if (astra.INSTANCE.friendStorage.isFriend(entity.method_5477().getString())) return false;  }
+       if (NazunaClient.INSTANCE.friendStorage.isFriend(entity.method_5477().getString())) return false;  }
      else if (entity instanceof net.minecraft.PassiveEntity || entity instanceof net.minecraft.CodEntity)
      { if (!this.targets.is("Мирные")) return false;  }
      else if (entity instanceof net.minecraft.HostileEntity && 

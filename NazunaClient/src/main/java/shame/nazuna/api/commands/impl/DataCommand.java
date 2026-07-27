@@ -54,7 +54,7 @@ package shame.nazuna.api.commands.impl;
            .suggests((context, suggestions) -> {
                Objects.requireNonNull(suggestions);
                
-               getAuraPatterns().stream().filter(()).forEach(suggestions::suggest);
+               getAuraPatterns().stream().filter(x -> true).forEach(suggestions::suggest);
                
                return suggestions.buildFuture();
              }).executes(context -> {
@@ -66,7 +66,7 @@ package shame.nazuna.api.commands.impl;
            .suggests((context, suggestions) -> {
                Objects.requireNonNull(suggestions);
                
-               getAuraPatterns().stream().filter(()).forEach(suggestions::suggest);
+               getAuraPatterns().stream().filter(x -> true).forEach(suggestions::suggest);
                
                return suggestions.buildFuture();
              }).executes(context -> {

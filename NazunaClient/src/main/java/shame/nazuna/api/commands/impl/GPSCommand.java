@@ -31,15 +31,15 @@ package shame.nazuna.api.commands.impl;
                
                Waypoint waypoint = new Waypoint(x, z);
                
-               astra.INSTANCE.waypointStorage.set(waypoint);
+               NazunaClient.INSTANCE.waypointStorage.set(waypoint);
                
                ChatUtils.sendMessage(I18n.method_4662("Метка поставлена: ", new Object[] { Integer.valueOf(x), Integer.valueOf(z) }));
                
                return 1;
              })))).then(literal("remove")
          .executes(context -> {
-             if (!astra.INSTANCE.waypointStorage.isEmpty()) {
-               astra.INSTANCE.waypointStorage.clear();
+             if (!NazunaClient.INSTANCE.waypointStorage.isEmpty()) {
+               NazunaClient.INSTANCE.waypointStorage.clear();
                ChatUtils.sendMessage(I18n.method_4662("Метка удалена!", new Object[0]));
              } else {
                ChatUtils.sendMessage(I18n.method_4662("Метки не было", new Object[0]));

@@ -226,7 +226,7 @@ package shame.nazuna.client.modules.impl.render;
      } 
      
      Entity entity = mc.field_1687.method_8469(playerState.field_53528);
-     if (entity instanceof PlayerEntity) { PlayerEntity player = (PlayerEntity)entity; if (astra.INSTANCE != null && astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage
+     if (entity instanceof PlayerEntity) { PlayerEntity player = (PlayerEntity)entity; if (NazunaClient.INSTANCE != null && NazunaClient.INSTANCE.friendStorage != null && NazunaClient.INSTANCE.friendStorage
  
          
          .isFriend(player.method_5477().getString())) {

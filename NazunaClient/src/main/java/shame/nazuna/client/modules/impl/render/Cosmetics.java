@@ -472,16 +472,16 @@ package shame.nazuna.client.modules.impl.render;
    private boolean shouldRenderCosmeticForPlayer(PlayerEntity player) {
      if (mc.field_1724 == null) return false; 
      if (player == mc.field_1724) return true; 
-     return (astra.INSTANCE != null && astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage
+     return (NazunaClient.INSTANCE != null && NazunaClient.INSTANCE.friendStorage != null && NazunaClient.INSTANCE.friendStorage
        
        .isFriend(player.method_5477().getString()));
    }
    
    private int getStableThemeColor() {
-     if (astra.INSTANCE == null || astra.INSTANCE.themeStorage == null || astra.INSTANCE.themeStorage.getThemes() == null) {
+     if (NazunaClient.INSTANCE == null || NazunaClient.INSTANCE.themeStorage == null || NazunaClient.INSTANCE.themeStorage.getThemes() == null) {
        return ColorUtils.getThemeColor(0);
      }
-     Theme theme = astra.INSTANCE.themeStorage.getThemes().getTheme();
+     Theme theme = NazunaClient.INSTANCE.themeStorage.getThemes().getTheme();
      if (theme == null || theme.color == null || theme.color.length == 0) {
        return ColorUtils.getThemeColor(0);
      }
@@ -489,11 +489,11 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private int resolveCosmeticThemeColor() {
-     if (astra.INSTANCE == null || astra.INSTANCE.themeStorage == null || astra.INSTANCE.themeStorage.getThemes() == null) {
+     if (NazunaClient.INSTANCE == null || NazunaClient.INSTANCE.themeStorage == null || NazunaClient.INSTANCE.themeStorage.getThemes() == null) {
        return ColorUtils.getThemeColor();
      }
      
-     Theme theme = astra.INSTANCE.themeStorage.getThemes().getTheme();
+     Theme theme = NazunaClient.INSTANCE.themeStorage.getThemes().getTheme();
      if (theme == null) {
        return ColorUtils.getThemeColor();
      }

@@ -34,8 +34,8 @@ package shame.nazuna.client.modules.impl.misc;
          if (this.onlyFriend.isState()) {
            boolean isFriend = false;
            
-           if (astra.INSTANCE.friendStorage != null) {
-             for (String friend : astra.INSTANCE.friendStorage.getFriends()) {
+           if (NazunaClient.INSTANCE.friendStorage != null) {
+             for (String friend : NazunaClient.INSTANCE.friendStorage.getFriends()) {
                if (raw.contains(friend.toLowerCase(Locale.ROOT))) {
                  isFriend = true;
                  

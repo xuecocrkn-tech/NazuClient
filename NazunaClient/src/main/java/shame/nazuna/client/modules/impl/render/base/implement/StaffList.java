@@ -132,7 +132,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    private List<PrefixSegment> parsePrefix(Text prefix) {
      List<PrefixSegment> segments = new ArrayList<>();
      
-     prefix.method_27658((style, string) -> { if (string == null || string.isEmpty()) return Optional.empty();  appendPrefixSegments(segments, string, (style.method_10973() != null) ? style.method_10973().method_27716() : 16777215); return Optional.empty(); }Style.field_24360);
+     prefix.method_27658((style, string) -> { if (string == null || string.isEmpty()) return Optional.empty();  appendPrefixSegments(segments, string, (style.method_10973() != null) ? style.method_10973().method_27716() : 16777215); return Optional.empty(); }, Style.field_24360);
  
  
  
@@ -240,7 +240,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        Text prefixText = team.method_1144();
        String prefixStr = prefixText.getString();
        boolean matchesPrefix = matchesStaffPrefix(prefixStr);
-       boolean isInStaffList = astra.INSTANCE.staffStorage.isStaff(name);
+       boolean isInStaffList = NazunaClient.INSTANCE.staffStorage.isStaff(name);
        
        if (matchesPrefix || vanish || isGM3 || isInStaffList) {
          String status; this.activeStaff.add(name);
@@ -265,7 +265,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        } 
      } 
      
-     for (String staffName : astra.INSTANCE.staffStorage.getStaffs()) {
+     for (String staffName : NazunaClient.INSTANCE.staffStorage.getStaffs()) {
        String status; if (staffName.equals(selfName) || 
          !this.namePattern.matcher(staffName).matches() || 
          this.activeStaff.contains(staffName))
@@ -359,8 +359,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      MatrixStack matrices = eventRender.getContext().method_51448();
  
      
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       colorTheme = (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       colorTheme = (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      } else {
        colorTheme = ColorUtils.getThemeColor();
      } 

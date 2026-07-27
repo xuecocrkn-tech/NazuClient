@@ -12,13 +12,13 @@ package shame.nazuna.mixin;
  {
    @Inject(method = {"main"}, at = {@At("HEAD")})
    private static void onMain(String[] args, CallbackInfo ci) {
-     if (astra.INSTANCE.isServer) {
+     if (NazunaClient.INSTANCE.isServer) {
        try {
-         astra.INSTANCE.closeMinecraft();
+         NazunaClient.INSTANCE.closeMinecraft();
        } catch (Exception e) {
          e.printStackTrace();
        } 
-       astra.INSTANCE.isServer = false;
+       NazunaClient.INSTANCE.isServer = false;
      } 
    }
  }

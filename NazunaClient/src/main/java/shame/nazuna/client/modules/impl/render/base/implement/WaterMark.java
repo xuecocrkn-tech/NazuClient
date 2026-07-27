@@ -131,7 +131,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      Font text = Fonts.getFont("suisse", 12);
      Font icon = Fonts.getFont("iconnew", 12);
      
-     int themeColor = astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow") ? ColorUtils.getThemeColor() : (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     int themeColor = NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow") ? ColorUtils.getThemeColor() : (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      int panel = ColorUtils.rgba(23, 24, 29, 218);
      int cell = ColorUtils.rgba(35, 36, 43, 228);
      int white = ColorUtils.rgba(245, 246, 250, 255);
@@ -240,8 +240,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  
  
      
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       iconTop = (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       iconTop = (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
        iconBottom = ColorUtils.gradient(iconTop, iconTop, (float)Math.sin((this.animationProgress / 180.0F) * Math.PI) * 0.5F + 0.5F);
        iconMid = ColorUtils.gradient(iconTop, iconTop, (float)Math.cos((this.animationProgress / 180.0F) * Math.PI) * 0.5F + 0.5F);
      } else {
@@ -588,10 +588,10 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    }
    
    private float getServerTps() {
-     if (astra.INSTANCE == null || astra.INSTANCE.tpsCalc == null) {
+     if (NazunaClient.INSTANCE == null || NazunaClient.INSTANCE.tpsCalc == null) {
        return 20.0F;
      }
-     return Math.max(0.0F, Math.min(20.0F, astra.INSTANCE.tpsCalc.getTPS()));
+     return Math.max(0.0F, Math.min(20.0F, NazunaClient.INSTANCE.tpsCalc.getTPS()));
    }
    
    private String formatOneDecimal(float value) {

@@ -721,7 +721,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      float itemSpacing = 10.0F;
  
      
-     int waveThemeColor = !astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow") ? (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0] : ColorUtils.getThemeColor();
+     int waveThemeColor = !NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow") ? (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0] : ColorUtils.getThemeColor();
      int waveSlotBorderColor = ColorUtils.applyAlpha(ColorUtils.rgba(50, 50, 50, 255), visualAlpha);
      int waveSlotTopColor = ColorUtils.applyAlpha(ColorUtils.darken(waveThemeColor, 0.15F), visualAlpha);
      int waveSlotBottomColor = ColorUtils.applyAlpha(ColorUtils.darken(waveThemeColor, 0.05F), visualAlpha);
@@ -987,13 +987,13 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      float goldenAlpha = MathHelper.method_15363(this.goldenAlphaAnimation.getValue(), 0.0F, 1.0F);
      float x = this.draggable.getX();
      float y = this.draggable.getY();
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       colorTheme = (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       colorTheme = (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      } else {
        colorTheme = ColorUtils.getThemeColor();
      } 
-     if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
-       colorTheme2 = ColorUtils.darken((astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0], 0.4F);
+     if (!NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
+       colorTheme2 = ColorUtils.darken((NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0], 0.4F);
      } else {
        colorTheme2 = ColorUtils.getThemeColor();
      } 

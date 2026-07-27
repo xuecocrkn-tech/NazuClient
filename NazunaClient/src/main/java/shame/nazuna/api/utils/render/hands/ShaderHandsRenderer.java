@@ -118,7 +118,7 @@ package shame.nazuna.api.utils.render.hands;
      boolean hasFill = (fillValue > 0.001F && alphaValue > 0.001F);
  
      
-     int color1 = astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow") ? ColorUtils.getThemeColor(0) : (astra.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
+     int color1 = NazunaClient.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow") ? ColorUtils.getThemeColor(0) : (NazunaClient.INSTANCE.themeStorage.getThemes().getTheme()).color[0];
      int color2 = color1;
      
      if (module.mode.is("Красивый")) {
@@ -318,7 +318,7 @@ package shame.nazuna.api.utils.render.hands;
    }
    
    private ShaderHands getModule() {
-     if (astra.INSTANCE == null || ModuleClass.INSTANCE == null) return null; 
+     if (NazunaClient.INSTANCE == null || ModuleClass.INSTANCE == null) return null; 
      return ModuleClass.shaderHands;
    }
    

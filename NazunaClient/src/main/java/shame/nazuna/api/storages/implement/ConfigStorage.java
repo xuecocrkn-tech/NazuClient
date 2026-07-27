@@ -54,12 +54,12 @@ package shame.nazuna.api.storages.implement;
  
    
    public void saveConfig(String config) throws Exception {
-     File file = new File(astra.INSTANCE.configsDir, config + ".wonder");
+     File file = new File(NazunaClient.INSTANCE.configsDir, config + ".wonder");
      
      JsonObject object = new JsonObject();
      object.add("config", (JsonElement)new JsonPrimitive(config));
-     object.add("theme", (JsonElement)new JsonPrimitive(astra.INSTANCE.themeStorage.getThemes().name()));
-     object.add("language", (JsonElement)new JsonPrimitive(astra.INSTANCE.localizationStorage.getLanguage().name()));
+     object.add("theme", (JsonElement)new JsonPrimitive(NazunaClient.INSTANCE.themeStorage.getThemes().name()));
+     object.add("language", (JsonElement)new JsonPrimitive(NazunaClient.INSTANCE.localizationStorage.getLanguage().name()));
      object.add("modules", (JsonElement)serializeModules());
      object.add("draggables", (JsonElement)serializeDraggables());
      object.add("hud", (JsonElement)serializeHudState());
@@ -76,9 +76,9 @@ package shame.nazuna.api.storages.implement;
    
    public void loadConfig(String config) throws Exception {
      JsonObject object;
-     if (!FileUtils.exists(String.valueOf(astra.INSTANCE.configsDir) + "/" + String.valueOf(astra.INSTANCE.configsDir) + ".wonder"))
+     if (!FileUtils.exists(String.valueOf(NazunaClient.INSTANCE.configsDir) + "/" + String.valueOf(NazunaClient.INSTANCE.configsDir) + ".wonder"))
        return; 
-     InputStream stream = Files.newInputStream(Paths.get(String.valueOf(astra.INSTANCE.configsDir) + "/" + String.valueOf(astra.INSTANCE.configsDir) + ".wonder", new String[0]), new java.nio.file.OpenOption[0]); 
+     InputStream stream = Files.newInputStream(Paths.get(String.valueOf(NazunaClient.INSTANCE.configsDir) + "/" + String.valueOf(NazunaClient.INSTANCE.configsDir) + ".wonder", new String[0]), new java.nio.file.OpenOption[0]); 
      try { Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8); 
        try { object = JsonParser.parseReader(reader).getAsJsonObject();
          reader.close(); } catch (Throwable throwable) { try { reader.close(); } catch (Throwable throwable1) { throwable.addSuppressed(throwable1); }  throw throwable; }  if (stream != null) stream.close();  } catch (Throwable throwable) { if (stream != null)
@@ -87,7 +87,7 @@ package shame.nazuna.api.storages.implement;
        String themeName = object.get("theme").getAsString();
        for (ThemeStorage.Themes theme : ThemeStorage.Themes.values()) {
          if (theme.name().equals(themeName)) {
-           astra.INSTANCE.themeStorage.setThemes(theme);
+           NazunaClient.INSTANCE.themeStorage.setThemes(theme);
            
            break;
          } 
@@ -95,7 +95,7 @@ package shame.nazuna.api.storages.implement;
      } 
      if (object.has("language")) {
        try {
-         astra.INSTANCE.localizationStorage.setLanguage(LocalizationStorage.Language.valueOf(object.get("language").getAsString()));
+         NazunaClient.INSTANCE.localizationStorage.setLanguage(LocalizationStorage.Language.valueOf(object.get("language").getAsString()));
        } catch (Exception exception) {}
      }
  
@@ -117,26 +117,26 @@ package shame.nazuna.api.storages.implement;
  
    
    public void saveGlobals() throws Exception {
-     File file = new File(astra.INSTANCE.globalsDir, "globals.wonder");
+     File file = new File(NazunaClient.INSTANCE.globalsDir, "globals.wonder");
      JsonObject object = new JsonObject();
      object.add("config", (JsonElement)new JsonPrimitive(this.currentConfig));
      
-     object.add("theme", (JsonElement)new JsonPrimitive(astra.INSTANCE.themeStorage.getThemes().name()));
-     object.add("language", (JsonElement)new JsonPrimitive(astra.INSTANCE.localizationStorage.getLanguage().name()));
+     object.add("theme", (JsonElement)new JsonPrimitive(NazunaClient.INSTANCE.themeStorage.getThemes().name()));
+     object.add("language", (JsonElement)new JsonPrimitive(NazunaClient.INSTANCE.localizationStorage.getLanguage().name()));
      
      object.add("draggables", (JsonElement)serializeDraggables());
      object.add("hud", (JsonElement)serializeHudState());
      
      JsonArray friendsArray = new JsonArray();
-     Objects.requireNonNull(friendsArray); astra.INSTANCE.friendStorage.getFriends().forEach(friendsArray::add);
+     Objects.requireNonNull(friendsArray); NazunaClient.INSTANCE.friendStorage.getFriends().forEach(friendsArray::add);
      object.add("friends", (JsonElement)friendsArray);
      
      JsonArray staffsArray = new JsonArray();
-     Objects.requireNonNull(staffsArray); astra.INSTANCE.staffStorage.getStaffs().forEach(staffsArray::add);
+     Objects.requireNonNull(staffsArray); NazunaClient.INSTANCE.staffStorage.getStaffs().forEach(staffsArray::add);
      object.add("staffs", (JsonElement)staffsArray);
      
      JsonArray macrosArray = new JsonArray();
-     astra.INSTANCE.macroStorage.getMacros().forEach(macro -> {
+     NazunaClient.INSTANCE.macroStorage.getMacros().forEach(macro -> {
            JsonObject macroObject = new JsonObject();
            macroObject.addProperty("name", macro.getName());
            macroObject.addProperty("command", macro.getCommand());
@@ -152,9 +152,9 @@ package shame.nazuna.api.storages.implement;
        catch (Throwable throwable1)
        { throwable.addSuppressed(throwable1); }
         throw throwable; }
-      } public void loadGlobals() throws Exception { JsonObject object; if (!FileUtils.exists(String.valueOf(astra.INSTANCE.globalsDir) + "/globals.wonder"))
+      } public void loadGlobals() throws Exception { JsonObject object; if (!FileUtils.exists(String.valueOf(NazunaClient.INSTANCE.globalsDir) + "/globals.wonder"))
        return; 
-     InputStream stream = Files.newInputStream(Paths.get(String.valueOf(astra.INSTANCE.globalsDir) + "/globals.wonder", new String[0]), new java.nio.file.OpenOption[0]); 
+     InputStream stream = Files.newInputStream(Paths.get(String.valueOf(NazunaClient.INSTANCE.globalsDir) + "/globals.wonder", new String[0]), new java.nio.file.OpenOption[0]); 
      try { Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8); 
        try { object = JsonParser.parseReader(reader).getAsJsonObject();
          reader.close(); } catch (Throwable throwable) { try { reader.close(); } catch (Throwable throwable1) { throwable.addSuppressed(throwable1); }  throw throwable; }  if (stream != null) stream.close();  } catch (Throwable throwable) { if (stream != null)
@@ -165,7 +165,7 @@ package shame.nazuna.api.storages.implement;
        String themeName = object.get("theme").getAsString();
        for (ThemeStorage.Themes theme : ThemeStorage.Themes.values()) {
          if (theme.name().equals(themeName)) {
-           astra.INSTANCE.themeStorage.setThemes(theme);
+           NazunaClient.INSTANCE.themeStorage.setThemes(theme);
            
            break;
          } 
@@ -173,7 +173,7 @@ package shame.nazuna.api.storages.implement;
      } 
      if (object.has("language")) {
        try {
-         astra.INSTANCE.localizationStorage.setLanguage(LocalizationStorage.Language.valueOf(object.get("language").getAsString()));
+         NazunaClient.INSTANCE.localizationStorage.setLanguage(LocalizationStorage.Language.valueOf(object.get("language").getAsString()));
        } catch (Exception exception) {}
      }
  
@@ -188,15 +188,15 @@ package shame.nazuna.api.storages.implement;
      
      if (object.has("friends")) {
        for (JsonElement element : object.get("friends").getAsJsonArray()) {
-         if (astra.INSTANCE.friendStorage.isFriend(element.getAsString()))
-           continue;  astra.INSTANCE.friendStorage.add(element.getAsString());
+         if (NazunaClient.INSTANCE.friendStorage.isFriend(element.getAsString()))
+           continue;  NazunaClient.INSTANCE.friendStorage.add(element.getAsString());
        } 
      }
      
      if (object.has("staffs")) {
        for (JsonElement element : object.get("staffs").getAsJsonArray()) {
-         if (astra.INSTANCE.staffStorage.isStaff(element.getAsString()))
-           continue;  astra.INSTANCE.staffStorage.add(element.getAsString());
+         if (NazunaClient.INSTANCE.staffStorage.isStaff(element.getAsString()))
+           continue;  NazunaClient.INSTANCE.staffStorage.add(element.getAsString());
        } 
      }
      
@@ -220,11 +220,11 @@ package shame.nazuna.api.storages.implement;
              key = Integer.parseInt(split[2]);
            } 
            
-           if (name.isBlank() || astra.INSTANCE.macroStorage.getMacro(name) != null) {
+           if (name.isBlank() || NazunaClient.INSTANCE.macroStorage.getMacro(name) != null) {
              continue;
            }
            
-           astra.INSTANCE.macroStorage.add(new Macro(name, command, new BindSetting("bind", key)));
+           NazunaClient.INSTANCE.macroStorage.add(new Macro(name, command, new BindSetting("bind", key)));
          } catch (Exception exception) {}
        } 
      } }

@@ -326,7 +326,7 @@ package shame.nazuna.client.modules.impl.combat;
            AntiBot.checkBot((LivingEntity)player) || 
            !this.targets.is("Игроки") || (
            player.method_6059(StatusEffects.field_5905) && !this.targets.is("Невидимые")) || 
-           astra.INSTANCE.friendStorage.isFriend(player.method_5477().getString()) || 
+           NazunaClient.INSTANCE.friendStorage.isFriend(player.method_5477().getString()) || 
            mc.field_1724.method_5739((Entity)player) > this.distance.getValue().floatValue())
            continue;  playerTargets.add(player); }
      

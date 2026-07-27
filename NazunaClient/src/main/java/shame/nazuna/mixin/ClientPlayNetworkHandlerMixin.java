@@ -30,9 +30,9 @@ package shame.nazuna.mixin;
    
    @Inject(method = {"method_45729"}, at = {@At("HEAD")}, cancellable = true)
    public void sendChatMessage(@NotNull String message, CallbackInfo ci) {
-     if (message.startsWith(astra.INSTANCE.commandStorage.getPrefix())) {
+     if (message.startsWith(NazunaClient.INSTANCE.commandStorage.getPrefix())) {
        try {
-         astra.INSTANCE.commandStorage.getDispatcher().execute(message.substring(astra.INSTANCE.commandStorage.getPrefix().length()), astra.INSTANCE.commandStorage.getSource());
+         NazunaClient.INSTANCE.commandStorage.getDispatcher().execute(message.substring(NazunaClient.INSTANCE.commandStorage.getPrefix().length()), NazunaClient.INSTANCE.commandStorage.getSource());
        } catch (CommandSyntaxException e) {
          ChatUtils.sendMessage(String.valueOf(Formatting.field_1061) + "Ошибка в использовании!");
        } 
