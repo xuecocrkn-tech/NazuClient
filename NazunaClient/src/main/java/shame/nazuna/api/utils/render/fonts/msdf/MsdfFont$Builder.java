@@ -5,8 +5,8 @@ package shame.nazuna.api.utils.render.fonts.msdf;
  import com.google.gson.JsonObject;
  import com.google.gson.JsonParser;
  import java.util.HashMap;
- import net.minecraft.class_1044;
- import net.minecraft.class_2960;
+ import net.minecraft.AbstractTexture;
+ import net.minecraft.Identifier;
  import shame.nazuna.api.QClient;
  
  
@@ -152,8 +152,8 @@ package shame.nazuna.api.utils.render.fonts.msdf;
  public class Builder
  {
    private String name = "?";
-   private class_2960 dataIdentifier;
-   private class_2960 atlasIdentifier;
+   private Identifier dataIdentifier;
+   private Identifier atlasIdentifier;
    
    public Builder name(String name) {
      this.name = name;
@@ -161,12 +161,12 @@ package shame.nazuna.api.utils.render.fonts.msdf;
    }
    
    public Builder data(String dataFileName) {
-     this.dataIdentifier = class_2960.method_60655("astra", "fonts/msdf/" + dataFileName + "/font.json");
+     this.dataIdentifier = Identifier.method_60655("astra", "fonts/msdf/" + dataFileName + "/font.json");
      return this;
    }
    
    public Builder atlas(String atlasFileName) {
-     this.atlasIdentifier = class_2960.method_60655("astra", "fonts/msdf/" + atlasFileName + "/font.png");
+     this.atlasIdentifier = Identifier.method_60655("astra", "fonts/msdf/" + atlasFileName + "/font.png");
      return this;
    }
    
@@ -221,7 +221,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
        glyphs.put(Integer.valueOf(unicode), glyph);
      } 
      
-     class_1044 texture = QClient.mc.method_1531().method_4619(this.atlasIdentifier);
+     AbstractTexture texture = QClient.mc.method_1531().method_4619(this.atlasIdentifier);
      
      return new MsdfFont(this.name, texture, atlasWidth, atlasHeight, range, lineHeight, ascender, descender, glyphs);
    }

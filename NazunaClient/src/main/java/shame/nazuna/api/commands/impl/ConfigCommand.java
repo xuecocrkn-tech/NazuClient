@@ -9,7 +9,7 @@ package shame.nazuna.api.commands.impl;
  import java.util.Arrays;
  import java.util.Objects;
  import java.util.concurrent.CompletableFuture;
- import net.minecraft.class_2172;
+ import net.minecraft.CommandSource;
  import shame.nazuna.api.commands.Command;
  import shame.nazuna.api.utils.chat.ChatUtils;
  import shame.nazuna.astra;
@@ -21,7 +21,7 @@ package shame.nazuna.api.commands.impl;
  
  
    
-   public void execute(LiteralArgumentBuilder<class_2172> builder) {
+   public void execute(LiteralArgumentBuilder<CommandSource> builder) {
      ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)builder
        .then(literal("save")
          .then(arg("config", (ArgumentType)StringArgumentType.word())

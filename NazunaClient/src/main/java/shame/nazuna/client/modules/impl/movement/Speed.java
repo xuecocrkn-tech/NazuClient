@@ -1,8 +1,8 @@
 package shame.nazuna.client.modules.impl.movement;
  
- import net.minecraft.class_1309;
- import net.minecraft.class_238;
- import net.minecraft.class_243;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Box;
+ import net.minecraft.Vec3d;
  import org.jetbrains.annotations.NotNull;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.events.EventLink;
@@ -40,18 +40,18 @@ package shame.nazuna.client.modules.impl.movement;
      Aura aura = ModuleClass.aura;
      if (aura == null || !aura.isEnable())
        return; 
-     class_1309 target = aura.getTarget();
+     LivingEntity target = aura.getTarget();
      if (target == null || target == mc.field_1724)
        return; 
      if (this.onlyElytra.isState() && !mc.field_1724.method_6128())
        return; 
-     class_238 expandedBox = mc.field_1724.method_5829().method_1014(this.radius.getValue().doubleValue());
+     Box expandedBox = mc.field_1724.method_5829().method_1014(this.radius.getValue().doubleValue());
      
      boolean canSpeed = false;
      
      if (mc.field_1724.method_6128() || target.method_5829().method_994(expandedBox)) {
        if (mc.field_1724.method_6128()) {
-         class_243 predictedPos = PredictUtils.predict(target, target.method_19538(), this.predict.getValue().intValue());
+         Vec3d predictedPos = PredictUtils.predict(target, target.method_19538(), this.predict.getValue().intValue());
          double distanceToPredict = mc.field_1724.method_33571().method_1022(predictedPos);
          double distanceToTarget = mc.field_1724.method_33571().method_1022(target.method_5829().method_1005());
          
@@ -64,7 +64,7 @@ package shame.nazuna.client.modules.impl.movement;
      }
      
      if (canSpeed) {
-       class_243 newVelocity = calculateVelocity(target);
+       Vec3d newVelocity = calculateVelocity(target);
        mc.field_1724.method_18799(newVelocity);
      } 
    }
@@ -74,8 +74,8 @@ package shame.nazuna.client.modules.impl.movement;
  
    
    @NotNull
-   private class_243 calculateVelocity(class_1309 target) {
-     class_243 predictedPos = PredictUtils.predict(target, target.method_19538(), this.predict.getValue().intValue());
+   private Vec3d calculateVelocity(LivingEntity target) {
+     Vec3d predictedPos = PredictUtils.predict(target, target.method_19538(), this.predict.getValue().intValue());
      double deltaX = predictedPos.field_1352 - mc.field_1724.method_23317();
      double deltaZ = predictedPos.field_1350 - mc.field_1724.method_23321();
      
@@ -84,9 +84,9 @@ package shame.nazuna.client.modules.impl.movement;
      
      double force = 0.072D * this.speed.getValue().doubleValue();
      
-     class_243 currentVelocity = mc.field_1724.method_18798();
+     Vec3d currentVelocity = mc.field_1724.method_18798();
      
-     return new class_243(currentVelocity.field_1352 + 
+     return new Vec3d(currentVelocity.field_1352 + 
          -Math.sin(radYaw) * force, currentVelocity.field_1351, currentVelocity.field_1350 + 
          
          Math.cos(radYaw) * force);

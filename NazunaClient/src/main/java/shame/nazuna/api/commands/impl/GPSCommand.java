@@ -5,8 +5,8 @@ package shame.nazuna.api.commands.impl;
  import com.mojang.brigadier.builder.LiteralArgumentBuilder;
  import com.mojang.brigadier.context.CommandContext;
  import com.mojang.brigadier.exceptions.CommandSyntaxException;
- import net.minecraft.class_1074;
- import net.minecraft.class_2172;
+ import net.minecraft.I18n;
+ import net.minecraft.CommandSource;
  import shame.nazuna.api.commands.Command;
  import shame.nazuna.api.utils.chat.ChatUtils;
  import shame.nazuna.api.utils.cmd.waypoint.Waypoint;
@@ -20,7 +20,7 @@ package shame.nazuna.api.commands.impl;
  
  
    
-   public void execute(LiteralArgumentBuilder<class_2172> builder) {
+   public void execute(LiteralArgumentBuilder<CommandSource> builder) {
      ((LiteralArgumentBuilder)builder
        .then(arg("X", (ArgumentType)IntegerArgumentType.integer())
          .then(arg("Z", (ArgumentType)IntegerArgumentType.integer())
@@ -33,16 +33,16 @@ package shame.nazuna.api.commands.impl;
                
                astra.INSTANCE.waypointStorage.set(waypoint);
                
-               ChatUtils.sendMessage(class_1074.method_4662("Метка поставлена: ", new Object[] { Integer.valueOf(x), Integer.valueOf(z) }));
+               ChatUtils.sendMessage(I18n.method_4662("Метка поставлена: ", new Object[] { Integer.valueOf(x), Integer.valueOf(z) }));
                
                return 1;
              })))).then(literal("remove")
          .executes(context -> {
              if (!astra.INSTANCE.waypointStorage.isEmpty()) {
                astra.INSTANCE.waypointStorage.clear();
-               ChatUtils.sendMessage(class_1074.method_4662("Метка удалена!", new Object[0]));
+               ChatUtils.sendMessage(I18n.method_4662("Метка удалена!", new Object[0]));
              } else {
-               ChatUtils.sendMessage(class_1074.method_4662("Метки не было", new Object[0]));
+               ChatUtils.sendMessage(I18n.method_4662("Метки не было", new Object[0]));
              } 
              return 1;
            }));

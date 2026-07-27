@@ -1,9 +1,9 @@
 package shame.nazuna.client.modules.impl.combat.components.rotations;
  
- import net.minecraft.class_1309;
- import net.minecraft.class_238;
- import net.minecraft.class_243;
- import net.minecraft.class_3532;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Box;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.storages.implement.RotationStorage;
  import shame.nazuna.api.utils.rotate.Rotation;
@@ -13,7 +13,7 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
  public class WellMineRotation
    extends RotationsSystem
    implements QClient {
-   private class_1309 currentTarget;
+   private LivingEntity currentTarget;
    private float lastYaw = 0.0F;
    private float lastPitch = 0.0F;
    
@@ -47,8 +47,8 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
    }
  
    
-   private void updateRandomOffset(class_1309 target) {
-     class_238 box = target.method_5829();
+   private void updateRandomOffset(LivingEntity target) {
+     Box box = target.method_5829();
      double boxWidth = box.field_1320 - box.field_1323;
      double boxHeight = box.field_1325 - box.field_1322;
      double boxDepth = box.field_1324 - box.field_1321;
@@ -60,7 +60,7 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
  
  
    
-   public void updateRotations(class_1309 target) {
+   public void updateRotations(LivingEntity target) {
      if (mc.field_1724 == null || target == null) {
        return;
      }
@@ -74,22 +74,22 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
        updateRandomOffset(target);
      } 
      
-     class_238 box = getPredictedBox(target);
-     class_243 eyePos = mc.field_1724.method_33571();
-     class_243 centerPoint = box.method_1005().method_1031(this.randomOffsetX, this.randomOffsetY, this.randomOffsetZ);
-     class_243 toTarget = centerPoint.method_1020(eyePos);
-     float centerYaw = (float)class_3532.method_15338(Math.toDegrees(Math.atan2(toTarget.field_1350, toTarget.field_1352)) - 90.0D);
+     Box box = getPredictedBox(target);
+     Vec3d eyePos = mc.field_1724.method_33571();
+     Vec3d centerPoint = box.method_1005().method_1031(this.randomOffsetX, this.randomOffsetY, this.randomOffsetZ);
+     Vec3d toTarget = centerPoint.method_1020(eyePos);
+     float centerYaw = (float)MathHelper.method_15338(Math.toDegrees(Math.atan2(toTarget.field_1350, toTarget.field_1352)) - 90.0D);
      float centerPitch = (float)-Math.toDegrees(Math.atan2(toTarget.field_1351, Math.hypot(toTarget.field_1352, toTarget.field_1350)));
      boolean bothGliding = (mc.field_1724.method_6128() && target.method_6128());
-     class_243 lookVec = mc.field_1724.method_5828(1.0F);
-     class_243 endVec = eyePos.method_1019(lookVec.method_1021(bothGliding ? 1488.0D : 999.0D));
-     class_238 shrunkBox = box.method_1014(bothGliding ? 0.0D : -0.5D);
+     Vec3d lookVec = mc.field_1724.method_5828(1.0F);
+     Vec3d endVec = eyePos.method_1019(lookVec.method_1021(bothGliding ? 1488.0D : 999.0D));
+     Box shrunkBox = box.method_1014(bothGliding ? 0.0D : -0.5D);
      boolean inBox = shrunkBox.method_992(eyePos, endVec).isPresent();
      
      if (bothGliding) {
        if (this.isBack) {
          if (this.acceleration >= -0.02F) {
-           this.acceleration -= (Math.abs(class_3532.method_15393(centerYaw - this.lastYaw)) > 80.0F) ? 0.15F : 0.02F;
+           this.acceleration -= (Math.abs(MathHelper.method_15393(centerYaw - this.lastYaw)) > 80.0F) ? 0.15F : 0.02F;
          }
          if (this.acceleration <= -0.02F) {
            this.isBack = false;
@@ -103,7 +103,7 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
        } 
      } else if (this.isBack) {
        if (this.acceleration >= -0.15F) {
-         float slowdownSpeed = (Math.abs(class_3532.method_15393(centerYaw - this.lastYaw)) > 80.0F) ? 0.1F : 0.01F;
+         float slowdownSpeed = (Math.abs(MathHelper.method_15393(centerYaw - this.lastYaw)) > 80.0F) ? 0.1F : 0.01F;
          this.acceleration -= slowdownSpeed *= 0.9F + (float)Math.random() * 0.2F;
        } 
        if (this.acceleration <= -0.15F) {
@@ -119,7 +119,7 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
        }
      } 
      
-     float deltaYaw = class_3532.method_15393(centerYaw - this.lastYaw);
+     float deltaYaw = MathHelper.method_15393(centerYaw - this.lastYaw);
      float deltaPitch = centerPitch - this.lastPitch;
      float smooth = Math.max(this.acceleration, 0.0F);
      float humanYawOffset = (float)(Math.sin(System.currentTimeMillis() * 0.001D) * 0.04D);
@@ -129,8 +129,8 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
        humanPitchOffset += ((float)Math.random() - 0.5F) * 0.02F;
      } 
      
-     float newYaw = this.lastYaw + deltaYaw * class_3532.method_15363(smooth * 1.12F, 0.0F, 1.0F) + humanYawOffset;
-     float newPitch = this.lastPitch + deltaPitch * class_3532.method_15363(smooth / 1.88F, 0.0F, 1.0F) + humanPitchOffset;
+     float newYaw = this.lastYaw + deltaYaw * MathHelper.method_15363(smooth * 1.12F, 0.0F, 1.0F) + humanYawOffset;
+     float newPitch = this.lastPitch + deltaPitch * MathHelper.method_15363(smooth / 1.88F, 0.0F, 1.0F) + humanPitchOffset;
      float gcd = getGCDValue();
      newYaw -= (newYaw - this.lastYaw) % gcd;
      newPitch -= (newPitch - this.lastPitch) % gcd;

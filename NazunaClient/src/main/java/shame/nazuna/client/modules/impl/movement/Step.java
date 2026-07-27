@@ -1,10 +1,10 @@
 package shame.nazuna.client.modules.impl.movement;
- import net.minecraft.class_1922;
- import net.minecraft.class_2338;
- import net.minecraft.class_238;
- import net.minecraft.class_243;
- import net.minecraft.class_265;
- import net.minecraft.class_2680;
+ import net.minecraft.BlockView;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Box;
+ import net.minecraft.Vec3d;
+ import net.minecraft.VoxelShape;
+ import net.minecraft.BlockState;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -44,7 +44,7 @@ package shame.nazuna.client.modules.impl.movement;
        float fallDistance = this.reverseHeight.get();
        
        if (canFall(fallDistance)) {
-         class_243 vel = mc.field_1724.method_18798();
+         Vec3d vel = mc.field_1724.method_18798();
          mc.field_1724.method_18800(vel.field_1352, -fallDistance, vel.field_1350);
        } 
      } 
@@ -107,7 +107,7 @@ package shame.nazuna.client.modules.impl.movement;
  
    
    private void handleMotionStep(float stepHeight) {
-     class_243 velocity = mc.field_1724.method_18798();
+     Vec3d velocity = mc.field_1724.method_18798();
      double motionY = 0.42D;
      
      if (stepHeight <= 1.0F) {
@@ -126,7 +126,7 @@ package shame.nazuna.client.modules.impl.movement;
    }
    
    private float getStepHeight() {
-     class_238 box = mc.field_1724.method_5829();
+     Box box = mc.field_1724.method_5829();
      float maxY = 0.0F;
      
      double checkDistance = 0.3D;
@@ -135,9 +135,9 @@ package shame.nazuna.client.modules.impl.movement;
      double offsetZ = Math.cos(playerYaw) * checkDistance;
      double y;
      for (y = 0.6D; y <= this.height.get() + 0.6D; y += 0.1D) {
-       class_238 testBox = box.method_989(offsetX, y, offsetZ);
+       Box testBox = box.method_989(offsetX, y, offsetZ);
        
-       for (class_2338 pos : class_2338.method_10094(
+       for (BlockPos pos : BlockPos.method_10094(
            (int)Math.floor(testBox.field_1323), 
            (int)Math.floor(testBox.field_1322), 
            (int)Math.floor(testBox.field_1321), 
@@ -145,14 +145,14 @@ package shame.nazuna.client.modules.impl.movement;
            (int)Math.floor(testBox.field_1325), 
            (int)Math.floor(testBox.field_1324))) {
          
-         class_2680 state = mc.field_1687.method_8320(pos);
+         BlockState state = mc.field_1687.method_8320(pos);
          if (state.method_26215())
            continue; 
-         class_265 shape = state.method_26220((class_1922)mc.field_1687, pos);
+         VoxelShape shape = state.method_26220((BlockView)mc.field_1687, pos);
          if (shape.method_1110())
            continue; 
-         for (class_238 collisionBox : shape.method_1090()) {
-           class_238 offsetBox = collisionBox.method_996(pos);
+         for (Box collisionBox : shape.method_1090()) {
+           Box offsetBox = collisionBox.method_996(pos);
            float blockHeight = (float)(offsetBox.field_1325 - mc.field_1724.method_23318());
            
            if (blockHeight > 0.6F && blockHeight <= this.height.get()) {
@@ -166,9 +166,9 @@ package shame.nazuna.client.modules.impl.movement;
    }
    
    private boolean isBlockAbove() {
-     class_238 box = mc.field_1724.method_5829().method_989(0.0D, 1.0D, 0.0D);
+     Box box = mc.field_1724.method_5829().method_989(0.0D, 1.0D, 0.0D);
      
-     for (class_2338 pos : class_2338.method_10094(
+     for (BlockPos pos : BlockPos.method_10094(
          (int)Math.floor(box.field_1323), 
          (int)Math.floor(box.field_1322), 
          (int)Math.floor(box.field_1321), 
@@ -185,12 +185,12 @@ package shame.nazuna.client.modules.impl.movement;
    }
    
    private boolean canFall(float distance) {
-     class_238 box = mc.field_1724.method_5829();
+     Box box = mc.field_1724.method_5829();
      
      for (double y = 0.1D; y <= distance; y += 0.1D) {
-       class_238 testBox = box.method_989(0.0D, -y, 0.0D);
+       Box testBox = box.method_989(0.0D, -y, 0.0D);
        
-       for (class_2338 pos : class_2338.method_10094(
+       for (BlockPos pos : BlockPos.method_10094(
            (int)Math.floor(testBox.field_1323), 
            (int)Math.floor(testBox.field_1322), 
            (int)Math.floor(testBox.field_1321), 

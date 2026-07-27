@@ -1,10 +1,10 @@
 package shame.nazuna.api.utils.render.fonts.ttf;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.awt.Color;
- import net.minecraft.class_10142;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
+ import net.minecraft.ShaderProgramKeys;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
  import org.joml.Matrix4f;
  
  public class MCFontRenderer extends CFont {
@@ -81,10 +81,10 @@ package shame.nazuna.api.utils.render.fonts.ttf;
        else {
          
          RenderSystem.setShaderTexture(0, this.glTextureId);
-         RenderSystem.setShader(class_10142.field_53880);
+         RenderSystem.setShader(ShaderProgramKeys.field_53880);
          
-         class_289 tessellator = class_289.method_1348();
-         class_287 buffer = tessellator.method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+         Tessellator tessellator = Tessellator.method_1348();
+         BufferBuilder buffer = tessellator.method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
          
          CFont.CharData cd = currentData[character];
          float charXPos = cd.storedX;
@@ -102,7 +102,7 @@ package shame.nazuna.api.utils.render.fonts.ttf;
          buffer.method_22918(matrix, (float)posX + width, (float)posY + height, 0.0F).method_22913(u1, v1).method_22915(botRed, botGreen, botBlue, botAlpha);
          buffer.method_22918(matrix, (float)posX + width, (float)posY, 0.0F).method_22913(u1, v0).method_22915(topRed, topGreen, topBlue, topAlpha);
          
-         class_286.method_43433(buffer.method_60800());
+         BufferRenderer.method_43433(buffer.method_60800());
          
          posX += (cd.width - 8 + this.charOffset);
        } 
@@ -146,10 +146,10 @@ package shame.nazuna.api.utils.render.fonts.ttf;
        } else {
          
          RenderSystem.setShaderTexture(0, this.glTextureId);
-         RenderSystem.setShader(class_10142.field_53880);
+         RenderSystem.setShader(ShaderProgramKeys.field_53880);
          
-         class_289 tessellator = class_289.method_1348();
-         class_287 buffer = tessellator.method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+         Tessellator tessellator = Tessellator.method_1348();
+         BufferBuilder buffer = tessellator.method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
          
          CFont.CharData cd = currentData[character];
          float charXPos = cd.storedX;
@@ -182,7 +182,7 @@ package shame.nazuna.api.utils.render.fonts.ttf;
          buffer.method_22918(matrix, (float)posX + width, (float)posY + height, 0.0F).method_22913(u1, v1).method_22915(lastRed, lastGreen, lastBlue, lastAlpha);
          buffer.method_22918(matrix, (float)posX + width, (float)posY, 0.0F).method_22913(u1, v0).method_22915(lastRed, lastGreen, lastBlue, lastAlpha);
          
-         class_286.method_43433(buffer.method_60800());
+         BufferRenderer.method_43433(buffer.method_60800());
          
          posX += charWidth;
          currentWidth += charWidth;
@@ -252,7 +252,7 @@ package shame.nazuna.api.utils.render.fonts.ttf;
      int size = text.length();
      int currentTexture = this.glTextureId;
      RenderSystem.setShaderTexture(0, currentTexture);
-     RenderSystem.setShader(class_10142.field_53879);
+     RenderSystem.setShader(ShaderProgramKeys.field_53879);
      
      for (int i = 0; i < size; i++) {
        char character = text.charAt(i);
@@ -315,12 +315,12 @@ package shame.nazuna.api.utils.render.fonts.ttf;
        else if (character < currentData.length && currentData[character] != null) {
          
          RenderSystem.setShaderTexture(0, currentTexture);
-         class_289 tessellator = class_289.method_1348();
-         class_287 buffer = tessellator.method_60827(class_293.class_5596.field_27379, class_290.field_1585);
+         Tessellator tessellator = Tessellator.method_1348();
+         BufferBuilder buffer = tessellator.method_60827(VertexFormat.class_5596.field_27379, VertexFormats.field_1585);
          
          drawChar(currentData, character, (float)x, (float)y, matrix, buffer);
          
-         class_286.method_43433(buffer.method_60800());
+         BufferRenderer.method_43433(buffer.method_60800());
          
          if (strikethrough) {
            drawLine(x, y + ((currentData[character]).height / 2.0F), x + (currentData[character]).width - 8.0D, y + ((currentData[character]).height / 2.0F), 1.0F, matrix);
@@ -402,13 +402,13 @@ package shame.nazuna.api.utils.render.fonts.ttf;
    }
    
    private void drawLine(double x, double y, double x1, double y1, float width, Matrix4f matrix) {
-     RenderSystem.setShader(class_10142.field_53875);
+     RenderSystem.setShader(ShaderProgramKeys.field_53875);
      RenderSystem.lineWidth(width);
-     class_289 tessellator = class_289.method_1348();
-     class_287 buffer = tessellator.method_60827(class_293.class_5596.field_27377, class_290.field_1592);
+     Tessellator tessellator = Tessellator.method_1348();
+     BufferBuilder buffer = tessellator.method_60827(VertexFormat.class_5596.field_27377, VertexFormats.field_1592);
      buffer.method_22918(matrix, (float)x, (float)y, 0.0F);
      buffer.method_22918(matrix, (float)x1, (float)y1, 0.0F);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
    
    public void drawStringWithOutline(String text, double x, double y, int color) {

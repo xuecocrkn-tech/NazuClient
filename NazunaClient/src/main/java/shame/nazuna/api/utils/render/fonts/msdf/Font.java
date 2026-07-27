@@ -1,15 +1,15 @@
 package shame.nazuna.api.utils.render.fonts.msdf;
  
  import com.mojang.blaze3d.systems.RenderSystem;
- import net.minecraft.class_284;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_4587;
- import net.minecraft.class_4588;
- import net.minecraft.class_5944;
+ import net.minecraft.GlUniform;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.VertexConsumer;
+ import net.minecraft.ShaderProgram;
  import org.joml.Matrix4f;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.utils.render.ShaderUtils;
@@ -29,40 +29,40 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      this.size = size;
    }
    
-   public void drawString(class_4587 matrixStack, String text, double x, double y, int color) {
+   public void drawString(MatrixStack matrixStack, String text, double x, double y, int color) {
      draw(matrixStack, text, (float)x, (float)y, color);
    }
    
-   public void drawString(class_4587 matrixStack, String text, float x, float y, int color) {
+   public void drawString(MatrixStack matrixStack, String text, float x, float y, int color) {
      draw(matrixStack, text, x, y, color);
    }
    
    public void drawString(String text, float x, float y, int color) {
-     class_4587 stack = new class_4587();
+     MatrixStack stack = new MatrixStack();
      draw(stack, text, x, y, color);
    }
    
-   public void drawCenteredString(class_4587 matrixStack, String text, double x, double y, int color) {
+   public void drawCenteredString(MatrixStack matrixStack, String text, double x, double y, int color) {
      draw(matrixStack, text, (float)(x - getStringWidth(text) / 2.0D), (float)y, color);
    }
    
-   public void drawCenteredString(class_4587 matrixStack, String text, float x, float y, int color) {
+   public void drawCenteredString(MatrixStack matrixStack, String text, float x, float y, int color) {
      draw(matrixStack, text, x - getStringWidth(text) / 2.0F, y, color);
    }
    
-   public void drawRight(class_4587 matrixStack, String text, double x, double y, int color) {
+   public void drawRight(MatrixStack matrixStack, String text, double x, double y, int color) {
      draw(matrixStack, text, (float)(x - getStringWidth(text)), (float)y, color);
    }
    
-   public void drawRight(class_4587 matrixStack, String text, float x, float y, int color) {
+   public void drawRight(MatrixStack matrixStack, String text, float x, float y, int color) {
      draw(matrixStack, text, x - getStringWidth(text), y, color);
    }
    
-   public void draw(class_4587 stack, String text, double x, double y, int color) {
+   public void draw(MatrixStack stack, String text, double x, double y, int color) {
      draw(stack, text, (float)x, (float)y, color);
    }
    
-   public void draw(class_4587 stack, String text, float x, float y, int color) {
+   public void draw(MatrixStack stack, String text, float x, float y, int color) {
      if (text == null || text.isEmpty())
        return; 
      float localSize = this.size * 0.5F;
@@ -73,7 +73,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      RenderSystem.defaultBlendFunc();
      RenderSystem.disableCull();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.fontsMsdf);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.fontsMsdf);
      if (shader == null)
        return; 
      setupShaderUniforms(shader, color);
@@ -82,14 +82,14 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      this.font.setFiltered();
      
      Matrix4f matrix = stack.method_23760().method_23761();
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      
-     this.font.applyGlyphs(matrix, (class_4588)buffer, localSize, text, 0.0F, x, y + this.font
+     this.font.applyGlyphs(matrix, (VertexConsumer)buffer, localSize, text, 0.0F, x, y + this.font
          .getBaselineHeight() * localSize, 0.0F, 255, 255, 255, 255);
  
      
      RenderSystem.setShader(ShaderUtils.fontsMsdf);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.setShaderTexture(0, 0);
      RenderSystem.enableCull();
@@ -97,11 +97,11 @@ package shame.nazuna.api.utils.render.fonts.msdf;
    }
    
    public void drawGradientStringHorizontal(String text, float x, float y, int leftColor, int rightColor) {
-     class_4587 stack = new class_4587();
+     MatrixStack stack = new MatrixStack();
      drawGradientStringHorizontal(stack, text, x, y, leftColor, rightColor);
    }
    
-   public void drawGradientStringHorizontal(class_4587 stack, String text, float x, float y, int leftColor, int rightColor) {
+   public void drawGradientStringHorizontal(MatrixStack stack, String text, float x, float y, int leftColor, int rightColor) {
      if (text == null || text.isEmpty())
        return; 
      float totalWidth = getStringWidth(text);
@@ -120,7 +120,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      } 
    }
    
-   public void drawGradientStringHorizontal(class_4587 stack, String text, float x, float y, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
+   public void drawGradientStringHorizontal(MatrixStack stack, String text, float x, float y, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
      if (text == null || text.isEmpty())
        return; 
      float totalWidth = getStringWidth(text);
@@ -142,13 +142,13 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      } 
    }
    
-   public void drawGradientStringVertical(class_4587 stack, String text, float x, float y, int topColor, int bottomColor) {
+   public void drawGradientStringVertical(MatrixStack stack, String text, float x, float y, int topColor, int bottomColor) {
      if (text == null || text.isEmpty())
        return;  int color = interpolateColor(topColor, bottomColor, 0.5F);
      draw(stack, text, x, y, color);
    }
    
-   public void drawStringWithFade(class_4587 stack, String text, float x, float y, float maxWidth, int color) {
+   public void drawStringWithFade(MatrixStack stack, String text, float x, float y, float maxWidth, int color) {
      if (text == null || text.isEmpty())
        return;  if (maxWidth <= 1.0F)
        return; 
@@ -163,17 +163,17 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      RenderSystem.defaultBlendFunc();
      RenderSystem.disableCull();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.fontsMsdf);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.fontsMsdf);
      if (shader == null)
        return; 
-     class_284 textureSizeUniform = shader.method_34582("TextureSize");
-     class_284 rangeUniform = shader.method_34582("Range");
-     class_284 thicknessUniform = shader.method_34582("Thickness");
-     class_284 edgeStrengthUniform = shader.method_34582("EdgeStrength");
-     class_284 colorUniform = shader.method_34582("Color");
-     class_284 outlineUniform = shader.method_34582("Outline");
-     class_284 outlineThicknessUniform = shader.method_34582("OutlineThickness");
-     class_284 outlineColorUniform = shader.method_34582("OutlineColor");
+     GlUniform textureSizeUniform = shader.method_34582("TextureSize");
+     GlUniform rangeUniform = shader.method_34582("Range");
+     GlUniform thicknessUniform = shader.method_34582("Thickness");
+     GlUniform edgeStrengthUniform = shader.method_34582("EdgeStrength");
+     GlUniform colorUniform = shader.method_34582("Color");
+     GlUniform outlineUniform = shader.method_34582("Outline");
+     GlUniform outlineThicknessUniform = shader.method_34582("OutlineThickness");
+     GlUniform outlineColorUniform = shader.method_34582("OutlineColor");
      
      if (textureSizeUniform != null) textureSizeUniform.method_1255(this.font.getAtlasWidth(), this.font.getAtlasHeight()); 
      if (rangeUniform != null) rangeUniform.method_1251(this.font.getRange()); 
@@ -214,14 +214,14 @@ package shame.nazuna.api.utils.render.fonts.msdf;
          if (colorUniform != null) colorUniform.method_35657(rgba[0], rgba[1], rgba[2], rgba[3]);
          
          Matrix4f matrix = stack.method_23760().method_23761();
-         class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+         BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
          
-         this.font.applyGlyphs(matrix, (class_4588)buffer, localSize, charStr, 0.0F, currentX, y + this.font
+         this.font.applyGlyphs(matrix, (VertexConsumer)buffer, localSize, charStr, 0.0F, currentX, y + this.font
              .getBaselineHeight() * localSize, 0.0F, 255, 255, 255, 255);
  
          
          RenderSystem.setShader(ShaderUtils.fontsMsdf);
-         class_286.method_43433(buffer.method_60800());
+         BufferRenderer.method_43433(buffer.method_60800());
        } 
        
        currentX += charWidth;
@@ -233,20 +233,20 @@ package shame.nazuna.api.utils.render.fonts.msdf;
    }
    
    public void drawAnimatedGradientStringHorizontal(String text, float x, float y, int leftColor, int rightColor, float speed) {
-     class_4587 stack = new class_4587();
+     MatrixStack stack = new MatrixStack();
      drawAnimatedGradientStringHorizontal(stack, text, x, y, leftColor, rightColor, speed, 1.15F);
    }
    
-   public void drawAnimatedGradientStringHorizontal(class_4587 stack, String text, float x, float y, int leftColor, int rightColor, float speed) {
+   public void drawAnimatedGradientStringHorizontal(MatrixStack stack, String text, float x, float y, int leftColor, int rightColor, float speed) {
      drawAnimatedGradientStringHorizontal(stack, text, x, y, leftColor, rightColor, speed, 1.15F);
    }
    
    public void drawAnimatedGradientStringHorizontal(String text, float x, float y, int leftColor, int rightColor, float speed, float waveScale) {
-     class_4587 stack = new class_4587();
+     MatrixStack stack = new MatrixStack();
      drawAnimatedGradientStringHorizontal(stack, text, x, y, leftColor, rightColor, speed, waveScale);
    }
    
-   public void drawAnimatedGradientStringHorizontal(class_4587 stack, String text, float x, float y, int leftColor, int rightColor, float speed, float waveScale) {
+   public void drawAnimatedGradientStringHorizontal(MatrixStack stack, String text, float x, float y, int leftColor, int rightColor, float speed, float waveScale) {
      if (text == null || text.isEmpty())
        return; 
      float totalWidth = getStringWidth(text);
@@ -268,7 +268,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      } 
    }
    
-   public void drawStringWithOutline(class_4587 stack, String text, float x, float y, int color, int outlineColor) {
+   public void drawStringWithOutline(MatrixStack stack, String text, float x, float y, int color, int outlineColor) {
      if (text == null || text.isEmpty())
        return; 
      draw(stack, text, x - 1.0F, y, outlineColor);
@@ -278,7 +278,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      draw(stack, text, x, y, color);
    }
    
-   public void drawStringWithShadow(class_4587 stack, String text, float x, float y, int color) {
+   public void drawStringWithShadow(MatrixStack stack, String text, float x, float y, int color) {
      if (text == null || text.isEmpty())
        return; 
      int shadowColor = 1426063360;
@@ -286,11 +286,11 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      draw(stack, text, x, y, color);
    }
    
-   public void drawParagraph(class_4587 stack, String text, double x, double y, int defaultColor) {
+   public void drawParagraph(MatrixStack stack, String text, double x, double y, int defaultColor) {
      drawParagraph(stack, text, (float)x, (float)y, defaultColor);
    }
    
-   public void drawParagraph(class_4587 stack, String text, float x, float y, int defaultColor) {
+   public void drawParagraph(MatrixStack stack, String text, float x, float y, int defaultColor) {
      if (text == null || text.isEmpty())
        return; 
      float localSize = this.size * 0.5F;
@@ -300,14 +300,14 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      RenderSystem.defaultBlendFunc();
      RenderSystem.disableCull();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.fontsMsdf);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.fontsMsdf);
      if (shader == null)
        return; 
-     class_284 textureSizeUniform = shader.method_34582("TextureSize");
-     class_284 rangeUniform = shader.method_34582("Range");
-     class_284 thicknessUniform = shader.method_34582("Thickness");
-     class_284 edgeStrengthUniform = shader.method_34582("EdgeStrength");
-     class_284 colorUniform = shader.method_34582("Color");
+     GlUniform textureSizeUniform = shader.method_34582("TextureSize");
+     GlUniform rangeUniform = shader.method_34582("Range");
+     GlUniform thicknessUniform = shader.method_34582("Thickness");
+     GlUniform edgeStrengthUniform = shader.method_34582("EdgeStrength");
+     GlUniform colorUniform = shader.method_34582("Color");
      
      if (textureSizeUniform != null) textureSizeUniform.method_1255(this.font.getAtlasWidth(), this.font.getAtlasHeight()); 
      if (rangeUniform != null) rangeUniform.method_1251(this.font.getRange()); 
@@ -353,34 +353,34 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      RenderSystem.disableBlend();
    }
    
-   private void drawSegment(class_4587 stack, class_284 colorUniform, String text, float x, float y, float size, int color) {
+   private void drawSegment(MatrixStack stack, GlUniform colorUniform, String text, float x, float y, float size, int color) {
      if (!hasDrawableGlyphs(text, size))
        return; 
      float[] rgba = extractRgba(color);
      if (colorUniform != null) colorUniform.method_35657(rgba[0], rgba[1], rgba[2], rgba[3]);
      
      Matrix4f matrix = stack.method_23760().method_23761();
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      
-     this.font.applyGlyphs(matrix, (class_4588)buffer, size, text, 0.0F, x, y, 0.0F, 255, 255, 255, 255);
+     this.font.applyGlyphs(matrix, (VertexConsumer)buffer, size, text, 0.0F, x, y, 0.0F, 255, 255, 255, 255);
      
      RenderSystem.setShader(ShaderUtils.fontsMsdf);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
    
    private boolean hasDrawableGlyphs(String text, float renderSize) {
      return (text != null && !text.isEmpty() && this.font.getWidth(text, renderSize) > 0.0F);
    }
    
-   private void setupShaderUniforms(class_5944 shader, int color) {
-     class_284 textureSizeUniform = shader.method_34582("TextureSize");
-     class_284 rangeUniform = shader.method_34582("Range");
-     class_284 thicknessUniform = shader.method_34582("Thickness");
-     class_284 edgeStrengthUniform = shader.method_34582("EdgeStrength");
-     class_284 colorUniform = shader.method_34582("Color");
-     class_284 outlineUniform = shader.method_34582("Outline");
-     class_284 outlineThicknessUniform = shader.method_34582("OutlineThickness");
-     class_284 outlineColorUniform = shader.method_34582("OutlineColor");
+   private void setupShaderUniforms(ShaderProgram shader, int color) {
+     GlUniform textureSizeUniform = shader.method_34582("TextureSize");
+     GlUniform rangeUniform = shader.method_34582("Range");
+     GlUniform thicknessUniform = shader.method_34582("Thickness");
+     GlUniform edgeStrengthUniform = shader.method_34582("EdgeStrength");
+     GlUniform colorUniform = shader.method_34582("Color");
+     GlUniform outlineUniform = shader.method_34582("Outline");
+     GlUniform outlineThicknessUniform = shader.method_34582("OutlineThickness");
+     GlUniform outlineColorUniform = shader.method_34582("OutlineColor");
      
      if (textureSizeUniform != null) textureSizeUniform.method_1255(this.font.getAtlasWidth(), this.font.getAtlasHeight()); 
      if (rangeUniform != null) rangeUniform.method_1251(this.font.getRange()); 

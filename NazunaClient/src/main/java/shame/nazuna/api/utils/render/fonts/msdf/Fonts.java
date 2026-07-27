@@ -1,7 +1,7 @@
 package shame.nazuna.api.utils.render.fonts.msdf;
  
  import java.util.HashMap;
- import net.minecraft.class_4587;
+ import net.minecraft.MatrixStack;
  
  public class Fonts
  {
@@ -63,7 +63,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
    
    public static void drawStringWithFade(Font font, String text, float x, float y, float maxWidth, int color) {
      if (font == null)
-       return;  class_4587 stack = new class_4587();
+       return;  MatrixStack stack = new MatrixStack();
      font.drawStringWithFade(stack, text, x, y, maxWidth, color);
    }
  }

@@ -1,12 +1,12 @@
 package shame.nazuna.api.storages.implement;
  
- import net.minecraft.class_1297;
- import net.minecraft.class_1657;
- import net.minecraft.class_2596;
- import net.minecraft.class_2663;
- import net.minecraft.class_2828;
- import net.minecraft.class_2848;
- import net.minecraft.class_2868;
+ import net.minecraft.Entity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.Packet;
+ import net.minecraft.EntityStatusS2CPacket;
+ import net.minecraft.PlayerMoveC2SPacket;
+ import net.minecraft.ClientCommandC2SPacket;
+ import net.minecraft.UpdateSelectedSlotC2SPacket;
  import shame.nazuna.api.events.implement.EventPacket;
  
  public class ServerStorage implements QClient {
@@ -34,7 +34,7 @@ package shame.nazuna.api.storages.implement;
    public void onPacketSend(EventPacket e) {
      if (mc.field_1724 == null || mc.field_1687 == null)
        return; 
-     class_2596 class_2596 = e.getPacket(); if (class_2596 instanceof class_2828) { class_2828 packet = (class_2828)class_2596;
+     Packet Packet = e.getPacket(); if (Packet instanceof PlayerMoveC2SPacket) { PlayerMoveC2SPacket packet = (PlayerMoveC2SPacket)Packet;
        if (packet.method_36171()) {
          this.serverX = packet.method_12269(mc.field_1724.method_23317());
          this.serverY = packet.method_12268(mc.field_1724.method_23318());
@@ -50,9 +50,9 @@ package shame.nazuna.api.storages.implement;
        this.serverHorizontalCollision = packet.method_61225(); }
  
      
-     class_2596 = e.getPacket(); if (class_2596 instanceof class_2868) { class_2868 packet = (class_2868)class_2596; this.serverSlot = packet.method_12442(); }
+     Packet = e.getPacket(); if (Packet instanceof UpdateSelectedSlotC2SPacket) { UpdateSelectedSlotC2SPacket packet = (UpdateSelectedSlotC2SPacket)Packet; this.serverSlot = packet.method_12442(); }
      
-     class_2596 = e.getPacket(); if (class_2596 instanceof class_2848) { class_2848 packet = (class_2848)class_2596;
+     Packet = e.getPacket(); if (Packet instanceof ClientCommandC2SPacket) { ClientCommandC2SPacket packet = (ClientCommandC2SPacket)Packet;
        switch (packet.method_12365()) {
          case field_12981:
            e.setCancelled(this.serverSprinting);
@@ -76,8 +76,8 @@ package shame.nazuna.api.storages.implement;
    public void onPacketReceive(EventPacket e) throws InvocationTargetException, IllegalAccessException, InstantiationException {
      if (mc.field_1724 == null || mc.field_1687 == null)
        return; 
-     class_2596 class_2596 = e.getPacket(); if (class_2596 instanceof class_2663) { class_2663 packet = (class_2663)class_2596; if (packet.method_11470() == 35) {
-         class_1657 player; class_1297 class_1297 = packet.method_11469((class_1937)mc.field_1687); if (class_1297 instanceof class_1657) { player = (class_1657)class_1297; } else { return; }
+     Packet Packet = e.getPacket(); if (Packet instanceof EntityStatusS2CPacket) { EntityStatusS2CPacket packet = (EntityStatusS2CPacket)Packet; if (packet.method_11470() == 35) {
+         PlayerEntity player; Entity Entity = packet.method_11469((World)mc.field_1687); if (Entity instanceof PlayerEntity) { player = (PlayerEntity)Entity; } else { return; }
           EventInvoker.invoke((Event)new EventPopTotem(player));
        }  }
    

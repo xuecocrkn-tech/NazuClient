@@ -1,12 +1,12 @@
 package shame.nazuna.client.modules.impl.movement;
  import java.util.Iterator;
- import net.minecraft.class_2246;
- import net.minecraft.class_2338;
- import net.minecraft.class_2350;
- import net.minecraft.class_238;
- import net.minecraft.class_243;
- import net.minecraft.class_2846;
- import net.minecraft.class_3532;
+ import net.minecraft.Blocks;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Direction;
+ import net.minecraft.Box;
+ import net.minecraft.Vec3d;
+ import net.minecraft.PlayerActionC2SPacket;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.utils.player.MoveUtils;
  import shame.nazuna.client.modules.Module;
  import shame.nazuna.client.modules.settings.Setting;
@@ -26,15 +26,15 @@ package shame.nazuna.client.modules.impl.movement;
      if (mc.field_1724 == null || mc.field_1687 == null)
        return; 
      if (this.web.is("Коллизия")) {
-       class_2338 playerPos = mc.field_1724.method_24515();
+       BlockPos playerPos = mc.field_1724.method_24515();
        
        for (int x = -1; x <= 1; x++) {
          for (int y = 0; y <= 2; y++) {
            for (int z = -1; z <= 1; z++) {
-             class_2338 pos = playerPos.method_10069(x, y, z);
+             BlockPos pos = playerPos.method_10069(x, y, z);
              
-             if (mc.field_1687.method_8320(pos).method_26204() == class_2246.field_10343) {
-               mc.field_1724.field_3944.method_52787((class_2596)new class_2846(class_2846.class_2847.field_12973, pos, class_2350.field_11036));
+             if (mc.field_1687.method_8320(pos).method_26204() == Blocks.field_10343) {
+               mc.field_1724.field_3944.method_52787((Packet)new PlayerActionC2SPacket(PlayerActionC2SPacket.class_2847.field_12973, pos, Direction.field_11036));
              }
            } 
          } 
@@ -54,8 +54,8 @@ package shame.nazuna.client.modules.impl.movement;
          
          for (double z = -0.295D; z <= 0.295D; z += 0.05D) {
            double y; for (y = mc.field_1724.method_5751(); y >= 0.0D; ) {
-             class_2338 headPos = class_2338.method_49637(mc.field_1724.method_23317() + x, mc.field_1724.method_23318() + y, mc.field_1724.method_23321() + z);
-             if (mc.field_1687.method_8320(headPos).method_26204() != class_2246.field_10343) { y -= 0.1D; continue; }
+             BlockPos headPos = BlockPos.method_49637(mc.field_1724.method_23317() + x, mc.field_1724.method_23318() + y, mc.field_1724.method_23321() + z);
+             if (mc.field_1687.method_8320(headPos).method_26204() != Blocks.field_10343) { y -= 0.1D; continue; }
               headInWeb = true;
            } 
          } 
@@ -66,16 +66,16 @@ package shame.nazuna.client.modules.impl.movement;
        {
          for (x = -0.295D; x <= 0.295D; x += 0.05D) {
            for (double z = -0.295D; z <= 0.295D; ) {
-             class_2338 pos = class_2338.method_49637(mc.field_1724.method_23317() + x, mc.field_1724.method_23318(), mc.field_1724.method_23321() + z);
-             if (mc.field_1687.method_8320(pos).method_26204() != class_2246.field_10343) { z += 0.05D; continue; }
+             BlockPos pos = BlockPos.method_49637(mc.field_1724.method_23317() + x, mc.field_1724.method_23318(), mc.field_1724.method_23321() + z);
+             if (mc.field_1687.method_8320(pos).method_26204() != Blocks.field_10343) { z += 0.05D; continue; }
               feetInWeb = true;
            } 
          } 
        }
  
        
-       class_2338 aboveHeadPos = class_2338.method_49637(mc.field_1724.method_23317(), mc.field_1724.method_23318() + mc.field_1724.method_5751() + 0.20000000298023224D, mc.field_1724.method_23321());
-       if (!headInWeb && !feetInWeb && mc.field_1687.method_8320(aboveHeadPos).method_26204() == class_2246.field_10343) {
+       BlockPos aboveHeadPos = BlockPos.method_49637(mc.field_1724.method_23317(), mc.field_1724.method_23318() + mc.field_1724.method_5751() + 0.20000000298023224D, mc.field_1724.method_23321());
+       if (!headInWeb && !feetInWeb && mc.field_1687.method_8320(aboveHeadPos).method_26204() == Blocks.field_10343) {
          headInWeb = true;
        }
        
@@ -95,18 +95,18 @@ package shame.nazuna.client.modules.impl.movement;
      if (this.web.is("Тест") && 
        mc.field_1724 != null) {
        boolean cobweb = false;
-       class_238 box = mc.field_1724.method_5829();
-       Iterator<class_2338> it = class_2338.method_10094(class_3532.method_15357(box.field_1323), class_3532.method_15357(box.field_1322), class_3532.method_15357(box.field_1321), class_3532.method_15357(box.field_1320), class_3532.method_15357(box.field_1325), class_3532.method_15357(box.field_1324)).iterator();
+       Box box = mc.field_1724.method_5829();
+       Iterator<BlockPos> it = BlockPos.method_10094(MathHelper.method_15357(box.field_1323), MathHelper.method_15357(box.field_1322), MathHelper.method_15357(box.field_1321), MathHelper.method_15357(box.field_1320), MathHelper.method_15357(box.field_1325), MathHelper.method_15357(box.field_1324)).iterator();
        
        while (it.hasNext()) {
-         class_2338 pos = it.next();
-         if (mc.field_1687.method_8320(pos).method_27852(class_2246.field_10343)) {
+         BlockPos pos = it.next();
+         if (mc.field_1687.method_8320(pos).method_27852(Blocks.field_10343)) {
            cobweb = true;
          }
        } 
        
        if (cobweb) {
-         class_243 velocity = mc.field_1724.method_18798();
+         Vec3d velocity = mc.field_1724.method_18798();
          float yaw = mc.field_1724.method_36454();
          double forward = 0.0D;
          double strafe = 0.0D;

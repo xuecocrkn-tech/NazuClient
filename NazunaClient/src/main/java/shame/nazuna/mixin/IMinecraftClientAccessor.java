@@ -1,16 +1,16 @@
 package shame.nazuna.mixin;
 
-import net.minecraft.class_310;
-import net.minecraft.class_320;
+import net.minecraft.MinecraftClient;
+import net.minecraft.Session;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin({class_310.class})
+@Mixin({MinecraftClient.class})
 public interface IMinecraftClientAccessor {
   @Mutable
   @Accessor("field_1726")
-  void setSession(class_320 paramclass_320);
+  void setSession(Session paramclass_320);
   
   @Mutable
   @Accessor("field_1752")

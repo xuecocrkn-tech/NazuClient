@@ -1,11 +1,11 @@
 package shame.nazuna.api.utils.render.fonts.ttf;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.awt.Font;
- import net.minecraft.class_10142;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
+ import net.minecraft.ShaderProgramKeys;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
  import org.joml.Matrix4f;
  
  public class GradientFontRenderer extends MCFontRenderer {
@@ -121,10 +121,10 @@ package shame.nazuna.api.utils.render.fonts.ttf;
      float v1 = (charYPos + 7.99F) / 512.0F;
      
      RenderSystem.setShaderTexture(0, this.glTextureId);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      
-     class_289 tessellator = class_289.method_1348();
-     class_287 buffer = tessellator.method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     Tessellator tessellator = Tessellator.method_1348();
+     BufferBuilder buffer = tessellator.method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      
      if (horizontal) {
        buffer.method_22918(matrix, posX, posY, 0.0F).method_22913(u0, v0).method_22915(startRed, startGreen, startBlue, startAlpha);
@@ -138,7 +138,7 @@ package shame.nazuna.api.utils.render.fonts.ttf;
        buffer.method_22918(matrix, posX + width - 1.0F, posY, 0.0F).method_22913(u1, v0).method_22915(startRed, startGreen, startBlue, startAlpha);
      } 
      
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
  }
 

@@ -2,9 +2,9 @@ package shame.nazuna.client.ui.clickgui;
  
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_1041;
- import net.minecraft.class_332;
- import net.minecraft.class_3532;
+ import net.minecraft.Window;
+ import net.minecraft.DrawContext;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.utils.color.ColorUtils;
  import shame.nazuna.api.utils.input.KeyBoardUtils;
  import shame.nazuna.api.utils.math.HoveringUtils;
@@ -28,12 +28,12 @@ package shame.nazuna.client.ui.clickgui;
      this.themeSelector = themeSelector;
    }
    
-   public void render(class_332 context, int mouseX, int mouseY, class_1041 window, float animationProgress) {
+   public void render(DrawContext context, int mouseX, int mouseY, Window window, float animationProgress) {
      if (window == null) {
        return;
      }
      
-     float alphaMul = class_3532.method_15363(animationProgress, 0.0F, 1.0F);
+     float alphaMul = MathHelper.method_15363(animationProgress, 0.0F, 1.0F);
      int shadeColor = getFadeShadeColor(alphaMul, 120);
      int colorTheme = getThemeColor();
      Module hoveredModule = null;
@@ -53,7 +53,7 @@ package shame.nazuna.client.ui.clickgui;
      renderDescription(context, window, hoveredModule, colorTheme, animationProgress);
    }
    
-   private Module renderCategoryPanel(class_332 context, int mouseX, int mouseY, float panelX, Module.ModuleCategory category, int colorTheme, float alphaMul, int shadeColor) {
+   private Module renderCategoryPanel(DrawContext context, int mouseX, int mouseY, float panelX, Module.ModuleCategory category, int colorTheme, float alphaMul, int shadeColor) {
      float panelY = this.state.getY() + this.state.getRenderOffsetY();
      RenderUtils.drawRoundedRect(context.method_51448(), panelX, panelY, 100.0F, 275.0F, 8.0F, ColorUtils.darken(colorTheme, 0.07F));
      RenderUtils.drawRoundedRect(context.method_51448(), panelX, panelY + 23.0F, 100.0F, 0.5F, 0.0F, ColorUtils.rgb(19, 18, 24));
@@ -91,7 +91,7 @@ package shame.nazuna.client.ui.clickgui;
      return hoveredModule;
    }
    
-   private Module renderModule(class_332 context, int mouseX, int mouseY, float panelX, float moduleY, Module module, float openProgress, float moduleHeight, int colorTheme, float alphaMul, int shadeColor) {
+   private Module renderModule(DrawContext context, int mouseX, int mouseY, float panelX, float moduleY, Module module, float openProgress, float moduleHeight, int colorTheme, float alphaMul, int shadeColor) {
      List<Setting> settings = module.getSettings();
      renderModuleBackground(context, panelX, moduleY, moduleHeight, module.isEnable(), colorTheme, shadeColor);
      
@@ -126,7 +126,7 @@ package shame.nazuna.client.ui.clickgui;
      return null;
    }
    
-   private void renderModuleBackground(class_332 context, float panelX, float moduleY, float moduleHeight, boolean enabled, int colorTheme, int shadeColor) {
+   private void renderModuleBackground(DrawContext context, float panelX, float moduleY, float moduleHeight, boolean enabled, int colorTheme, int shadeColor) {
      if (enabled) {
        RenderUtils.drawRoundedRect(context.method_51448(), panelX + 3.0F, moduleY - 0.5F, 93.5F, moduleHeight + 1.0F, 5.0F, ColorUtils.darken(colorTheme, 0.17F));
        RenderUtils.drawGradientRect(context.method_51448(), panelX + 3.0F + 0.5F, moduleY, 92.5F, moduleHeight, 4.0F, ColorUtils.darken(colorTheme, 0.15F), ColorUtils.darken(colorTheme, 0.1F), false);
@@ -143,7 +143,7 @@ package shame.nazuna.client.ui.clickgui;
      }
    }
    
-   private void renderModuleDots(class_332 context, float panelX, float moduleY, Module module, boolean enabled, float alphaMul) {
+   private void renderModuleDots(DrawContext context, float panelX, float moduleY, Module module, boolean enabled, float alphaMul) {
      int dotsColor = enabled ? alpha(ColorUtils.rgba(255, 255, 255, 220), alphaMul) : alpha(ColorUtils.rgba(255, 255, 255, 100), alphaMul);
      float dotsX = panelX + 87.5F;
      float baseY = moduleY + 10.0F;
@@ -173,7 +173,7 @@ package shame.nazuna.client.ui.clickgui;
      return ColorUtils.getThemeColor();
    }
    
-   private void renderSearch(class_332 context, int categoryCount, int colorTheme, float alphaMul, int shadeColor) {
+   private void renderSearch(DrawContext context, int categoryCount, int colorTheme, float alphaMul, int shadeColor) {
      float searchY = ClickGuiLayout.getSearchY(this.state.getY() + this.state.getRenderOffsetY());
      float searchW = getSearchWidth();
      float searchX = ClickGuiLayout.getSearchX(this.state.getX(), categoryCount, searchW);
@@ -224,7 +224,7 @@ package shame.nazuna.client.ui.clickgui;
      ScissorUtils.pop();
    }
    
-   private void renderDescription(class_332 context, class_1041 window, Module hoveredModule, int colorTheme, float alphaMul) {
+   private void renderDescription(DrawContext context, Window window, Module hoveredModule, int colorTheme, float alphaMul) {
      if (hoveredModule == null) {
        return;
      }
@@ -303,7 +303,7 @@ package shame.nazuna.client.ui.clickgui;
    }
    
    private int getFadeShadeColor(float alphaMul, int maxAlpha) {
-     int alpha = class_3532.method_15340((int)((1.0F - alphaMul) * maxAlpha), 0, 255);
+     int alpha = MathHelper.method_15340((int)((1.0F - alphaMul) * maxAlpha), 0, 255);
      return ColorUtils.rgba(0, 0, 0, alpha);
    }
  }

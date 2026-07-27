@@ -1,10 +1,10 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_10017;
- import net.minecraft.class_4538;
- import net.minecraft.class_4587;
- import net.minecraft.class_4597;
- import net.minecraft.class_898;
+ import net.minecraft.EntityRenderState;
+ import net.minecraft.WorldView;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.VertexConsumerProvider;
+ import net.minecraft.EntityRenderDispatcher;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,11 +12,11 @@ package shame.nazuna.mixin;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.client.modules.impl.render.Removals;
  
- @Mixin({class_898.class})
+ @Mixin({EntityRenderDispatcher.class})
  public class EntityRenderDispatcherMixin
  {
    @Inject(method = {"method_23166"}, at = {@At("HEAD")}, cancellable = true)
-   private static void astra$renderShadow(class_4587 matrices, class_4597 vertexConsumers, class_10017 renderState, float opacity, float tickDelta, class_4538 world, float radius, CallbackInfo ci) {
+   private static void astra$renderShadow(MatrixStack matrices, VertexConsumerProvider vertexConsumers, EntityRenderState renderState, float opacity, float tickDelta, WorldView world, float radius, CallbackInfo ci) {
      if (ModuleClass.INSTANCE == null)
        return; 
      Removals removals = ModuleClass.removals;

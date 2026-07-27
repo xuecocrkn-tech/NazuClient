@@ -2,7 +2,7 @@ package shame.nazuna.client.modules.impl.movement;
  
  import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  import it.unimi.dsi.fastutil.objects.ObjectListIterator;
- import net.minecraft.class_2596;
+ import net.minecraft.Packet;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventPacket;
  import shame.nazuna.api.events.implement.EventUpdate;
@@ -55,7 +55,7 @@ package shame.nazuna.client.modules.impl.movement;
        return; 
      if (event.getType() == EventPacket.Type.SEND) {
        if (this.onlyMovement.isState()) {
-         if (event.getPacket() instanceof net.minecraft.class_2828) {
+         if (event.getPacket() instanceof net.minecraft.PlayerMoveC2SPacket) {
            event.cancel();
            this.packets.add(event.getPacket());
          } 
@@ -70,7 +70,7 @@ package shame.nazuna.client.modules.impl.movement;
      if (this.packets.isEmpty())
        return; 
      this.releasing = true;
-     for (ObjectListIterator<class_2596> objectListIterator = this.packets.iterator(); objectListIterator.hasNext(); ) { class_2596<?> packet = objectListIterator.next();
+     for (ObjectListIterator<Packet> objectListIterator = this.packets.iterator(); objectListIterator.hasNext(); ) { Packet<?> packet = objectListIterator.next();
        mc.field_1724.field_3944.method_52787(packet); }
      
      this.packets.clear();

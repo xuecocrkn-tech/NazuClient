@@ -1,8 +1,8 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_310;
- import net.minecraft.class_312;
- import net.minecraft.class_3540;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.Mouse;
+ import net.minecraft.Smoother;
  import org.spongepowered.asm.mixin.Final;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.Shadow;
@@ -16,12 +16,12 @@ package shame.nazuna.mixin;
  
  
  
- @Mixin({class_312.class})
+ @Mixin({Mouse.class})
  public abstract class MouseMixin
  {
    @Shadow
    @Final
-   private class_310 field_1779;
+   private MinecraftClient field_1779;
    @Shadow
    private double field_1789;
    
@@ -38,8 +38,8 @@ package shame.nazuna.mixin;
      }
      catch (Exception exception) {} } @Shadow
    private double field_1787; @Shadow
-   private class_3540 field_1793; @Shadow
-   private class_3540 field_1782; @Inject(method = {"method_1606"}, at = {@At("HEAD")}, cancellable = true)
+   private Smoother field_1793; @Shadow
+   private Smoother field_1782; @Inject(method = {"method_1606"}, at = {@At("HEAD")}, cancellable = true)
    private void onUpdateMouse(double timeDelta, CallbackInfo ci) {
      try {
        double i, j;

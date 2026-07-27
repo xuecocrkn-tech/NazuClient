@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -139,10 +139,10 @@ package shame.nazuna.client.modules.impl.render;
  
  class ActiveEffect
  {
-   final class_243 position;
+   final Vec3d position;
    final long startTime;
    
-   ActiveEffect(class_243 position, long startTime) {
+   ActiveEffect(Vec3d position, long startTime) {
      this.position = position;
      this.startTime = startTime;
    }

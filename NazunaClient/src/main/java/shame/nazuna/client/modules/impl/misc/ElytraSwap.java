@@ -1,17 +1,17 @@
 package shame.nazuna.client.modules.impl.misc;
  import java.util.Set;
- import net.minecraft.class_124;
- import net.minecraft.class_1268;
- import net.minecraft.class_1304;
- import net.minecraft.class_1657;
- import net.minecraft.class_1713;
- import net.minecraft.class_1792;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_2596;
- import net.minecraft.class_2815;
- import net.minecraft.class_2848;
- import net.minecraft.class_2868;
+ import net.minecraft.Formatting;
+ import net.minecraft.Hand;
+ import net.minecraft.EquipmentSlot;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.Item;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.Packet;
+ import net.minecraft.CloseHandledScreenC2SPacket;
+ import net.minecraft.ClientCommandC2SPacket;
+ import net.minecraft.UpdateSelectedSlotC2SPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventBinding;
  import shame.nazuna.api.events.implement.EventMoveInput;
@@ -84,30 +84,30 @@ package shame.nazuna.client.modules.impl.misc;
      } 
      
      if (this.useFirework) {
-       int slotFirework = InventoryUtils.getItemSlot(class_1802.field_8639);
+       int slotFirework = InventoryUtils.getItemSlot(Items.field_8639);
        if (mc.field_1724.method_6128()) {
          if (slotFirework != -1) {
            if (this.bypassGround.isState()) {
              executePacketFireworkSwap(slotFirework);
            } else {
-             InventoryUtils.swapAndUseHvH(class_1802.field_8639);
+             InventoryUtils.swapAndUseHvH(Items.field_8639);
            } 
          } else {
-           ChatUtils.sendMessage(String.valueOf(class_124.field_1061) + String.valueOf(class_124.field_1061) + "Нет Фейерверков!");
+           ChatUtils.sendMessage(String.valueOf(Formatting.field_1061) + String.valueOf(Formatting.field_1061) + "Нет Фейерверков!");
          } 
        }
        this.useFirework = false;
      } 
      
      if (this.autofly.isState() && this.bypassTicks == 0) {
-       class_1799 chestStack = mc.field_1724.method_6118(class_1304.field_6174);
-       if (chestStack.method_31574(class_1802.field_8833) && !mc.field_1724.method_5799() && !mc.field_1724.method_5771() && mc.field_1724
+       ItemStack chestStack = mc.field_1724.method_6118(EquipmentSlot.field_6174);
+       if (chestStack.method_31574(Items.field_8833) && !mc.field_1724.method_5799() && !mc.field_1724.method_5771() && mc.field_1724
          .method_24828() && !mc.field_1690.field_1903.method_1434()) {
          mc.field_1724.method_6043();
-       } else if (chestStack.method_31574(class_1802.field_8833) && isElytraUsable(chestStack) && 
+       } else if (chestStack.method_31574(Items.field_8833) && isElytraUsable(chestStack) && 
          !mc.field_1724.method_6128() && !mc.field_1724.method_24828()) {
          mc.field_1724.method_23669();
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2848((class_1297)mc.field_1724, class_2848.class_2849.field_12982));
+         mc.field_1724.field_3944.method_52787((Packet)new ClientCommandC2SPacket((Entity)mc.field_1724, ClientCommandC2SPacket.class_2849.field_12982));
        } 
      } 
    }
@@ -118,10 +118,10 @@ package shame.nazuna.client.modules.impl.misc;
      if (this.packetSwapStage == 0) {
        int currentSlot = (mc.field_1724.method_31548()).field_7545;
        int nextSlot = (currentSlot + 1) % 9;
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2868(nextSlot));
+       mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(nextSlot));
        this.packetSwapStage = 1;
      } else if (this.packetSwapStage == 1) {
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2868(this.packetSwapSlot));
+       mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(this.packetSwapSlot));
        this.packetSwapActive = false;
        this.packetSwapStage = 0;
      } 
@@ -132,17 +132,17 @@ package shame.nazuna.client.modules.impl.misc;
      this.packetSwapSlot = currentSlot;
      
      if (fireworkSlot < 9) {
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2868(fireworkSlot));
-       mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2868(currentSlot));
+       mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(fireworkSlot));
+       mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
+       mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(currentSlot));
      } else {
        int targetSlot = (fireworkSlot >= 36) ? (fireworkSlot - 36) : fireworkSlot;
-       mc.field_1761.method_2906(0, fireworkSlot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-       mc.field_1761.method_2906(0, 36 + currentSlot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-       mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
-       mc.field_1761.method_2906(0, 36 + currentSlot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-       mc.field_1761.method_2906(0, fireworkSlot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+       mc.field_1761.method_2906(0, fireworkSlot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+       mc.field_1761.method_2906(0, 36 + currentSlot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+       mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
+       mc.field_1761.method_2906(0, 36 + currentSlot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+       mc.field_1761.method_2906(0, fireworkSlot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+       mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
      } 
      this.packetSwapActive = true;
      this.packetSwapStage = 0;
@@ -156,27 +156,27 @@ package shame.nazuna.client.modules.impl.misc;
  
  
      
-     boolean needChestplate = (mc.field_1724.method_6118(class_1304.field_6174).method_31574(class_1802.field_8833) || mc.field_1724.method_6118(class_1304.field_6174).method_7960() || !Set.<class_1792>of(class_1802.field_22028, class_1802.field_8058, class_1802.field_8523, class_1802.field_8678, class_1802.field_8873, class_1802.field_8577).contains(mc.field_1724.method_6118(class_1304.field_6174).method_7909()));
+     boolean needChestplate = (mc.field_1724.method_6118(EquipmentSlot.field_6174).method_31574(Items.field_8833) || mc.field_1724.method_6118(EquipmentSlot.field_6174).method_7960() || !Set.<Item>of(Items.field_22028, Items.field_8058, Items.field_8523, Items.field_8678, Items.field_8873, Items.field_8577).contains(mc.field_1724.method_6118(EquipmentSlot.field_6174).method_7909()));
      
      if (needChestplate) {
-       if (chestSlot == -1) { ChatUtils.sendMessage(String.valueOf(class_124.field_1061) + String.valueOf(class_124.field_1061) + "Нет нагрудника!"); this.bypassTicks = 0; restoreSprint(); return; }
-        class_1799 chestItem = mc.field_1724.field_7498.method_7611(chestSlot).method_7677();
+       if (chestSlot == -1) { ChatUtils.sendMessage(String.valueOf(Formatting.field_1061) + String.valueOf(Formatting.field_1061) + "Нет нагрудника!"); this.bypassTicks = 0; restoreSprint(); return; }
+        ItemStack chestItem = mc.field_1724.field_7498.method_7611(chestSlot).method_7677();
        doSwap(chestSlot);
      } else {
-       if (slotElytra == -1) { ChatUtils.sendMessage(String.valueOf(class_124.field_1061) + String.valueOf(class_124.field_1061) + "Нет элитры!"); this.bypassTicks = 0; restoreSprint(); return; }
-        class_1799 elytraItem = mc.field_1724.field_7498.method_7611(slotElytra).method_7677();
+       if (slotElytra == -1) { ChatUtils.sendMessage(String.valueOf(Formatting.field_1061) + String.valueOf(Formatting.field_1061) + "Нет элитры!"); this.bypassTicks = 0; restoreSprint(); return; }
+        ItemStack elytraItem = mc.field_1724.field_7498.method_7611(slotElytra).method_7677();
        doSwap(slotElytra);
      } 
-     mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+     mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
    }
    
    private void doSwap(int slot) {
      if (slot >= 0 && slot < 9) {
-       mc.field_1761.method_2906(0, 6, slot, class_1713.field_7791, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(0, 6, slot, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
      } else {
-       mc.field_1761.method_2906(0, slot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-       mc.field_1761.method_2906(0, 6, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-       mc.field_1761.method_2906(0, slot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(0, slot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+       mc.field_1761.method_2906(0, 6, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+       mc.field_1761.method_2906(0, slot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
      } 
    }
    
@@ -185,15 +185,15 @@ package shame.nazuna.client.modules.impl.misc;
        return;  if (this.fireworkReturnTicks > 0) { this.fireworkReturnTicks--; return; }
       if (this.fireworkReturnSlot != -1) {
        swapSlotToOffhand(this.fireworkReturnSlot);
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+       mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
      } 
      this.fireworkReturnSlot = -1;
      this.fireworkReturnTicks = -1;
    }
    
-   private int findScreenSlot(class_1792 item) {
+   private int findScreenSlot(Item item) {
      for (int slot = 9; slot < 45; slot++) {
-       class_1799 stack = mc.field_1724.field_7498.method_7611(slot).method_7677();
+       ItemStack stack = mc.field_1724.field_7498.method_7611(slot).method_7677();
        if (stack.method_31574(item)) return slot; 
      } 
      return -1;
@@ -201,12 +201,12 @@ package shame.nazuna.client.modules.impl.misc;
    
    private void swapSlotToOffhand(int slot) {
      if (slot >= 36 && slot <= 44) {
-       mc.field_1761.method_2906(0, 45, slot - 36, class_1713.field_7791, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(0, 45, slot - 36, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
        return;
      } 
-     mc.field_1761.method_2906(0, slot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-     mc.field_1761.method_2906(0, 45, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-     mc.field_1761.method_2906(0, slot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
+     mc.field_1761.method_2906(0, slot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+     mc.field_1761.method_2906(0, 45, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+     mc.field_1761.method_2906(0, slot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
    }
    
    private void disableSprint() {
@@ -221,7 +221,7 @@ package shame.nazuna.client.modules.impl.misc;
      Sprint.popPause();
    }
    
-   private boolean isElytraUsable(class_1799 stack) {
+   private boolean isElytraUsable(ItemStack stack) {
      return (stack.method_7919() < stack.method_7936() - 1);
    }
    

@@ -1,14 +1,14 @@
 package shame.nazuna.mixin;
 
-import net.minecraft.class_276;
-import net.minecraft.class_761;
+import net.minecraft.Framebuffer;
+import net.minecraft.WorldRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin({class_761.class})
+@Mixin({WorldRenderer.class})
 public interface WorldRendererAccessor {
   @Accessor("field_53080")
-  class_276 astra$getEntityOutlineFramebufferRaw();
+  Framebuffer astra$getEntityOutlineFramebufferRaw();
 }
 
 

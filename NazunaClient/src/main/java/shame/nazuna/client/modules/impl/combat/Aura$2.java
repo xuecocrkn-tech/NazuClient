@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_1309;
+ import net.minecraft.LivingEntity;
  import shame.nazuna.api.storages.implement.FreeLookStorage;
  import shame.nazuna.api.storages.implement.RotationStorage;
  import shame.nazuna.api.utils.math.MathUtils;
@@ -443,7 +443,7 @@ package shame.nazuna.client.modules.impl.combat;
  {
    null(Aura this$0) {}
    
-   public void updateRotations(class_1309 target) {
+   public void updateRotations(LivingEntity target) {
      RotationStorage.update(new Rotation(FreeLookStorage.getFreeYaw(), FreeLookStorage.getFreePitch()), MathUtils.random(100.0F, 170.0F), MathUtils.random(100.0F, 170.0F), MathUtils.random(100.0F, 170.0F), MathUtils.random(100.0F, 170.0F), 1, 6, false);
    }
  }

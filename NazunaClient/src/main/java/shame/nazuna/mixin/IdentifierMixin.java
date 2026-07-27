@@ -1,13 +1,13 @@
 package shame.nazuna.mixin;
  
  import java.util.Locale;
- import net.minecraft.class_2960;
+ import net.minecraft.Identifier;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
  import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  
- @Mixin({class_2960.class})
+ @Mixin({Identifier.class})
  public abstract class IdentifierMixin
  {
    private static final String SAFE_JOIN_PATH = "invalid_join_id";

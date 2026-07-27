@@ -8,7 +8,7 @@ package shame.nazuna.api.commands.impl;
  import java.lang.reflect.Field;
  import java.util.Objects;
  import java.util.concurrent.CompletableFuture;
- import net.minecraft.class_2172;
+ import net.minecraft.CommandSource;
  import org.lwjgl.glfw.GLFW;
  import shame.nazuna.api.commands.Command;
  import shame.nazuna.api.utils.chat.ChatUtils;
@@ -22,7 +22,7 @@ package shame.nazuna.api.commands.impl;
    }
  
    
-   public void execute(LiteralArgumentBuilder<class_2172> builder) {
+   public void execute(LiteralArgumentBuilder<CommandSource> builder) {
      ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)builder
        .then(literal("add")
          .then(arg("name", (ArgumentType)StringArgumentType.word())

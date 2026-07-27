@@ -6,22 +6,22 @@ package shame.nazuna.client.modules.impl.player;
  import java.util.Locale;
  import java.util.Map;
  import java.util.Set;
- import net.minecraft.class_1268;
- import net.minecraft.class_2338;
- import net.minecraft.class_2350;
- import net.minecraft.class_2382;
- import net.minecraft.class_243;
- import net.minecraft.class_2596;
- import net.minecraft.class_2626;
- import net.minecraft.class_2680;
- import net.minecraft.class_2846;
- import net.minecraft.class_3481;
- import net.minecraft.class_3959;
- import net.minecraft.class_3965;
- import net.minecraft.class_634;
- import net.minecraft.class_636;
- import net.minecraft.class_638;
- import net.minecraft.class_746;
+ import net.minecraft.Hand;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Direction;
+ import net.minecraft.Vec3i;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Packet;
+ import net.minecraft.BlockUpdateS2CPacket;
+ import net.minecraft.BlockState;
+ import net.minecraft.PlayerActionC2SPacket;
+ import net.minecraft.BlockTags;
+ import net.minecraft.RaycastContext;
+ import net.minecraft.BlockHitResult;
+ import net.minecraft.ClientPlayNetworkHandler;
+ import net.minecraft.ClientPlayerInteractionManager;
+ import net.minecraft.ClientWorld;
+ import net.minecraft.ClientPlayerEntity;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventPacket;
  import shame.nazuna.api.utils.bot.BotSessionManager;
@@ -58,11 +58,11 @@ package shame.nazuna.client.modules.impl.player;
    
    private final FloatSetting intervalSeconds;
    
-   private final Map<class_2338, class_2680> preservedBlocks;
-   private final Map<class_2338, Long> lastUpdateTime;
-   private final Set<class_2338> managedBlocks;
+   private final Map<BlockPos, BlockState> preservedBlocks;
+   private final Map<BlockPos, Long> lastUpdateTime;
+   private final Set<BlockPos> managedBlocks;
    private boolean currentSessionEnabled;
-   private class_2338 targetPos;
+   private BlockPos targetPos;
    private String payTarget;
    private long lastBreakTime;
    private long lastPacketTime;
@@ -198,14 +198,14 @@ package shame.nazuna.client.modules.impl.player;
      }
      
      if (bot.interactionManager() != null) {
-       bot.interactionManager().method_2910(state.targetPos(), class_2350.field_11036);
-       bot.interactionManager().method_2902(state.targetPos(), class_2350.field_11036);
+       bot.interactionManager().method_2910(state.targetPos(), Direction.field_11036);
+       bot.interactionManager().method_2902(state.targetPos(), Direction.field_11036);
      } else {
        performFastBreak(bot.handler(), bot.interactionManager(), bot.player(), bot.world(), state.targetPos(), state.swing());
      } 
      
      if (state.swing()) {
-       bot.handler().method_52787((class_2596)new class_2879(class_1268.field_5808));
+       bot.handler().method_52787((Packet)new HandSwingC2SPacket(Hand.field_5808));
      }
      state.lastBreakTime(now);
    }
@@ -216,19 +216,19 @@ package shame.nazuna.client.modules.impl.player;
        return;
      }
      
-     if (event.getType() == EventPacket.Type.SEND) { class_2596 class_2596 = event.getPacket(); if (class_2596 instanceof class_2846) { class_2846 packet = (class_2846)class_2596;
+     if (event.getType() == EventPacket.Type.SEND) { Packet Packet = event.getPacket(); if (Packet instanceof PlayerActionC2SPacket) { PlayerActionC2SPacket packet = (PlayerActionC2SPacket)Packet;
          handleDigPacket(packet);
          return; }
         }
      
-     if (event.getType() == EventPacket.Type.RECEIVE) { class_2596 class_2596 = event.getPacket(); if (class_2596 instanceof class_2626) { class_2626 packet = (class_2626)class_2596;
-         class_2338 pos = packet.method_11309();
-         class_2680 savedState = this.preservedBlocks.get(pos);
+     if (event.getType() == EventPacket.Type.RECEIVE) { Packet Packet = event.getPacket(); if (Packet instanceof BlockUpdateS2CPacket) { BlockUpdateS2CPacket packet = (BlockUpdateS2CPacket)Packet;
+         BlockPos pos = packet.method_11309();
+         BlockState savedState = this.preservedBlocks.get(pos);
          if (savedState == null) {
            return;
          }
          
-         class_2680 serverState = packet.method_11308();
+         BlockState serverState = packet.method_11308();
          if (serverState.method_26215() || !serverState.equals(savedState)) {
            event.cancel();
            setClientBlock(pos, savedState);
@@ -257,15 +257,15 @@ package shame.nazuna.client.modules.impl.player;
        return;
      }
      
-     mc.field_1761.method_2910(this.targetPos, class_2350.field_11036);
-     mc.field_1761.method_2902(this.targetPos, class_2350.field_11036);
+     mc.field_1761.method_2910(this.targetPos, Direction.field_11036);
+     mc.field_1761.method_2902(this.targetPos, Direction.field_11036);
      if (this.swing.isState()) {
-       mc.field_1724.method_6104(class_1268.field_5808);
+       mc.field_1724.method_6104(Hand.field_5808);
      }
      this.lastBreakTime = now;
    }
    
-   private void performFastBreak(class_2338 pos) {
+   private void performFastBreak(BlockPos pos) {
      if (mc.field_1724 == null || mc.field_1687 == null || mc.field_1724.field_3944 == null) {
        return;
      }
@@ -278,15 +278,15 @@ package shame.nazuna.client.modules.impl.player;
  
  
    
-   private void performFastBreak(class_634 handler, class_636 interactionManager, class_746 player, class_638 world, class_2338 pos, boolean shouldSwing) {
+   private void performFastBreak(ClientPlayNetworkHandler handler, ClientPlayerInteractionManager interactionManager, ClientPlayerEntity player, ClientWorld world, BlockPos pos, boolean shouldSwing) {
      if (handler == null || player == null || pos == null) {
        return;
      }
      
      boolean accelerated = false;
      if (interactionManager != null && world != null) {
-       interactionManager.method_2910(pos, class_2350.field_11036);
-       accelerated = FastBreak.accelerateClientBreak(interactionManager, player, world, pos, class_2350.field_11036, 1.0F, shouldSwing);
+       interactionManager.method_2910(pos, Direction.field_11036);
+       accelerated = FastBreak.accelerateClientBreak(interactionManager, player, world, pos, Direction.field_11036, 1.0F, shouldSwing);
      } 
  
  
@@ -298,54 +298,54 @@ package shame.nazuna.client.modules.impl.player;
  
      
      if (!accelerated) {
-       FastBreak.packetBreak(handler, player, pos, class_2350.field_11036, shouldSwing);
+       FastBreak.packetBreak(handler, player, pos, Direction.field_11036, shouldSwing);
      }
    }
    
-   private class_2338 findNearestLog() {
+   private BlockPos findNearestLog() {
      return findNearestLog(mc.field_1687, mc.field_1724, this.breakRadius.get());
    }
    
-   private class_2338 findNearestLog(class_638 world, class_746 player, float radiusValue) {
+   private BlockPos findNearestLog(ClientWorld world, ClientPlayerEntity player, float radiusValue) {
      if (player == null || world == null) {
        return null;
      }
      
-     class_2338 playerPos = player.method_24515();
+     BlockPos playerPos = player.method_24515();
      int radius = Math.round(radiusValue);
      
-     return class_2338.method_20437(playerPos
+     return BlockPos.method_20437(playerPos
          .method_10069(-radius, -radius, -radius), playerPos
          .method_10069(radius, radius, radius))
        
-       .map(class_2338::method_10062)
+       .map(BlockPos::method_10062)
        .filter(pos -> isLog(world, pos))
        .filter(pos -> isInRange(player, pos))
        .filter(pos -> isVisible(world, player, pos))
-       .min(Comparator.comparingDouble(pos -> player.method_5707(class_243.method_24953((class_2382)pos))))
+       .min(Comparator.comparingDouble(pos -> player.method_5707(Vec3d.method_24953((Vec3i)pos))))
        .orElse(null);
    }
    
-   private boolean isInRange(class_2338 pos) {
+   private boolean isInRange(BlockPos pos) {
      return isInRange(mc.field_1724, pos);
    }
    
-   private boolean isInRange(class_746 player, class_2338 pos) {
-     return (player != null && player.method_5707(class_243.method_24953((class_2382)pos)) <= 16.0D);
+   private boolean isInRange(ClientPlayerEntity player, BlockPos pos) {
+     return (player != null && player.method_5707(Vec3d.method_24953((Vec3i)pos)) <= 16.0D);
    }
    
-   private boolean isVisible(class_2338 pos) {
+   private boolean isVisible(BlockPos pos) {
      return isVisible(mc.field_1687, mc.field_1724, pos);
    }
    
-   private boolean isVisible(class_638 world, class_746 player, class_2338 pos) {
+   private boolean isVisible(ClientWorld world, ClientPlayerEntity player, BlockPos pos) {
      if (player == null || world == null) {
        return false;
      }
      
-     class_243 eyePos = player.method_33571();
-     class_243 targetCenter = class_243.method_24953((class_2382)pos);
-     class_3965 hit = world.method_17742(new class_3959(eyePos, targetCenter, class_3959.class_3960.field_17558, class_3959.class_242.field_1348, (class_1297)player));
+     Vec3d eyePos = player.method_33571();
+     Vec3d targetCenter = Vec3d.method_24953((Vec3i)pos);
+     BlockHitResult hit = world.method_17742(new RaycastContext(eyePos, targetCenter, RaycastContext.class_3960.field_17558, RaycastContext.class_242.field_1348, (Entity)player));
  
  
  
@@ -353,30 +353,30 @@ package shame.nazuna.client.modules.impl.player;
  
  
      
-     return (hit == null || hit.method_17783() == class_239.class_240.field_1333 || pos.equals(hit.method_17777()));
+     return (hit == null || hit.method_17783() == HitResult.class_240.field_1333 || pos.equals(hit.method_17777()));
    }
    
-   private boolean isLog(class_2338 pos) {
+   private boolean isLog(BlockPos pos) {
      return isLog(mc.field_1687, pos);
    }
    
-   private boolean isLog(class_638 world, class_2338 pos) {
-     return (world != null && world.method_8320(pos).method_26164(class_3481.field_15475));
+   private boolean isLog(ClientWorld world, BlockPos pos) {
+     return (world != null && world.method_8320(pos).method_26164(BlockTags.field_15475));
    }
    
-   private void handleDigPacket(class_2846 packet) {
-     class_2846.class_2847 action = packet.method_12363();
-     if (action != class_2846.class_2847.field_12968 && action != class_2846.class_2847.field_12973) {
+   private void handleDigPacket(PlayerActionC2SPacket packet) {
+     PlayerActionC2SPacket.class_2847 action = packet.method_12363();
+     if (action != PlayerActionC2SPacket.class_2847.field_12968 && action != PlayerActionC2SPacket.class_2847.field_12973) {
        return;
      }
  
      
-     class_2338 pos = packet.method_12362();
+     BlockPos pos = packet.method_12362();
      if (!isLog(pos)) {
        return;
      }
      
-     class_2680 state = mc.field_1687.method_8320(pos);
+     BlockState state = mc.field_1687.method_8320(pos);
      if (state.method_26215()) {
        return;
      }
@@ -388,16 +388,16 @@ package shame.nazuna.client.modules.impl.player;
    }
    
    private void updateVisualization(long now) {
-     class_638 clientWorld, class_6381 = mc.field_1687; if (class_6381 instanceof class_638) { clientWorld = class_6381; }
+     ClientWorld clientWorld, NarrationPart = mc.field_1687; if (NarrationPart instanceof ClientWorld) { clientWorld = NarrationPart; }
      else
      { return; }
      
-     Set<class_2338> toRemove = new HashSet<>();
+     Set<BlockPos> toRemove = new HashSet<>();
      
-     for (Map.Entry<class_2338, class_2680> entry : this.preservedBlocks.entrySet()) {
-       class_2338 pos = entry.getKey();
-       class_2680 savedState = entry.getValue();
-       class_2680 currentState = clientWorld.method_8320(pos);
+     for (Map.Entry<BlockPos, BlockState> entry : this.preservedBlocks.entrySet()) {
+       BlockPos pos = entry.getKey();
+       BlockState savedState = entry.getValue();
+       BlockState currentState = clientWorld.method_8320(pos);
        
        if (currentState == null || !currentState.equals(savedState)) {
          clientWorld.method_8652(pos, savedState, 0);
@@ -410,7 +410,7 @@ package shame.nazuna.client.modules.impl.player;
        }
      } 
      
-     for (class_2338 pos : toRemove) {
+     for (BlockPos pos : toRemove) {
        this.preservedBlocks.remove(pos);
        this.lastUpdateTime.remove(pos);
        this.managedBlocks.remove(pos);
@@ -418,14 +418,14 @@ package shame.nazuna.client.modules.impl.player;
    }
    
    private void restoreVisualState() {
-     class_638 clientWorld, class_6381 = mc.field_1687; if (class_6381 instanceof class_638) { clientWorld = class_6381; }
+     ClientWorld clientWorld, NarrationPart = mc.field_1687; if (NarrationPart instanceof ClientWorld) { clientWorld = NarrationPart; }
      else { this.preservedBlocks.clear();
        this.lastUpdateTime.clear();
        this.managedBlocks.clear();
        
        return; }
      
-     for (class_2338 pos : this.managedBlocks) {
+     for (BlockPos pos : this.managedBlocks) {
        clientWorld.method_8652(pos, mc.field_1687.method_8320(pos), 0);
      }
      
@@ -434,8 +434,8 @@ package shame.nazuna.client.modules.impl.player;
      this.managedBlocks.clear();
    }
    
-   private void setClientBlock(class_2338 pos, class_2680 state) {
-     class_638 class_638 = mc.field_1687; if (class_638 instanceof class_638) { class_638 clientWorld = class_638;
+   private void setClientBlock(BlockPos pos, BlockState state) {
+     ClientWorld ClientWorld = mc.field_1687; if (ClientWorld instanceof ClientWorld) { ClientWorld clientWorld = ClientWorld;
        clientWorld.method_8652(pos, state, 0); }
    
    }
@@ -675,15 +675,15 @@ package shame.nazuna.client.modules.impl.player;
      private float payAmount = 1000.0F;
      private float intervalSeconds = 20.0F;
      private String payTarget = "";
-     private class_2338 targetPos;
+     private BlockPos targetPos;
      private long lastBreakTime;
      private long lastPacketTime;
      private long lastSellTime;
      private long lastPayTime;
      private long lastNickReminderTime;
-     private Map<class_2338, class_2680> preservedBlocks = new HashMap<>();
-     private Map<class_2338, Long> lastUpdateTime = new HashMap<>();
-     private Set<class_2338> managedBlocks = new HashSet<>();
+     private Map<BlockPos, BlockState> preservedBlocks = new HashMap<>();
+     private Map<BlockPos, Long> lastUpdateTime = new HashMap<>();
+     private Set<BlockPos> managedBlocks = new HashSet<>();
      
      public boolean enabled() { return this.enabled; }
      public void enabled(boolean value) { this.enabled = value; }
@@ -707,8 +707,8 @@ package shame.nazuna.client.modules.impl.player;
      public void intervalSeconds(float value) { this.intervalSeconds = value; }
      public String payTarget() { return (this.payTarget == null) ? "" : this.payTarget; }
      public void payTarget(String value) { this.payTarget = (value == null) ? "" : value; }
-     public class_2338 targetPos() { return this.targetPos; }
-     public void targetPos(class_2338 value) { this.targetPos = value; }
+     public BlockPos targetPos() { return this.targetPos; }
+     public void targetPos(BlockPos value) { this.targetPos = value; }
      public long lastBreakTime() { return this.lastBreakTime; }
      public void lastBreakTime(long value) { this.lastBreakTime = value; }
      public long lastPacketTime() { return this.lastPacketTime; }
@@ -719,11 +719,11 @@ package shame.nazuna.client.modules.impl.player;
      public void lastPayTime(long value) { this.lastPayTime = value; }
      public long lastNickReminderTime() { return this.lastNickReminderTime; }
      public void lastNickReminderTime(long value) { this.lastNickReminderTime = value; }
-     public Map<class_2338, class_2680> preservedBlocks() { return this.preservedBlocks; }
-     public void preservedBlocks(Map<class_2338, class_2680> value) { this.preservedBlocks = (value == null) ? new HashMap<>() : value; }
-     public Map<class_2338, Long> lastUpdateTime() { return this.lastUpdateTime; }
-     public void lastUpdateTime(Map<class_2338, Long> value) { this.lastUpdateTime = (value == null) ? new HashMap<>() : value; }
-     public Set<class_2338> managedBlocks() { return this.managedBlocks; } public void managedBlocks(Set<class_2338> value) {
+     public Map<BlockPos, BlockState> preservedBlocks() { return this.preservedBlocks; }
+     public void preservedBlocks(Map<BlockPos, BlockState> value) { this.preservedBlocks = (value == null) ? new HashMap<>() : value; }
+     public Map<BlockPos, Long> lastUpdateTime() { return this.lastUpdateTime; }
+     public void lastUpdateTime(Map<BlockPos, Long> value) { this.lastUpdateTime = (value == null) ? new HashMap<>() : value; }
+     public Set<BlockPos> managedBlocks() { return this.managedBlocks; } public void managedBlocks(Set<BlockPos> value) {
        this.managedBlocks = (value == null) ? new HashSet<>() : value;
      }
    }

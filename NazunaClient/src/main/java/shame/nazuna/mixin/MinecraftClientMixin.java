@@ -1,9 +1,9 @@
 package shame.nazuna.mixin;
  
  import java.lang.reflect.InvocationTargetException;
- import net.minecraft.class_1297;
- import net.minecraft.class_156;
- import net.minecraft.class_310;
+ import net.minecraft.Entity;
+ import net.minecraft.Util;
+ import net.minecraft.MinecraftClient;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.Unique;
  import org.spongepowered.asm.mixin.injection.At;
@@ -20,11 +20,11 @@ package shame.nazuna.mixin;
  import shame.nazuna.api.utils.player.Counter;
  import shame.nazuna.client.modules.impl.render.ShaderEsp;
  
- @Mixin({class_310.class})
+ @Mixin({MinecraftClient.class})
  public abstract class MinecraftClientMixin
  {
    @Unique
-   private long lastHookTime = class_156.method_648(); @Unique
+   private long lastHookTime = Util.method_648(); @Unique
    private int accumulatedCalls = 0;
  
    
@@ -49,12 +49,12 @@ package shame.nazuna.mixin;
    @Inject(method = {"method_1523"}, at = {@At("HEAD")})
    private void render(boolean tick, CallbackInfo ci) throws InvocationTargetException, IllegalAccessException, InstantiationException {
      if (!EventInvoker.hasListeners(EventGameUpdate.class)) {
-       this.lastHookTime = class_156.method_648();
+       this.lastHookTime = Util.method_648();
        this.accumulatedCalls = 0;
        
        return;
      } 
-     long now = class_156.method_648();
+     long now = Util.method_648();
      long delta = now - this.lastHookTime;
      this.accumulatedCalls += (int)(delta / 4166666L);
      this.lastHookTime += this.accumulatedCalls * 4166666L;
@@ -65,7 +65,7 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_27022"}, at = {@At("HEAD")}, cancellable = true)
-   private void astra$hasOutline(class_1297 entity, CallbackInfoReturnable<Boolean> cir) {
+   private void astra$hasOutline(Entity entity, CallbackInfoReturnable<Boolean> cir) {
      if (ModuleClass.INSTANCE == null)
        return; 
      ShaderEsp shaderEsp = ModuleClass.shaderEsp;

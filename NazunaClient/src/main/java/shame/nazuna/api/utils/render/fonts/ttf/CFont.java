@@ -5,10 +5,10 @@ package shame.nazuna.api.utils.render.fonts.ttf;
  import java.awt.RenderingHints;
  import java.awt.geom.Rectangle2D;
  import java.awt.image.BufferedImage;
- import net.minecraft.class_1011;
- import net.minecraft.class_1043;
- import net.minecraft.class_287;
- import net.minecraft.class_2960;
+ import net.minecraft.NativeImage;
+ import net.minecraft.NativeImageBackedTexture;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Identifier;
  import org.joml.Matrix4f;
  
  public class CFont {
@@ -33,7 +33,7 @@ package shame.nazuna.api.utils.render.fonts.ttf;
    protected void setupTexture(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
      BufferedImage img = generateFontImage(font, antiAlias, fractionalMetrics, chars);
      try {
-       class_1011 nativeImage = new class_1011(img.getWidth(), img.getHeight(), false);
+       NativeImage nativeImage = new NativeImage(img.getWidth(), img.getHeight(), false);
        for (int y = 0; y < img.getHeight(); y++) {
          for (int x = 0; x < img.getWidth(); x++) {
            int argb = img.getRGB(x, y);
@@ -44,11 +44,11 @@ package shame.nazuna.api.utils.render.fonts.ttf;
            nativeImage.method_61941(x, y, a << 24 | r << 16 | g << 8 | b);
          } 
        } 
-       class_1043 texture = new class_1043(nativeImage);
+       NativeImageBackedTexture texture = new NativeImageBackedTexture(nativeImage);
        this.glTextureId = texture.method_4624();
        String name = "cfont_" + textureCounter++;
-       this.textureId = class_2960.method_60655("customfont", name);
-       class_310.method_1551().method_1531().method_4616(this.textureId, (class_1044)texture);
+       this.textureId = Identifier.method_60655("customfont", name);
+       MinecraftClient.method_1551().method_1531().method_4616(this.textureId, (AbstractTexture)texture);
      } catch (Exception e) {
        e.printStackTrace();
      } 
@@ -95,7 +95,7 @@ package shame.nazuna.api.utils.render.fonts.ttf;
      }  return bufferedImage;
    }
    
-   public void drawChar(CharData[] chars, char c, float x, float y, Matrix4f matrix, class_287 buffer) {
+   public void drawChar(CharData[] chars, char c, float x, float y, Matrix4f matrix, BufferBuilder buffer) {
      try {
        if (chars[c] == null)
          return;  drawQuad(x, y, (chars[c]).width, (chars[c]).height, (chars[c]).storedX, (chars[c]).storedY, (chars[c]).width, (chars[c]).height, matrix, buffer);
@@ -103,7 +103,7 @@ package shame.nazuna.api.utils.render.fonts.ttf;
    }
  
    
-   protected void drawQuad(float x, float y, float width, float height, float srcX, float srcY, float srcWidth, float srcHeight, Matrix4f matrix, class_287 buffer) {
+   protected void drawQuad(float x, float y, float width, float height, float srcX, float srcY, float srcWidth, float srcHeight, Matrix4f matrix, BufferBuilder buffer) {
      float renderSRCX = srcX / 512.0F;
      float renderSRCY = srcY / 512.0F;
      float renderSRCWidth = srcWidth / 512.0F;

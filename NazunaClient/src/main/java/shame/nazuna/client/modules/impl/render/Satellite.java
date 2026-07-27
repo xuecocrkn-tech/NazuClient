@@ -1,21 +1,21 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_10055;
- import net.minecraft.class_1297;
- import net.minecraft.class_1309;
- import net.minecraft.class_1657;
- import net.minecraft.class_243;
- import net.minecraft.class_2960;
- import net.minecraft.class_3532;
- import net.minecraft.class_4050;
- import net.minecraft.class_4587;
- import net.minecraft.class_4588;
- import net.minecraft.class_4597;
- import net.minecraft.class_4608;
- import net.minecraft.class_5602;
- import net.minecraft.class_7308;
- import net.minecraft.class_7833;
- import net.minecraft.class_9996;
+ import net.minecraft.PlayerEntityRenderState;
+ import net.minecraft.Entity;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Identifier;
+ import net.minecraft.MathHelper;
+ import net.minecraft.EntityPose;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.VertexConsumer;
+ import net.minecraft.VertexConsumerProvider;
+ import net.minecraft.OverlayTexture;
+ import net.minecraft.EntityModelLayers;
+ import net.minecraft.AllayEntityModel;
+ import net.minecraft.RotationAxis;
+ import net.minecraft.AllayEntityRenderState;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.Event3DRender;
  import shame.nazuna.api.events.implement.EventAttackEntity;
@@ -29,7 +29,7 @@ package shame.nazuna.client.modules.impl.render;
  
  public class Satellite
    extends Module {
-   private static final class_2960 ALLAY_TEXTURE = class_2960.method_60656("textures/entity/allay/allay.png");
+   private static final Identifier ALLAY_TEXTURE = Identifier.method_60656("textures/entity/allay/allay.png");
    private static final long ATTACK_FOLLOW_TIMEOUT_MS = 3600L;
    private static final long ATTACK_LAUNCH_DURATION_MS = 560L;
    private static final long ATTACK_RETURN_DURATION_MS = 920L;
@@ -53,13 +53,13 @@ package shame.nazuna.client.modules.impl.render;
    public final FloatSetting idleStrength = (new FloatSetting("Сила idle", 0.35F, 0.0F, 1.5F, 0.05F))
      .visible(() -> Boolean.valueOf(this.idleAnimation.isState()));
    
-   private final class_9996 attackState = new class_9996();
-   private class_7308 attackModel;
+   private final AllayEntityRenderState attackState = new AllayEntityRenderState();
+   private AllayEntityModel attackModel;
    private int attackTargetId = Integer.MIN_VALUE;
    private long attackStartedAt;
    private long lastAttackAt;
    private long attackReturnStartedAt;
-   private class_243 attackReturnStartPos = new class_243(0.0D, 0.0D, 0.0D);
+   private Vec3d attackReturnStartPos = new Vec3d(0.0D, 0.0D, 0.0D);
    private float attackOrbitSeed;
    private float attackCurveSide;
    private float attackCurveLift;
@@ -140,7 +140,7 @@ package shame.nazuna.client.modules.impl.render;
      float tickDelta = event.getTickDelta();
      long now = System.currentTimeMillis();
      
-     class_1297 target = updateAttackLifecycle();
+     Entity target = updateAttackLifecycle();
      if (target == null) {
        return;
      }
@@ -153,12 +153,12 @@ package shame.nazuna.client.modules.impl.render;
      renderAttackSatellite(event, target, getAttackRenderPosition(target, tickDelta, now), tickDelta, now);
    }
    
-   private void renderAttackSatellite(Event3DRender event, class_1297 target, class_243 renderPos, float tickDelta, long now) {
-     class_243 cameraPos = event.getCamera().method_19326();
-     class_243 targetPos = getInterpolatedEntityPos(target, tickDelta);
+   private void renderAttackSatellite(Event3DRender event, Entity target, Vec3d renderPos, float tickDelta, long now) {
+     Vec3d cameraPos = event.getCamera().method_19326();
+     Vec3d targetPos = getInterpolatedEntityPos(target, tickDelta);
      float elapsed = (float)(now - this.attackStartedAt) / 1000.0F;
      
-     class_243 focusPos = targetPos.method_1031(0.0D, target.method_17682() * 0.56D, 0.0D);
+     Vec3d focusPos = targetPos.method_1031(0.0D, target.method_17682() * 0.56D, 0.0D);
      float desiredYaw = getLookYaw(renderPos, focusPos);
      float desiredPitch = getLookPitch(renderPos, focusPos);
      
@@ -167,23 +167,23 @@ package shame.nazuna.client.modules.impl.render;
        this.attackLookPitch = desiredPitch;
        this.attackLookInitialized = true;
      } else {
-       this.attackLookYaw = class_3532.method_17821(0.32F, this.attackLookYaw, desiredYaw);
-       this.attackLookPitch = class_3532.method_16439(0.24F, this.attackLookPitch, desiredPitch);
+       this.attackLookYaw = MathHelper.method_17821(0.32F, this.attackLookYaw, desiredYaw);
+       this.attackLookPitch = MathHelper.method_16439(0.24F, this.attackLookPitch, desiredPitch);
      } 
      
-     float headYaw = class_3532.method_15363(class_3532.method_15393(desiredYaw - this.attackLookYaw), -85.0F, 85.0F);
+     float headYaw = MathHelper.method_15363(MathHelper.method_15393(desiredYaw - this.attackLookYaw), -85.0F, 85.0F);
      
-     class_4587 matrices = event.getMatrices();
+     MatrixStack matrices = event.getMatrices();
      matrices.method_22903();
      matrices.method_22904(renderPos.field_1352 - cameraPos.field_1352, renderPos.field_1351 - cameraPos.field_1351, renderPos.field_1350 - cameraPos.field_1350);
-     matrices.method_22907(class_7833.field_40716.rotationDegrees(180.0F - this.attackLookYaw));
+     matrices.method_22907(RotationAxis.field_40716.rotationDegrees(180.0F - this.attackLookYaw));
      matrices.method_22905(this.scale.get(), this.scale.get(), this.scale.get());
      matrices.method_22905(-1.0F, -1.0F, 1.0F);
      matrices.method_46416(0.0F, -1.501F, 0.0F);
      
      this.attackState.field_53328 = mc.field_1724.field_6012 + tickDelta + elapsed * 20.0F;
      this.attackState.field_53450 = elapsed * 6.4F;
-     this.attackState.field_53451 = 0.72F + class_3532.method_15374(elapsed * 7.0F + this.attackBobSeed) * 0.12F;
+     this.attackState.field_53451 = 0.72F + MathHelper.method_15374(elapsed * 7.0F + this.attackBobSeed) * 0.12F;
      this.attackState.field_53447 = headYaw;
      this.attackState.field_53448 = this.attackLookPitch;
      this.attackState.field_53333 = false;
@@ -195,7 +195,7 @@ package shame.nazuna.client.modules.impl.render;
      this.attackState.field_53446 = this.attackLookYaw;
      this.attackState.field_53453 = 1.0F;
      this.attackState.field_53454 = 1.0F;
-     class_1309 living = (class_1309)target; this.attackState.field_53465 = (target instanceof class_1309) ? living.method_18376() : class_4050.field_18076;
+     LivingEntity living = (LivingEntity)target; this.attackState.field_53465 = (target instanceof LivingEntity) ? living.method_18376() : EntityPose.field_18076;
      this.attackState.field_53449 = 0.0F;
      this.attackState.field_53460 = false;
      this.attackState.field_53237 = false;
@@ -204,14 +204,14 @@ package shame.nazuna.client.modules.impl.render;
      this.attackState.field_53240 = 0.65F;
      
      this.attackModel.method_42732(this.attackState);
-     class_4597.class_4598 immediate = mc.method_22940().method_23000();
-     class_4588 vertexConsumer = immediate.getBuffer(this.attackModel.method_23500(ALLAY_TEXTURE));
-     this.attackModel.method_60879(matrices, vertexConsumer, 15728880, class_4608.field_21444);
+     VertexConsumerProvider.class_4598 immediate = mc.method_22940().method_23000();
+     VertexConsumer vertexConsumer = immediate.getBuffer(this.attackModel.method_23500(ALLAY_TEXTURE));
+     this.attackModel.method_60879(matrices, vertexConsumer, 15728880, OverlayTexture.field_21444);
      immediate.method_22993();
      matrices.method_22909();
    }
    
-   public boolean shouldRender(class_10055 playerState) {
+   public boolean shouldRender(PlayerEntityRenderState playerState) {
      if (!isEnable() || mc.field_1724 == null || mc.field_1687 == null || playerState == null || playerState.field_53542) {
        return false;
      }
@@ -225,8 +225,8 @@ package shame.nazuna.client.modules.impl.render;
        return shouldRenderOwnShoulderPet();
      } 
      
-     class_1297 entity = mc.field_1687.method_8469(playerState.field_53528);
-     if (entity instanceof class_1657) { class_1657 player = (class_1657)entity; if (astra.INSTANCE != null && astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage
+     Entity entity = mc.field_1687.method_8469(playerState.field_53528);
+     if (entity instanceof PlayerEntity) { PlayerEntity player = (PlayerEntity)entity; if (astra.INSTANCE != null && astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage
  
          
          .isFriend(player.method_5477().getString())) {
@@ -248,18 +248,18 @@ package shame.nazuna.client.modules.impl.render;
      return (this.showSelf.isState() && !mc.field_1690.method_31044().method_31034());
    }
    
-   private class_1297 updateAttackLifecycle() {
+   private Entity updateAttackLifecycle() {
      if (!this.attackEnemies.isState() || mc.field_1687 == null || mc.field_1724 == null || this.attackTargetId == Integer.MIN_VALUE) {
        return null;
      }
      
-     class_1297 target = mc.field_1687.method_8469(this.attackTargetId);
+     Entity target = mc.field_1687.method_8469(this.attackTargetId);
      if (target == null || target.method_31481() || target == mc.field_1724) {
        clearAttackTarget();
        return null;
      } 
      
-     if (target instanceof class_1309) { class_1309 living = (class_1309)target; if (!living.method_5805()) {
+     if (target instanceof LivingEntity) { LivingEntity living = (LivingEntity)target; if (!living.method_5805()) {
          clearAttackTarget();
          return null;
        }  }
@@ -284,25 +284,25 @@ package shame.nazuna.client.modules.impl.render;
      return target;
    }
    
-   private class_243 getAttackRenderPosition(class_1297 target, float tickDelta, long now) {
-     class_243 shoulderPos = getShoulderWorldPosition(tickDelta);
-     class_243 targetPos = getInterpolatedEntityPos(target, tickDelta);
+   private Vec3d getAttackRenderPosition(Entity target, float tickDelta, long now) {
+     Vec3d shoulderPos = getShoulderWorldPosition(tickDelta);
+     Vec3d targetPos = getInterpolatedEntityPos(target, tickDelta);
      float elapsed = (float)(now - this.attackStartedAt) / 1000.0F;
      
-     class_243 orbitPos = getOrbitPosition(target, targetPos, elapsed);
+     Vec3d orbitPos = getOrbitPosition(target, targetPos, elapsed);
      if (this.attackReturnStartedAt == 0L) {
-       float launchProgress = class_3532.method_15363((float)(now - this.attackStartedAt) / 560.0F, 0.0F, 1.0F);
+       float launchProgress = MathHelper.method_15363((float)(now - this.attackStartedAt) / 560.0F, 0.0F, 1.0F);
        if (launchProgress < 1.0F) {
          return buildLaunchCurve(shoulderPos, orbitPos, launchProgress);
        }
        return orbitPos;
      } 
      
-     float returnProgress = class_3532.method_15363((float)(now - this.attackReturnStartedAt) / 920.0F, 0.0F, 1.0F);
+     float returnProgress = MathHelper.method_15363((float)(now - this.attackReturnStartedAt) / 920.0F, 0.0F, 1.0F);
      return buildReturnCurve(this.attackReturnStartPos, shoulderPos, returnProgress);
    }
    
-   private class_243 getOrbitPosition(class_1297 target, class_243 targetPos, float elapsed) {
+   private Vec3d getOrbitPosition(Entity target, Vec3d targetPos, float elapsed) {
      double baseRadius = Math.max(0.86D, target.method_17681() * 1.05D + 0.46D) * this.attackRadiusJitter;
      double angle = (this.attackOrbitSeed * 0.017453292F + elapsed * this.attackOrbitSpeed * this.attackOrbitDirection);
      double radiusPulse = Math.sin((elapsed * 1.25F + this.attackBobSeed * 0.45F)) * 0.07D;
@@ -313,51 +313,51 @@ package shame.nazuna.client.modules.impl.render;
  
      
      double orbitY = targetPos.field_1351 + target.method_17682() * (0.78D + this.attackHeightJitter) + Math.sin((elapsed * 2.9F + this.attackBobSeed)) * 0.2D + Math.cos((elapsed * 1.8F + this.attackBobSeed * 0.8F)) * 0.08D;
-     return new class_243(targetPos.field_1352 + orbitX, orbitY, targetPos.field_1350 + orbitZ);
+     return new Vec3d(targetPos.field_1352 + orbitX, orbitY, targetPos.field_1350 + orbitZ);
    }
    
-   private class_243 buildLaunchCurve(class_243 start, class_243 end, float progress) {
+   private Vec3d buildLaunchCurve(Vec3d start, Vec3d end, float progress) {
      float eased = easeInOut(progress);
-     class_243 direction = end.method_1020(start);
-     class_243 horizontal = new class_243(direction.field_1352, 0.0D, direction.field_1350);
+     Vec3d direction = end.method_1020(start);
+     Vec3d horizontal = new Vec3d(direction.field_1352, 0.0D, direction.field_1350);
      if (horizontal.method_1027() < 1.0E-4D) {
-       horizontal = new class_243(0.0D, 0.0D, 1.0D);
+       horizontal = new Vec3d(0.0D, 0.0D, 1.0D);
      } else {
        horizontal = horizontal.method_1029();
      } 
      
-     class_243 sideways = (new class_243(horizontal.field_1350, 0.0D, -horizontal.field_1352)).method_1029();
-     class_243 lift = new class_243(0.0D, this.attackCurveLift, 0.0D);
-     class_243 control1 = start.method_1019(sideways.method_1021(this.attackCurveSide * 0.52D)).method_1019(lift.method_1021(0.82D));
-     class_243 control2 = end.method_1019(sideways.method_1021(-this.attackCurveSide * 0.28D)).method_1019(horizontal.method_1021(this.attackCurveDepth * 0.18D)).method_1019(lift.method_1021(0.58D));
+     Vec3d sideways = (new Vec3d(horizontal.field_1350, 0.0D, -horizontal.field_1352)).method_1029();
+     Vec3d lift = new Vec3d(0.0D, this.attackCurveLift, 0.0D);
+     Vec3d control1 = start.method_1019(sideways.method_1021(this.attackCurveSide * 0.52D)).method_1019(lift.method_1021(0.82D));
+     Vec3d control2 = end.method_1019(sideways.method_1021(-this.attackCurveSide * 0.28D)).method_1019(horizontal.method_1021(this.attackCurveDepth * 0.18D)).method_1019(lift.method_1021(0.58D));
      return cubicBezier(start, control1, control2, end, eased);
    }
    
-   private class_243 buildReturnCurve(class_243 start, class_243 end, float progress) {
+   private Vec3d buildReturnCurve(Vec3d start, Vec3d end, float progress) {
      float eased = easeInOut(progress);
-     class_243 direction = end.method_1020(start);
-     class_243 horizontal = new class_243(direction.field_1352, 0.0D, direction.field_1350);
+     Vec3d direction = end.method_1020(start);
+     Vec3d horizontal = new Vec3d(direction.field_1352, 0.0D, direction.field_1350);
      if (horizontal.method_1027() < 1.0E-4D) {
-       horizontal = new class_243(0.0D, 0.0D, 1.0D);
+       horizontal = new Vec3d(0.0D, 0.0D, 1.0D);
      } else {
        horizontal = horizontal.method_1029();
      } 
      
-     class_243 sideways = (new class_243(horizontal.field_1350, 0.0D, -horizontal.field_1352)).method_1029();
-     class_243 lift = new class_243(0.0D, this.attackCurveLift * 0.72D, 0.0D);
-     class_243 control1 = start.method_1019(sideways.method_1021(-this.attackCurveSide * 0.24D)).method_1019(lift.method_1021(0.62D));
-     class_243 control2 = end.method_1019(sideways.method_1021(this.attackCurveSide * 0.3D)).method_1019(horizontal.method_1021(-this.attackCurveDepth * 0.1D)).method_1019(lift.method_1021(0.22D));
-     class_243 bezier = cubicBezier(start, control1, control2, end, eased);
+     Vec3d sideways = (new Vec3d(horizontal.field_1350, 0.0D, -horizontal.field_1352)).method_1029();
+     Vec3d lift = new Vec3d(0.0D, this.attackCurveLift * 0.72D, 0.0D);
+     Vec3d control1 = start.method_1019(sideways.method_1021(-this.attackCurveSide * 0.24D)).method_1019(lift.method_1021(0.62D));
+     Vec3d control2 = end.method_1019(sideways.method_1021(this.attackCurveSide * 0.3D)).method_1019(horizontal.method_1021(-this.attackCurveDepth * 0.1D)).method_1019(lift.method_1021(0.22D));
+     Vec3d bezier = cubicBezier(start, control1, control2, end, eased);
      return (eased > 0.985F) ? end : bezier;
    }
    
-   private class_243 getShoulderWorldPosition(float tickDelta) {
-     class_243 playerPos = getInterpolatedEntityPos((class_1297)mc.field_1724, tickDelta);
-     float bodyYaw = class_3532.method_17821(tickDelta, mc.field_1724.field_6220, mc.field_1724.field_6283);
+   private Vec3d getShoulderWorldPosition(float tickDelta) {
+     Vec3d playerPos = getInterpolatedEntityPos((Entity)mc.field_1724, tickDelta);
+     float bodyYaw = MathHelper.method_17821(tickDelta, mc.field_1724.field_6220, mc.field_1724.field_6283);
      float yawRad = bodyYaw * 0.017453292F;
      
-     class_243 forward = new class_243(-class_3532.method_15374(yawRad), 0.0D, class_3532.method_15362(yawRad));
-     class_243 right = new class_243(forward.field_1350, 0.0D, -forward.field_1352);
+     Vec3d forward = new Vec3d(-MathHelper.method_15374(yawRad), 0.0D, MathHelper.method_15362(yawRad));
+     Vec3d right = new Vec3d(forward.field_1350, 0.0D, -forward.field_1352);
      double side = (isLeftShoulder() ? 1.0D : -1.0D) * mc.field_1724.method_17681() * 0.42D;
      double height = mc.field_1724.method_17682() - (mc.field_1724.method_5715() ? 0.38D : 0.24D);
      double back = 0.0D;
@@ -368,32 +368,32 @@ package shame.nazuna.client.modules.impl.render;
  
  
      
-     class_243 shoulderPos = playerPos.method_1031(0.0D, height, 0.0D).method_1019(right.method_1021(side)).method_1019(forward.method_1021(back)).method_1019(right.method_1021(this.offsetX.get() * 0.65D)).method_1031(0.0D, this.offsetY.get() * 0.45D, 0.0D).method_1019(forward.method_1021(this.offsetZ.get() * 0.35D));
+     Vec3d shoulderPos = playerPos.method_1031(0.0D, height, 0.0D).method_1019(right.method_1021(side)).method_1019(forward.method_1021(back)).method_1019(right.method_1021(this.offsetX.get() * 0.65D)).method_1031(0.0D, this.offsetY.get() * 0.45D, 0.0D).method_1019(forward.method_1021(this.offsetZ.get() * 0.35D));
      
      if (this.idleAnimation.isState()) {
        float time = (mc.field_1724.field_6012 + tickDelta) * (0.7F + this.idleSpeed.get() * 0.65F);
-       float bob = class_3532.method_15374(time * 0.42F) * 0.03F * this.idleStrength.get();
+       float bob = MathHelper.method_15374(time * 0.42F) * 0.03F * this.idleStrength.get();
        shoulderPos = shoulderPos.method_1031(0.0D, bob, 0.0D);
      } 
      
      return shoulderPos;
    }
    
-   private class_243 getInterpolatedEntityPos(class_1297 entity, float tickDelta) {
-     return new class_243(
-         class_3532.method_16436(tickDelta, entity.field_6014, entity.method_23317()), 
-         class_3532.method_16436(tickDelta, entity.field_6036, entity.method_23318()), 
-         class_3532.method_16436(tickDelta, entity.field_5969, entity.method_23321()));
+   private Vec3d getInterpolatedEntityPos(Entity entity, float tickDelta) {
+     return new Vec3d(
+         MathHelper.method_16436(tickDelta, entity.field_6014, entity.method_23317()), 
+         MathHelper.method_16436(tickDelta, entity.field_6036, entity.method_23318()), 
+         MathHelper.method_16436(tickDelta, entity.field_5969, entity.method_23321()));
    }
  
    
-   private class_243 cubicBezier(class_243 p0, class_243 p1, class_243 p2, class_243 p3, float t) {
+   private Vec3d cubicBezier(Vec3d p0, Vec3d p1, Vec3d p2, Vec3d p3, float t) {
      float inv = 1.0F - t;
      double w0 = (inv * inv * inv);
      double w1 = 3.0D * inv * inv * t;
      double w2 = 3.0D * inv * t * t;
      double w3 = (t * t * t);
-     return new class_243(p0.field_1352 * w0 + p1.field_1352 * w1 + p2.field_1352 * w2 + p3.field_1352 * w3, p0.field_1351 * w0 + p1.field_1351 * w1 + p2.field_1351 * w2 + p3.field_1351 * w3, p0.field_1350 * w0 + p1.field_1350 * w1 + p2.field_1350 * w2 + p3.field_1350 * w3);
+     return new Vec3d(p0.field_1352 * w0 + p1.field_1352 * w1 + p2.field_1352 * w2 + p3.field_1352 * w3, p0.field_1351 * w0 + p1.field_1351 * w1 + p2.field_1351 * w2 + p3.field_1351 * w3, p0.field_1350 * w0 + p1.field_1350 * w1 + p2.field_1350 * w2 + p3.field_1350 * w3);
    }
  
  
@@ -401,7 +401,7 @@ package shame.nazuna.client.modules.impl.render;
  
    
    private float easeInOut(float value) {
-     float clamped = class_3532.method_15363(value, 0.0F, 1.0F);
+     float clamped = MathHelper.method_15363(value, 0.0F, 1.0F);
      return clamped * clamped * clamped * (clamped * (clamped * 6.0F - 15.0F) + 10.0F);
    }
    
@@ -410,7 +410,7 @@ package shame.nazuna.client.modules.impl.render;
        return;
      }
      
-     this.attackModel = new class_7308(mc.method_31974().method_32072(class_5602.field_38455));
+     this.attackModel = new AllayEntityModel(mc.method_31974().method_32072(EntityModelLayers.field_38455));
    }
    
    private void randomizeAttackPath(long now) {
@@ -429,18 +429,18 @@ package shame.nazuna.client.modules.impl.render;
      return min + (float)Math.random() * (max - min);
    }
    
-   private float getLookYaw(class_243 from, class_243 to) {
+   private float getLookYaw(Vec3d from, Vec3d to) {
      double dx = to.field_1352 - from.field_1352;
      double dz = to.field_1350 - from.field_1350;
      return (float)Math.toDegrees(Math.atan2(dz, dx)) - 90.0F;
    }
    
-   private float getLookPitch(class_243 from, class_243 to) {
+   private float getLookPitch(Vec3d from, Vec3d to) {
      double dx = to.field_1352 - from.field_1352;
      double dy = to.field_1351 - from.field_1351;
      double dz = to.field_1350 - from.field_1350;
      double horizontalDistance = Math.sqrt(dx * dx + dz * dz);
-     return class_3532.method_15363((float)-Math.toDegrees(Math.atan2(dy, horizontalDistance)), -35.0F, 35.0F);
+     return MathHelper.method_15363((float)-Math.toDegrees(Math.atan2(dy, horizontalDistance)), -35.0F, 35.0F);
    }
    
    private void clearAttackTarget() {
@@ -448,7 +448,7 @@ package shame.nazuna.client.modules.impl.render;
      this.attackStartedAt = 0L;
      this.lastAttackAt = 0L;
      this.attackReturnStartedAt = 0L;
-     this.attackReturnStartPos = new class_243(0.0D, 0.0D, 0.0D);
+     this.attackReturnStartPos = new Vec3d(0.0D, 0.0D, 0.0D);
      this.attackLookYaw = 0.0F;
      this.attackLookPitch = 0.0F;
      this.attackLookInitialized = false;

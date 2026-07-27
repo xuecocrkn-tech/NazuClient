@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_1814;
+ import net.minecraft.Rarity;
  
 
 

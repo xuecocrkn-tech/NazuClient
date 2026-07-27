@@ -1,7 +1,7 @@
 package shame.nazuna.client.ui.clickgui;
  
  import java.util.List;
- import net.minecraft.class_1041;
+ import net.minecraft.Window;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.utils.input.KeyBoardUtils;
  import shame.nazuna.api.utils.math.HoveringUtils;
@@ -27,7 +27,7 @@ package shame.nazuna.client.ui.clickgui;
      this.themeSelector = themeSelector;
    }
    
-   public boolean mouseClicked(double mouseX, double mouseY, int button, class_1041 window) {
+   public boolean mouseClicked(double mouseX, double mouseY, int button, Window window) {
      if (window != null && button == 0) {
        int categoryCount = (Module.ModuleCategory.values()).length;
        float searchW = getSearchWidth();

@@ -1,16 +1,16 @@
 package shame.nazuna.client.modules.impl.player;
- import net.minecraft.class_1268;
- import net.minecraft.class_2338;
- import net.minecraft.class_2350;
- import net.minecraft.class_239;
- import net.minecraft.class_2596;
- import net.minecraft.class_2680;
- import net.minecraft.class_2846;
- import net.minecraft.class_3965;
- import net.minecraft.class_634;
- import net.minecraft.class_636;
- import net.minecraft.class_638;
- import net.minecraft.class_746;
+ import net.minecraft.Hand;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Direction;
+ import net.minecraft.HitResult;
+ import net.minecraft.Packet;
+ import net.minecraft.BlockState;
+ import net.minecraft.PlayerActionC2SPacket;
+ import net.minecraft.BlockHitResult;
+ import net.minecraft.ClientPlayNetworkHandler;
+ import net.minecraft.ClientPlayerInteractionManager;
+ import net.minecraft.ClientWorld;
+ import net.minecraft.ClientPlayerEntity;
  import shame.nazuna.client.modules.Module;
  import shame.nazuna.client.modules.settings.Setting;
  import shame.nazuna.client.modules.settings.implement.FloatSetting;
@@ -26,12 +26,12 @@ package shame.nazuna.client.modules.impl.player;
    }
    @EventLink
    public void onUpdate(EventUpdate event) {
-     class_3965 hit;
+     BlockHitResult hit;
      if (mc.field_1724 == null || mc.field_1687 == null || mc.field_1761 == null) {
        return;
      }
      
-     class_239 class_239 = mc.field_1765; if (class_239 instanceof class_3965) { hit = (class_3965)class_239; }
+     HitResult HitResult = mc.field_1765; if (HitResult instanceof BlockHitResult) { hit = (BlockHitResult)HitResult; }
      else
      { return; }
      
@@ -56,24 +56,24 @@ package shame.nazuna.client.modules.impl.player;
  
  
    
-   public static boolean accelerateClientBreak(class_636 interactionManager, class_746 player, class_638 world, class_2338 pos, class_2350 side, float speed, boolean swing) {
+   public static boolean accelerateClientBreak(ClientPlayerInteractionManager interactionManager, ClientPlayerEntity player, ClientWorld world, BlockPos pos, Direction side, float speed, boolean swing) {
      if (interactionManager == null || player == null || world == null || pos == null) {
        return false;
      }
      
-     class_2680 state = world.method_8320(pos);
+     BlockState state = world.method_8320(pos);
      if (state == null || state.method_26215()) {
        return false;
      }
      
-     class_2350 breakSide = (side == null) ? class_2350.field_11036 : side;
+     Direction breakSide = (side == null) ? Direction.field_11036 : side;
      int extraTicks = getExtraTicks(speed);
      for (int i = 0; i < extraTicks; i++) {
        interactionManager.method_2902(pos, breakSide);
      }
      
      if (swing) {
-       player.method_6104(class_1268.field_5808);
+       player.method_6104(Hand.field_5808);
      }
      
      return true;
@@ -83,17 +83,17 @@ package shame.nazuna.client.modules.impl.player;
  
  
    
-   public static boolean packetBreak(class_634 handler, class_746 player, class_2338 pos, class_2350 side, boolean swing) {
+   public static boolean packetBreak(ClientPlayNetworkHandler handler, ClientPlayerEntity player, BlockPos pos, Direction side, boolean swing) {
      if (handler == null || player == null || pos == null) {
        return false;
      }
      
-     class_2350 breakSide = (side == null) ? class_2350.field_11036 : side;
-     handler.method_52787((class_2596)new class_2846(class_2846.class_2847.field_12968, pos, breakSide));
-     handler.method_52787((class_2596)new class_2846(class_2846.class_2847.field_12973, pos, breakSide));
+     Direction breakSide = (side == null) ? Direction.field_11036 : side;
+     handler.method_52787((Packet)new PlayerActionC2SPacket(PlayerActionC2SPacket.class_2847.field_12968, pos, breakSide));
+     handler.method_52787((Packet)new PlayerActionC2SPacket(PlayerActionC2SPacket.class_2847.field_12973, pos, breakSide));
      
      if (swing) {
-       handler.method_52787((class_2596)new class_2879(class_1268.field_5808));
+       handler.method_52787((Packet)new HandSwingC2SPacket(Hand.field_5808));
      }
      
      return true;

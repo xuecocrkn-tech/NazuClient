@@ -1,10 +1,10 @@
 package shame.nazuna.client.modules.impl.combat.components.rotations;
  
- import net.minecraft.class_1297;
- import net.minecraft.class_1309;
- import net.minecraft.class_241;
- import net.minecraft.class_243;
- import net.minecraft.class_3532;
+ import net.minecraft.Entity;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Vec2f;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.storages.implement.RotationStorage;
  import shame.nazuna.api.utils.rotate.Rotation;
@@ -16,7 +16,7 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
  
  public class WhiteRiseRotation extends RotationsSystem implements QClient {
    private final Aura aura;
-   private class_1309 trackedTarget;
+   private LivingEntity trackedTarget;
    private float lastYaw;
    private float lastPitch;
    private float speedAcceleration;
@@ -50,11 +50,11 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
    public void onAttack() {}
  
    
-   public void updateRotations(class_1309 target) {
+   public void updateRotations(LivingEntity target) {
      if (mc.field_1724 == null || target == null)
        return; 
      if (mc.field_1724.method_6039()) {
-       this.rotate = new class_241(mc.field_1724.method_36454(), mc.field_1724.method_36455());
+       this.rotate = new Vec2f(mc.field_1724.method_36454(), mc.field_1724.method_36455());
        this.lastYaw = this.rotate.field_1343;
        this.lastPitch = this.rotate.field_1342;
        
@@ -76,12 +76,12 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      this.tickCounter++;
      this.jitterOffset = (float)((Math.sin(this.tickCounter * 0.17D) * 0.12D + Math.random() * 0.08D - 0.04D) * 0.699999988079071D);
      
-     class_243 point = BestPoint.getMultipoint((class_1297)target, 128.0D);
-     class_241 angle = RotationUtils.getRotations(point);
+     Vec3d point = BestPoint.getMultipoint((Entity)target, 128.0D);
+     Vec2f angle = RotationUtils.getRotations(point);
      float targetYaw = angle.field_1343;
      float targetPitch = angle.field_1342;
      
-     float yawDiff = Math.abs(class_3532.method_15393(targetYaw - this.lastYaw));
+     float yawDiff = Math.abs(MathHelper.method_15393(targetYaw - this.lastYaw));
      boolean readyToAttack = (mc.field_1724.method_7261(1.0F) > 0.9F && this.aura.getWhiteRiseTicksToAttack() <= 1);
      
      if (!this.back) {
@@ -104,21 +104,21 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
        if (this.speedAcceleration <= -0.04F) this.back = false;
      
      } 
-     float smooth = class_3532.method_15363(this.speedAcceleration, 0.0F, mc.field_1724.method_6128() ? 0.38F : 0.26F);
+     float smooth = MathHelper.method_15363(this.speedAcceleration, 0.0F, mc.field_1724.method_6128() ? 0.38F : 0.26F);
      if (readyToAttack) {
        smooth = Math.min(smooth + 0.1F, mc.field_1724.method_6128() ? 0.46F : 0.34F);
      }
      smooth += this.jitterOffset * 0.5F;
      if (this.tickCounter % 7 == 0) smooth += 0.03F;
      
-     float deltaYaw = class_3532.method_15393(targetYaw - this.lastYaw);
+     float deltaYaw = MathHelper.method_15393(targetYaw - this.lastYaw);
      float deltaPitch = targetPitch - this.lastPitch;
      
      float yawLimit = mc.field_1724.method_6128() ? 42.0F : (readyToAttack ? 28.0F : 20.0F);
      float pitchLimit = mc.field_1724.method_6128() ? 12.0F : (readyToAttack ? 4.5F : 2.8F);
      
-     deltaYaw = class_3532.method_15363(deltaYaw, -yawLimit, yawLimit);
-     deltaPitch = class_3532.method_15363(deltaPitch, -pitchLimit, pitchLimit);
+     deltaYaw = MathHelper.method_15363(deltaYaw, -yawLimit, yawLimit);
+     deltaPitch = MathHelper.method_15363(deltaPitch, -pitchLimit, pitchLimit);
      
      float pitchSpeed = smooth * 0.28F;
      float yawSpeed = smooth * (0.85F + this.jitterOffset * 0.4F);
@@ -132,19 +132,19 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
        newPitch = this.lastPitch + Math.round((newPitch - this.lastPitch) / gcd) * gcd;
      } 
      
-     newPitch = class_3532.method_15363(newPitch, -89.0F, 89.0F);
+     newPitch = MathHelper.method_15363(newPitch, -89.0F, 89.0F);
      
      Rotation finalRot = new Rotation(newYaw, newPitch);
      float rotSpeed = (mc.field_1724.method_6128() && target.method_6128()) ? 360.0F : 45.0F;
      RotationStorage.update(finalRot, rotSpeed, rotSpeed, rotSpeed, rotSpeed, 0, 1, Aura.clientLook.isState());
      
-     this.rotate = new class_241(finalRot.getYaw(), finalRot.getPitch());
+     this.rotate = new Vec2f(finalRot.getYaw(), finalRot.getPitch());
      this.lastYaw = finalRot.getYaw();
      this.lastPitch = finalRot.getPitch();
    }
    
-   private class_243 getAimPoint(class_1309 target) {
-     class_243 point = BestPoint.getPoint((class_1297)target);
+   private Vec3d getAimPoint(LivingEntity target) {
+     Vec3d point = BestPoint.getPoint((Entity)target);
      if (point == null) {
        point = target.method_5829().method_1005();
      }

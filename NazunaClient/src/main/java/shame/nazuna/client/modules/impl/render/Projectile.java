@@ -2,24 +2,24 @@ package shame.nazuna.client.modules.impl.render;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_1297;
- import net.minecraft.class_1684;
- import net.minecraft.class_2246;
- import net.minecraft.class_2374;
- import net.minecraft.class_238;
- import net.minecraft.class_239;
- import net.minecraft.class_243;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_2960;
- import net.minecraft.class_3532;
- import net.minecraft.class_3959;
- import net.minecraft.class_3965;
- import net.minecraft.class_4184;
- import net.minecraft.class_4587;
+ import net.minecraft.Entity;
+ import net.minecraft.EnderPearlEntity;
+ import net.minecraft.Blocks;
+ import net.minecraft.Position;
+ import net.minecraft.Box;
+ import net.minecraft.HitResult;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.Identifier;
+ import net.minecraft.MathHelper;
+ import net.minecraft.RaycastContext;
+ import net.minecraft.BlockHitResult;
+ import net.minecraft.Camera;
+ import net.minecraft.MatrixStack;
  import org.joml.Matrix4f;
  import org.joml.Quaternionf;
  import org.joml.Quaternionfc;
@@ -39,8 +39,8 @@ package shame.nazuna.client.modules.impl.render;
    private final Font impactFont = Fonts.getFont("sf_regular", 14);
    
    public static Projectile INSTANCE = new Projectile();
-   private static final class ImpactPoint extends Record { private final class_243 pos; private final float seconds;
-     private ImpactPoint(class_243 pos, float seconds) { this.pos = pos; this.seconds = seconds; } public final String toString() { // Byte code:
+   private static final class ImpactPoint extends Record { private final Vec3d pos; private final float seconds;
+     private ImpactPoint(Vec3d pos, float seconds) { this.pos = pos; this.seconds = seconds; } public final String toString() { // Byte code:
        //   0: aload_0
        //   1: <illegal opcode> toString : (Lshame/astra/client/modules/impl/render/Projectile$ImpactPoint;)Ljava/lang/String;
        //   6: areturn
@@ -49,7 +49,7 @@ package shame.nazuna.client.modules.impl.render;
        //   #43	-> 0
        // Local variable table:
        //   start	length	slot	name	descriptor
-       //   0	7	0	this	Lshame/astra/client/modules/impl/render/Projectile$ImpactPoint; } public class_243 pos() { return this.pos; } public final int hashCode() { // Byte code:
+       //   0	7	0	this	Lshame/astra/client/modules/impl/render/Projectile$ImpactPoint; } public Vec3d pos() { return this.pos; } public final int hashCode() { // Byte code:
        //   0: aload_0
        //   1: <illegal opcode> hashCode : (Lshame/astra/client/modules/impl/render/Projectile$ImpactPoint;)I
        //   6: ireturn
@@ -72,14 +72,14 @@ package shame.nazuna.client.modules.impl.render;
        //   0	8	1	o	Ljava/lang/Object; } public float seconds() { return this.seconds; }
       }
    
-   private static final class_2960 BLOOM_TEXTURE = class_2960.method_60655("astra", "textures/particle/bloom.png");
+   private static final Identifier BLOOM_TEXTURE = Identifier.method_60655("astra", "textures/particle/bloom.png");
    
    private final FloatSetting size = new FloatSetting("Размер", 1.2F, 0.6F, 2.4F, 0.1F);
    
    private final List<ImpactPoint> impactPoints = new ArrayList<>();
    private final Matrix4f lastProjectionMatrix = new Matrix4f();
    private final Quaternionf lastCameraRotation = new Quaternionf();
-   private class_243 lastCameraPos = class_243.field_1353;
+   private Vec3d lastCameraPos = Vec3d.field_1353;
    private boolean hasMatrices;
    
    public Projectile() {
@@ -97,9 +97,9 @@ package shame.nazuna.client.modules.impl.render;
      this.lastCameraPos = event.getCamera().method_19326();
      this.lastCameraRotation.set((Quaternionfc)event.getCamera().method_23767());
      
-     class_4587 matrices = event.getMatrices();
-     class_4184 camera = event.getCamera();
-     class_243 cameraPos = camera.method_19326();
+     MatrixStack matrices = event.getMatrices();
+     Camera camera = event.getCamera();
+     Vec3d cameraPos = camera.method_19326();
      Quaternionf cameraRotation = camera.method_23767();
      float tickDelta = event.getTickDelta();
      
@@ -108,17 +108,17 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.disableCull();
      RenderSystem.disableDepthTest();
      RenderSystem.depthMask(false);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      RenderSystem.setShaderTexture(0, BLOOM_TEXTURE);
      
-     class_238 searchBox = mc.field_1724.method_5829().method_1014(128.0D);
-     for (class_1684 pearl : mc.field_1687.method_8390(class_1684.class, searchBox, class_1297::method_5805)) {
+     Box searchBox = mc.field_1724.method_5829().method_1014(128.0D);
+     for (EnderPearlEntity pearl : mc.field_1687.method_8390(EnderPearlEntity.class, searchBox, Entity::method_5805)) {
        
-       List<class_243> points = simulate(pearl, tickDelta);
+       List<Vec3d> points = simulate(pearl, tickDelta);
        if (points.size() < 2)
          continue; 
        float seconds = (points.size() - 1) / 20.0F;
-       class_243 impactPos = points.get(points.size() - 1);
+       Vec3d impactPos = points.get(points.size() - 1);
        this.impactPoints.add(new ImpactPoint(impactPos, seconds));
        
        float quadSize = this.size.get() * 0.2F;
@@ -131,14 +131,14 @@ package shame.nazuna.client.modules.impl.render;
        matrices.method_22903();
        matrices.method_22904(-cameraPos.field_1352, -cameraPos.field_1351, -cameraPos.field_1350);
        
-       class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+       BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
        for (int i = 0; i < points.size() - 1; i++) {
-         class_243 start = points.get(i);
-         class_243 end = points.get(i + 1);
+         Vec3d start = points.get(i);
+         Vec3d end = points.get(i + 1);
          
          int samples = Math.max(2, Math.min(12, (int)Math.ceil(start.method_1022(end) / Math.max(quadSize * 1.75F, 0.08F))));
          for (int j = 0; j < samples; j++) {
-           class_243 interp = start.method_35590(end, j / samples);
+           Vec3d interp = start.method_35590(end, j / samples);
            
            matrices.method_22903();
            matrices.method_22904(interp.field_1352, interp.field_1351, interp.field_1350);
@@ -152,7 +152,7 @@ package shame.nazuna.client.modules.impl.render;
            matrices.method_22909();
          } 
        } 
-       class_286.method_43433(buffer.method_60800());
+       BufferRenderer.method_43433(buffer.method_60800());
        matrices.method_22909();
        
        float markerSize = quadSize * 1.6F;
@@ -169,12 +169,12 @@ package shame.nazuna.client.modules.impl.render;
        matrices.method_46416(mx, my, mz);
        matrices.method_22907(cameraRotation);
        Matrix4f markerMatrix = matrices.method_23760().method_23761();
-       class_287 marker = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+       BufferBuilder marker = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
        marker.method_22918(markerMatrix, -markerSize, -markerSize, 0.0F).method_22913(0.0F, 0.0F).method_1336(mr, mg, mb, ma);
        marker.method_22918(markerMatrix, -markerSize, markerSize, 0.0F).method_22913(0.0F, 1.0F).method_1336(mr, mg, mb, ma);
        marker.method_22918(markerMatrix, markerSize, markerSize, 0.0F).method_22913(1.0F, 1.0F).method_1336(mr, mg, mb, ma);
        marker.method_22918(markerMatrix, markerSize, -markerSize, 0.0F).method_22913(1.0F, 0.0F).method_1336(mr, mg, mb, ma);
-       class_286.method_43433(marker.method_60800());
+       BufferRenderer.method_43433(marker.method_60800());
        matrices.method_22909();
      } 
      
@@ -189,14 +189,14 @@ package shame.nazuna.client.modules.impl.render;
    public void onRender2D(EventRender.Default event) {
      if (!this.hasMatrices || this.impactPoints.isEmpty() || mc.field_1724 == null)
        return; 
-     class_4587 matrices = event.getContext().method_51448();
+     MatrixStack matrices = event.getContext().method_51448();
      Font font = this.impactFont;
      if (font == null)
        return; 
      int themeColor = ColorUtils.getThemeColor();
      
      for (ImpactPoint impact : this.impactPoints) {
-       class_243 screen = worldToScreen(impact.pos());
+       Vec3d screen = worldToScreen(impact.pos());
        if (screen == null)
          continue; 
        String text = formatOneDecimal(impact.seconds()) + " сек";
@@ -211,7 +211,7 @@ package shame.nazuna.client.modules.impl.render;
      } 
    }
    
-   private class_243 worldToScreen(class_243 worldPos) {
+   private Vec3d worldToScreen(Vec3d worldPos) {
      if (mc == null || mc.method_22683() == null) return null;
      
      Vector3f relative = new Vector3f((float)(worldPos.field_1352 - this.lastCameraPos.field_1352), (float)(worldPos.field_1351 - this.lastCameraPos.field_1351), (float)(worldPos.field_1350 - this.lastCameraPos.field_1350));
@@ -244,7 +244,7 @@ package shame.nazuna.client.modules.impl.render;
        return null;
      }
      
-     return new class_243(screenX, screenY, ndcZ);
+     return new Vec3d(screenX, screenY, ndcZ);
    }
    
    private String formatOneDecimal(float value) {
@@ -252,22 +252,22 @@ package shame.nazuna.client.modules.impl.render;
      return "" + scaled / 10 + "." + scaled / 10;
    }
    
-   private List<class_243> simulate(class_1684 pearl, float tickDelta) {
-     List<class_243> points = new ArrayList<>();
+   private List<Vec3d> simulate(EnderPearlEntity pearl, float tickDelta) {
+     List<Vec3d> points = new ArrayList<>();
  
  
  
      
-     class_243 pos = new class_243(class_3532.method_16436(tickDelta, pearl.field_6014, pearl.method_23317()), class_3532.method_16436(tickDelta, pearl.field_6036, pearl.method_23318()), class_3532.method_16436(tickDelta, pearl.field_5969, pearl.method_23321()));
+     Vec3d pos = new Vec3d(MathHelper.method_16436(tickDelta, pearl.field_6014, pearl.method_23317()), MathHelper.method_16436(tickDelta, pearl.field_6036, pearl.method_23318()), MathHelper.method_16436(tickDelta, pearl.field_5969, pearl.method_23321()));
      
-     class_243 motion = pearl.method_18798();
+     Vec3d motion = pearl.method_18798();
      points.add(pos);
      
      for (int i = 0; i < 300; i++) {
-       class_243 lastPos = pos;
-       class_243 nextPos = pos.method_1019(motion);
+       Vec3d lastPos = pos;
+       Vec3d nextPos = pos.method_1019(motion);
        
-       class_3965 hit = mc.field_1687.method_17742(new class_3959(lastPos, nextPos, class_3959.class_3960.field_17558, class_3959.class_242.field_1348, (class_1297)mc.field_1724));
+       BlockHitResult hit = mc.field_1687.method_17742(new RaycastContext(lastPos, nextPos, RaycastContext.class_3960.field_17558, RaycastContext.class_242.field_1348, (Entity)mc.field_1724));
  
  
  
@@ -275,7 +275,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
        
-       if (hit.method_17783() == class_239.class_240.field_1332) {
+       if (hit.method_17783() == HitResult.class_240.field_1332) {
          points.add(hit.method_17784());
          
          break;
@@ -283,7 +283,7 @@ package shame.nazuna.client.modules.impl.render;
        points.add(nextPos);
        pos = nextPos;
        
-       boolean inWater = mc.field_1687.method_8320(class_2338.method_49638((class_2374)pos)).method_27852(class_2246.field_10382);
+       boolean inWater = mc.field_1687.method_8320(BlockPos.method_49638((Position)pos)).method_27852(Blocks.field_10382);
        double drag = inWater ? 0.8D : 0.99D;
        motion = motion.method_1021(drag).method_1023(0.0D, 0.03D, 0.0D);
        

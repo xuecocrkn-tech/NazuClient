@@ -1,9 +1,9 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_1041;
- import net.minecraft.class_310;
- import net.minecraft.class_332;
- import net.minecraft.class_408;
+ import net.minecraft.Window;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.DrawContext;
+ import net.minecraft.ChatScreen;
  import org.lwjgl.glfw.GLFW;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.Unique;
@@ -15,7 +15,7 @@ package shame.nazuna.mixin;
  import shame.nazuna.api.utils.draggable.Draggable;
  import shame.nazuna.astra;
  
- @Mixin({class_408.class})
+ @Mixin({ChatScreen.class})
  public class ChatScreenMixin
  {
    @Unique
@@ -32,9 +32,9 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_25394"}, at = {@At("HEAD")})
-   private void onRender(class_332 context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-     class_310 mc = class_310.method_1551();
-     class_1041 window = mc.method_22683();
+   private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+     MinecraftClient mc = MinecraftClient.method_1551();
+     Window window = mc.method_22683();
      
      boolean leftPressed = (GLFW.glfwGetMouseButton(mc.method_22683().method_4490(), 0) == 1);
      if (this.astra$leftPressed && !leftPressed) {

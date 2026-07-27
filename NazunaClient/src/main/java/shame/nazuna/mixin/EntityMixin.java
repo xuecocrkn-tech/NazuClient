@@ -1,8 +1,8 @@
 package shame.nazuna.mixin;
  
  import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
- import net.minecraft.class_1297;
- import net.minecraft.class_1657;
+ import net.minecraft.Entity;
+ import net.minecraft.PlayerEntity;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,10 +14,10 @@ package shame.nazuna.mixin;
  import shame.nazuna.client.modules.impl.render.SeeInvisibles;
  import shame.nazuna.client.modules.impl.render.ShaderEsp;
  
- @Mixin({class_1297.class})
+ @Mixin({Entity.class})
  public abstract class EntityMixin
    implements QClient {
-   @ModifyExpressionValue(method = {"method_5784"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/class_1297;method_65038()Z")})
+   @ModifyExpressionValue(method = {"method_5784"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/Entity;method_65038()Z")})
    private boolean fixFallDistanceCalculation(boolean original) {
      if (this == mc.field_1724) {
        return false;
@@ -48,14 +48,14 @@ package shame.nazuna.mixin;
      if (ModuleClass.INSTANCE == null)
        return; 
      ShaderEsp shaderEsp = ModuleClass.shaderEsp;
-     if (shaderEsp != null && shaderEsp.shouldOutline((class_1297)this)) {
+     if (shaderEsp != null && shaderEsp.shouldOutline((Entity)this)) {
        cir.setReturnValue(Integer.valueOf(shaderEsp.getOutlineColor()));
      }
    }
    
    @Inject(method = {"method_5756"}, at = {@At("HEAD")}, cancellable = true)
-   private void astra$allowSeeInvisibles(class_1657 player, CallbackInfoReturnable<Boolean> cir) {
-     EntityMixin entityMixin = this; if (entityMixin instanceof class_1657) { class_1657 target = (class_1657)entityMixin; if (ModuleClass.INSTANCE != null) {
+   private void astra$allowSeeInvisibles(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
+     EntityMixin entityMixin = this; if (entityMixin instanceof PlayerEntity) { PlayerEntity target = (PlayerEntity)entityMixin; if (ModuleClass.INSTANCE != null) {
  
  
          

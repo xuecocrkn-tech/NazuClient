@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Gradle wrapper script
+
+# Determine the project base dir
+SCRIPT_DIR="$( cd -P "$( dirname "$0" )" && pwd )"
+
+# Use gradle from PATH if available
+if command -v gradle >/dev/null 2>&1; then
+    exec gradle "$@"
+fi
+
+APP_HOME="$SCRIPT_DIR"
+
+CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+
+java -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"

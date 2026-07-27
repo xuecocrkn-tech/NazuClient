@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.misc;
  
- import net.minecraft.class_2338;
- import net.minecraft.class_243;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Vec3d;
  
  
  
@@ -269,8 +269,8 @@ package shame.nazuna.client.modules.impl.misc;
  final class LayerTimer
    extends Record
  {
-   private final class_2338 blockPos;
-   private final class_243 pos;
+   private final BlockPos blockPos;
+   private final Vec3d pos;
    private final long endTime;
    
    public final String toString() {
@@ -314,8 +314,8 @@ package shame.nazuna.client.modules.impl.misc;
      //   0	8	1	o	Ljava/lang/Object;
    }
    
-   private LayerTimer(class_2338 blockPos, class_243 pos, long endTime) {
-     this.blockPos = blockPos; this.pos = pos; this.endTime = endTime; } public class_2338 blockPos() { return this.blockPos; } public class_243 pos() { return this.pos; } public long endTime() { return this.endTime; }
+   private LayerTimer(BlockPos blockPos, Vec3d pos, long endTime) {
+     this.blockPos = blockPos; this.pos = pos; this.endTime = endTime; } public BlockPos blockPos() { return this.blockPos; } public Vec3d pos() { return this.pos; } public long endTime() { return this.endTime; }
  
  }
 

@@ -1,11 +1,11 @@
 package shame.nazuna.api.events.implement;
  
- import net.minecraft.class_1671;
+ import net.minecraft.FireworkRocketEntity;
  
  public class EventFireWork extends Event {
-   private final class_1671 firework;
+   private final FireworkRocketEntity firework;
    
-   public class_1671 getFirework() {
+   public FireworkRocketEntity getFirework() {
      return this.firework;
    }
  }

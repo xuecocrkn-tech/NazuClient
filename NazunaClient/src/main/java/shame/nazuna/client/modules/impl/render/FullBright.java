@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_1293;
- import net.minecraft.class_1294;
+ import net.minecraft.StatusEffectInstance;
+ import net.minecraft.StatusEffects;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -17,13 +17,13 @@ package shame.nazuna.client.modules.impl.render;
    @EventLink
    public void onUpdate(EventUpdate ignored) {
      if (mc.field_1724 == null || mc.field_1687 == null)
-       return;  mc.field_1724.method_6092(new class_1293(class_1294.field_5925, 777, 1));
+       return;  mc.field_1724.method_6092(new StatusEffectInstance(StatusEffects.field_5925, 777, 1));
    }
  
    
    public void onDisable() {
      if (mc.field_1724 == null || mc.field_1687 == null)
-       return;  mc.field_1724.method_6016(class_1294.field_5925);
+       return;  mc.field_1724.method_6016(StatusEffects.field_5925);
      super.onDisable();
    }
  }

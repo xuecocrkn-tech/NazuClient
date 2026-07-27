@@ -2,11 +2,11 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
  
  import java.util.Optional;
  import java.util.concurrent.ThreadLocalRandom;
- import net.minecraft.class_1309;
- import net.minecraft.class_238;
- import net.minecraft.class_241;
- import net.minecraft.class_243;
- import net.minecraft.class_3532;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Box;
+ import net.minecraft.Vec2f;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.storages.implement.RotationStorage;
  import shame.nazuna.api.utils.rotate.Rotation;
@@ -18,12 +18,12 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
    extends RotationsSystem
    implements QClient
  {
-   public void updateRotations(class_1309 target) {
-     class_243 eyePos = mc.field_1724.method_5836(1.0F);
-     class_243 lookVec = mc.field_1724.method_5828(1.0F);
-     class_243 reachVec = eyePos.method_1019(lookVec.method_1021(999.0D));
+   public void updateRotations(LivingEntity target) {
+     Vec3d eyePos = mc.field_1724.method_5836(1.0F);
+     Vec3d lookVec = mc.field_1724.method_5828(1.0F);
+     Vec3d reachVec = eyePos.method_1019(lookVec.method_1021(999.0D));
      
-     class_238 box = getPredictedBox(target);
+     Box box = getPredictedBox(target);
      
      double shrinkXZ = target.method_6128() ? -0.5D : 0.10000000149011612D;
      double shrinkY = target.method_6128() ? -0.5D : 0.10000000149011612D;
@@ -34,38 +34,38 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
  
  
      
-     box = new class_238(box.field_1323 + box.method_17939() * shrinkXZ / 2.0D, box.field_1322, box.field_1321 + box.method_17941() * shrinkXZ / 2.0D, box.field_1320 - box.method_17939() * shrinkXZ / 2.0D, box.field_1325 - box.method_17940() * shrinkY, box.field_1324 - box.method_17941() * shrinkXZ / 2.0D);
+     box = new Box(box.field_1323 + box.method_17939() * shrinkXZ / 2.0D, box.field_1322, box.field_1321 + box.method_17941() * shrinkXZ / 2.0D, box.field_1320 - box.method_17939() * shrinkXZ / 2.0D, box.field_1325 - box.method_17940() * shrinkY, box.field_1324 - box.method_17941() * shrinkXZ / 2.0D);
  
      
-     Optional<class_243> hit = box.method_992(eyePos, reachVec);
+     Optional<Vec3d> hit = box.method_992(eyePos, reachVec);
      boolean inside = box.method_1006(eyePos);
      
      if (hit.isPresent() || inside) {
-       Aura.adjYaw = class_3532.method_15363(Aura.adjYaw - ThreadLocalRandom.current().nextFloat(0.005F, 0.02F), 0.0F, 1.0F);
-       Aura.adjPitch = class_3532.method_15363(Aura.adjPitch - ThreadLocalRandom.current().nextFloat(0.005F, 0.02F), 0.0F, 1.0F);
+       Aura.adjYaw = MathHelper.method_15363(Aura.adjYaw - ThreadLocalRandom.current().nextFloat(0.005F, 0.02F), 0.0F, 1.0F);
+       Aura.adjPitch = MathHelper.method_15363(Aura.adjPitch - ThreadLocalRandom.current().nextFloat(0.005F, 0.02F), 0.0F, 1.0F);
      }
      else if (mc.field_1724.method_6128()) {
-       Aura.adjYaw = class_3532.method_15363(Aura.adjYaw + ThreadLocalRandom.current().nextFloat(5.0E-4F, 0.005F), 0.0F, 1.0F);
-       Aura.adjPitch = class_3532.method_15363(Aura.adjPitch + ThreadLocalRandom.current().nextFloat(9.0E-4F, 0.009F), 0.0F, 1.0F);
+       Aura.adjYaw = MathHelper.method_15363(Aura.adjYaw + ThreadLocalRandom.current().nextFloat(5.0E-4F, 0.005F), 0.0F, 1.0F);
+       Aura.adjPitch = MathHelper.method_15363(Aura.adjPitch + ThreadLocalRandom.current().nextFloat(9.0E-4F, 0.009F), 0.0F, 1.0F);
      }
      else if (target.method_20232()) {
-       Aura.adjYaw = class_3532.method_15363(Aura.adjYaw + ThreadLocalRandom.current().nextFloat(9.0E-5F, 0.009F), 0.0F, 1.0F);
-       Aura.adjPitch = class_3532.method_15363(Aura.adjPitch + ThreadLocalRandom.current().nextFloat(9.0E-5F, 9.0E-4F), 0.0F, 1.0F);
+       Aura.adjYaw = MathHelper.method_15363(Aura.adjYaw + ThreadLocalRandom.current().nextFloat(9.0E-5F, 0.009F), 0.0F, 1.0F);
+       Aura.adjPitch = MathHelper.method_15363(Aura.adjPitch + ThreadLocalRandom.current().nextFloat(9.0E-5F, 9.0E-4F), 0.0F, 1.0F);
      } else {
-       Aura.adjYaw = class_3532.method_15363(Aura.adjYaw + ThreadLocalRandom.current().nextFloat(9.0E-5F, 0.009F), 0.0F, 1.0F);
-       Aura.adjPitch = class_3532.method_15363(Aura.adjPitch + ThreadLocalRandom.current().nextFloat(9.0E-4F, 0.009F), 0.0F, 1.0F);
+       Aura.adjYaw = MathHelper.method_15363(Aura.adjYaw + ThreadLocalRandom.current().nextFloat(9.0E-5F, 0.009F), 0.0F, 1.0F);
+       Aura.adjPitch = MathHelper.method_15363(Aura.adjPitch + ThreadLocalRandom.current().nextFloat(9.0E-4F, 0.009F), 0.0F, 1.0F);
      } 
  
  
  
      
-     class_241 targetRot = RotationUtils.getRotations(getPredictedPoint(target, target.method_30951(1.0F)));
+     Vec2f targetRot = RotationUtils.getRotations(getPredictedPoint(target, target.method_30951(1.0F)));
      
      float currentYaw = mc.field_1724.method_36454();
      float currentPitch = mc.field_1724.method_36455();
      
-     float diffYaw = class_3532.method_15393(targetRot.field_1343 - currentYaw);
-     float diffPitch = class_3532.method_15393(targetRot.field_1342 - currentPitch);
+     float diffYaw = MathHelper.method_15393(targetRot.field_1343 - currentYaw);
+     float diffPitch = MathHelper.method_15393(targetRot.field_1342 - currentPitch);
      
      float newYaw = currentYaw + diffYaw * Aura.adjYaw;
      float newPitch = currentPitch + diffPitch * Aura.adjPitch;

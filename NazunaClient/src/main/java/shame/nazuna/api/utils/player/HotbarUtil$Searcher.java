@@ -1,9 +1,9 @@
 package shame.nazuna.api.utils.player;
 
-import net.minecraft.class_1799;
+import net.minecraft.ItemStack;
 
 public interface Searcher {
-  boolean isValid(class_1799 paramclass_1799);
+  boolean isValid(ItemStack paramclass_1799);
 }
 
 

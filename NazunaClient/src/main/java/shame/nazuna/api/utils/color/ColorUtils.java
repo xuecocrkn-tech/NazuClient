@@ -2,11 +2,11 @@ package shame.nazuna.api.utils.color;
  
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.awt.Color;
- import net.minecraft.class_2561;
- import net.minecraft.class_2583;
- import net.minecraft.class_3532;
- import net.minecraft.class_5250;
- import net.minecraft.class_5251;
+ import net.minecraft.Text;
+ import net.minecraft.Style;
+ import net.minecraft.MathHelper;
+ import net.minecraft.MutableText;
+ import net.minecraft.TextColor;
  import org.lwjgl.opengl.GL11;
  import shame.nazuna.api.utils.math.MathUtils;
  import shame.nazuna.astra;
@@ -45,11 +45,11 @@ package shame.nazuna.api.utils.color;
    }
    
    public static int gradient(int color1, int color2, float amount) {
-     amount = class_3532.method_15363(amount, 0.0F, 1.0F);
-     int r = class_3532.method_48781(amount, red(color1), red(color2));
-     int g = class_3532.method_48781(amount, green(color1), green(color2));
-     int b = class_3532.method_48781(amount, blue(color1), blue(color2));
-     int a = class_3532.method_48781(amount, alpha(color1), alpha(color2));
+     amount = MathHelper.method_15363(amount, 0.0F, 1.0F);
+     int r = MathHelper.method_48781(amount, red(color1), red(color2));
+     int g = MathHelper.method_48781(amount, green(color1), green(color2));
+     int b = MathHelper.method_48781(amount, blue(color1), blue(color2));
+     int a = MathHelper.method_48781(amount, alpha(color1), alpha(color2));
      
      return rgba(r, g, b, a);
    }
@@ -301,27 +301,27 @@ package shame.nazuna.api.utils.color;
      return interpolatedAlpha << 24 | interpolatedRed << 16 | interpolatedGreen << 8 | interpolatedBlue;
    }
    
-   public static class_5250 gradient(String message, int first, int end) {
-     class_5250 text = class_2561.method_43473();
+   public static MutableText gradient(String message, int first, int end) {
+     MutableText text = Text.method_43473();
      
      for (int i = 0; i < message.length(); i++) {
        int color = interpolateColor(first, end, i / message.length());
        
-       class_5250 charText = class_2561.method_43470(String.valueOf(message.charAt(i))).method_10862(class_2583.field_24360.method_27703(class_5251.method_27717(color)));
-       text.method_10852((class_2561)charText);
+       MutableText charText = Text.method_43470(String.valueOf(message.charAt(i))).method_10862(Style.field_24360.method_27703(TextColor.method_27717(color)));
+       text.method_10852((Text)charText);
      } 
      
      return text;
    }
    
-   public static class_2561 replace(class_2561 original, String find, String replaceWith) {
+   public static Text replace(Text original, String find, String replaceWith) {
      if (original == null || find == null || replaceWith == null) {
        return original;
      }
      
      String originalText = original.getString();
      String replacedText = originalText.replace(find, replaceWith);
-     return (class_2561)class_2561.method_43470(replacedText);
+     return (Text)Text.method_43470(replacedText);
    }
    
    public static int gradient(int speed, int index, int... colors) {

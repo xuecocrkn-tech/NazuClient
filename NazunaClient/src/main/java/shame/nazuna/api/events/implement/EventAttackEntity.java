@@ -1,12 +1,12 @@
 package shame.nazuna.api.events.implement;
  
- import net.minecraft.class_1657;
+ import net.minecraft.PlayerEntity;
  
  public class EventAttackEntity extends Event {
-   private final class_1657 player;
+   private final PlayerEntity player;
    
-   public class_1657 getPlayer() {
-   public class_1297 getTarget() { return this.target; }
+   public PlayerEntity getPlayer() {
+   public Entity getTarget() { return this.target; }
  
  }
 

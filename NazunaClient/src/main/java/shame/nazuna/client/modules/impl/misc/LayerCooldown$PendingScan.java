@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.misc;
  
- import net.minecraft.class_2338;
+ import net.minecraft.BlockPos;
  
  
  
@@ -273,7 +273,7 @@ package shame.nazuna.client.modules.impl.misc;
  final class PendingScan
    extends Record
  {
-   private final class_2338 center;
+   private final BlockPos center;
    private final long runAt;
    
    public final String toString() {
@@ -317,8 +317,8 @@ package shame.nazuna.client.modules.impl.misc;
      //   0	8	1	o	Ljava/lang/Object;
    }
    
-   private PendingScan(class_2338 center, long runAt) {
-     this.center = center; this.runAt = runAt; } public class_2338 center() { return this.center; } public long runAt() { return this.runAt; }
+   private PendingScan(BlockPos center, long runAt) {
+     this.center = center; this.runAt = runAt; } public BlockPos center() { return this.center; } public long runAt() { return this.runAt; }
  
  }
 

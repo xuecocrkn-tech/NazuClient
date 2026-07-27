@@ -9,9 +9,9 @@ package shame.nazuna.api.utils.render.fonts.msdf;
  import java.io.InputStreamReader;
  import java.util.HashMap;
  import java.util.stream.Collectors;
- import net.minecraft.class_1044;
- import net.minecraft.class_2960;
- import net.minecraft.class_4588;
+ import net.minecraft.AbstractTexture;
+ import net.minecraft.Identifier;
+ import net.minecraft.VertexConsumer;
  import org.joml.Matrix4f;
  import shame.nazuna.api.QClient;
  
@@ -21,7 +21,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
    implements QClient
  {
    private final String name;
-   private final class_1044 texture;
+   private final AbstractTexture texture;
    private final float atlasWidth;
    private final float atlasHeight;
    private final float range;
@@ -31,7 +31,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
    private final HashMap<Integer, MsdfGlyph> glyphs;
    private boolean filtered = false;
    
-   private MsdfFont(String name, class_1044 texture, float atlasWidth, float atlasHeight, float range, float lineHeight, float ascender, float descender, HashMap<Integer, MsdfGlyph> glyphs) {
+   private MsdfFont(String name, AbstractTexture texture, float atlasWidth, float atlasHeight, float range, float lineHeight, float ascender, float descender, HashMap<Integer, MsdfGlyph> glyphs) {
      this.name = name;
      this.texture = texture;
      this.atlasWidth = atlasWidth;
@@ -80,7 +80,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
  
  
    
-   public void applyGlyphs(Matrix4f matrix, class_4588 consumer, float size, String text, float thickness, float x, float y, float z, int red, int green, int blue, int alpha) {
+   public void applyGlyphs(Matrix4f matrix, VertexConsumer consumer, float size, String text, float thickness, float x, float y, float z, int red, int green, int blue, int alpha) {
      text = replaceSymbols(text);
      
      for (int i = 0; i < text.length(); i++) {
@@ -133,7 +133,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
        .replace("ᴢ", "Z").replace("ꜰ", "F");
    }
    
-   private static String readResource(class_2960 identifier) {
+   private static String readResource(Identifier identifier) {
      try {
        InputStream inputStream = mc.method_1478().open(identifier);
        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -152,8 +152,8 @@ package shame.nazuna.api.utils.render.fonts.msdf;
    
    public static class Builder {
      private String name = "?";
-     private class_2960 dataIdentifier;
-     private class_2960 atlasIdentifier;
+     private Identifier dataIdentifier;
+     private Identifier atlasIdentifier;
      
      public Builder name(String name) {
        this.name = name;
@@ -161,12 +161,12 @@ package shame.nazuna.api.utils.render.fonts.msdf;
      }
      
      public Builder data(String dataFileName) {
-       this.dataIdentifier = class_2960.method_60655("astra", "fonts/msdf/" + dataFileName + "/font.json");
+       this.dataIdentifier = Identifier.method_60655("astra", "fonts/msdf/" + dataFileName + "/font.json");
        return this;
      }
      
      public Builder atlas(String atlasFileName) {
-       this.atlasIdentifier = class_2960.method_60655("astra", "fonts/msdf/" + atlasFileName + "/font.png");
+       this.atlasIdentifier = Identifier.method_60655("astra", "fonts/msdf/" + atlasFileName + "/font.png");
        return this;
      }
      
@@ -221,7 +221,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
          glyphs.put(Integer.valueOf(unicode), glyph);
        } 
        
-       class_1044 texture = QClient.mc.method_1531().method_4619(this.atlasIdentifier);
+       AbstractTexture texture = QClient.mc.method_1531().method_4619(this.atlasIdentifier);
        
        return new MsdfFont(this.name, texture, atlasWidth, atlasHeight, range, lineHeight, ascender, descender, glyphs);
      }

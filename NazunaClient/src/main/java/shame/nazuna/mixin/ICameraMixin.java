@@ -1,10 +1,10 @@
 package shame.nazuna.mixin;
 
-import net.minecraft.class_4184;
+import net.minecraft.Camera;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin({class_4184.class})
+@Mixin({Camera.class})
 public interface ICameraMixin {
   @Invoker("method_19325")
   void setCustomRotation(float paramFloat1, float paramFloat2);

@@ -2,23 +2,23 @@ package shame.nazuna.client.modules.impl.combat;
  import java.util.ArrayList;
  import java.util.Comparator;
  import java.util.List;
- import net.minecraft.class_1268;
- import net.minecraft.class_1294;
- import net.minecraft.class_1297;
- import net.minecraft.class_1309;
- import net.minecraft.class_1657;
- import net.minecraft.class_1713;
- import net.minecraft.class_1792;
- import net.minecraft.class_1802;
- import net.minecraft.class_1922;
- import net.minecraft.class_2338;
- import net.minecraft.class_2350;
- import net.minecraft.class_2382;
- import net.minecraft.class_241;
- import net.minecraft.class_243;
- import net.minecraft.class_2680;
- import net.minecraft.class_3532;
- import net.minecraft.class_3965;
+ import net.minecraft.Hand;
+ import net.minecraft.StatusEffects;
+ import net.minecraft.Entity;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.Item;
+ import net.minecraft.Items;
+ import net.minecraft.BlockView;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Direction;
+ import net.minecraft.Vec3i;
+ import net.minecraft.Vec2f;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BlockState;
+ import net.minecraft.MathHelper;
+ import net.minecraft.BlockHitResult;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventBinding;
  import shame.nazuna.api.events.implement.EventGameUpdate;
@@ -48,7 +48,7 @@ package shame.nazuna.client.modules.impl.combat;
    
    private final BooleanSetting reverseRotate;
    
-   private class_1657 target;
+   private PlayerEntity target;
    
    private int oldSlot;
    
@@ -57,9 +57,9 @@ package shame.nazuna.client.modules.impl.combat;
    private boolean placing;
    
    private boolean use;
-   private final List<class_2338> blocksToPlace;
+   private final List<BlockPos> blocksToPlace;
    private int placeIndex;
-   private class_2338 currentBlock;
+   private BlockPos currentBlock;
    private boolean waitingForRotation;
    private int rotationTicks;
    private float restoreYaw;
@@ -109,15 +109,15 @@ package shame.nazuna.client.modules.impl.combat;
    }
  
    
-   private void rotateToBlock(class_2338 pos) {
-     class_2350 side = getPlaceSide(pos);
+   private void rotateToBlock(BlockPos pos) {
+     Direction side = getPlaceSide(pos);
      if (side == null)
        return; 
-     class_2338 neighbor = pos.method_10093(side);
-     class_2350 opposite = side.method_10153();
-     class_243 hitVec = getHitVec(neighbor, opposite);
+     BlockPos neighbor = pos.method_10093(side);
+     Direction opposite = side.method_10153();
+     Vec3d hitVec = getHitVec(neighbor, opposite);
      
-     class_241 targetRot = RotationUtils.getRotations(hitVec);
+     Vec2f targetRot = RotationUtils.getRotations(hitVec);
      
      RotationStorage.update(new Rotation(targetRot.field_1343, targetRot.field_1342), 360.0F, 360.0F, 360.0F, 360.0F, 5, 1, false);
    }
@@ -127,8 +127,8 @@ package shame.nazuna.client.modules.impl.combat;
  
  
    
-   private class_243 getHitVec(class_2338 neighbor, class_2350 face) {
-     class_243 center = class_243.method_24953((class_2382)neighbor);
+   private Vec3d getHitVec(BlockPos neighbor, Direction face) {
+     Vec3d center = Vec3d.method_24953((Vec3i)neighbor);
      return center.method_1031(face
          .method_10148() * 0.5D, face
          .method_10164() * 0.5D, face
@@ -136,19 +136,19 @@ package shame.nazuna.client.modules.impl.combat;
    }
  
    
-   private boolean isRotatedToBlock(class_2338 pos) {
+   private boolean isRotatedToBlock(BlockPos pos) {
      if (!this.rotation.isState()) return true;
      
-     class_2350 side = getPlaceSide(pos);
+     Direction side = getPlaceSide(pos);
      if (side == null) return false;
      
-     class_2338 neighbor = pos.method_10093(side);
-     class_2350 opposite = side.method_10153();
-     class_243 hitVec = getHitVec(neighbor, opposite);
+     BlockPos neighbor = pos.method_10093(side);
+     Direction opposite = side.method_10153();
+     Vec3d hitVec = getHitVec(neighbor, opposite);
      
-     class_241 targetRot = RotationUtils.getRotations(hitVec);
-     float yawDiff = Math.abs(class_3532.method_15393(targetRot.field_1343 - mc.field_1724.method_36454()));
-     float pitchDiff = Math.abs(class_3532.method_15393(targetRot.field_1342 - mc.field_1724.method_36455()));
+     Vec2f targetRot = RotationUtils.getRotations(hitVec);
+     float yawDiff = Math.abs(MathHelper.method_15393(targetRot.field_1343 - mc.field_1724.method_36454()));
+     float pitchDiff = Math.abs(MathHelper.method_15393(targetRot.field_1342 - mc.field_1724.method_36455()));
      
      return (yawDiff < 5.0F && pitchDiff < 5.0F);
    }
@@ -159,7 +159,7 @@ package shame.nazuna.client.modules.impl.combat;
      this.waitingForRotation = false;
      this.rotationTicks = 0;
      
-     class_2338 targetPos = this.target.method_24515();
+     BlockPos targetPos = this.target.method_24515();
      
      if (this.mode.is("Obsidian")) {
        this.blocksToPlace.add(targetPos.method_10069(1, 0, 0));
@@ -193,7 +193,7 @@ package shame.nazuna.client.modules.impl.combat;
          this.inventorySlot = -1;
        } else {
          this.inventorySlot = slot;
-         mc.field_1761.method_2906(mc.field_1724.field_7512.field_7763, slot, this.oldSlot, class_1713.field_7791, (class_1657)mc.field_1724);
+         mc.field_1761.method_2906(mc.field_1724.field_7512.field_7763, slot, this.oldSlot, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
        } 
      } 
      
@@ -201,7 +201,7 @@ package shame.nazuna.client.modules.impl.combat;
    }
    
    private void processPlacing() {
-     if (this.target != null && (!this.target.method_5805() || AntiBot.checkBot((class_1309)this.target) || mc.field_1724.method_5739((class_1297)this.target) > this.distance.getValue().floatValue())) {
+     if (this.target != null && (!this.target.method_5805() || AntiBot.checkBot((LivingEntity)this.target) || mc.field_1724.method_5739((Entity)this.target) > this.distance.getValue().floatValue())) {
        finishPlacing();
        
        return;
@@ -211,7 +211,7 @@ package shame.nazuna.client.modules.impl.combat;
        
        return;
      } 
-     class_2338 pos = this.blocksToPlace.get(this.placeIndex);
+     BlockPos pos = this.blocksToPlace.get(this.placeIndex);
      this.currentBlock = pos;
      
      if (!mc.field_1687.method_8320(pos).method_45474()) {
@@ -221,7 +221,7 @@ package shame.nazuna.client.modules.impl.combat;
        
        return;
      } 
-     class_2350 side = getPlaceSide(pos);
+     Direction side = getPlaceSide(pos);
      if (side == null) {
        this.placeIndex++;
        this.waitingForRotation = false;
@@ -254,7 +254,7 @@ package shame.nazuna.client.modules.impl.combat;
    private void finishPlacing() {
      if (this.fromInventory.isState()) {
        if (this.inventorySlot != -1) {
-         mc.field_1761.method_2906(mc.field_1724.field_7512.field_7763, this.inventorySlot, this.oldSlot, class_1713.field_7791, (class_1657)mc.field_1724);
+         mc.field_1761.method_2906(mc.field_1724.field_7512.field_7763, this.inventorySlot, this.oldSlot, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
          this.inventorySlot = -1;
        } else if (this.oldSlot != -1) {
          (mc.field_1724.method_31548()).field_7545 = this.oldSlot;
@@ -270,18 +270,18 @@ package shame.nazuna.client.modules.impl.combat;
      this.rotationTicks = 0;
    }
    
-   private class_2350 getPlaceSide(class_2338 pos) {
-     class_2350[] priority = { class_2350.field_11033, class_2350.field_11036, class_2350.field_11043, class_2350.field_11035, class_2350.field_11039, class_2350.field_11034 };
-     for (class_2350 dir : priority) {
-       class_2338 neighbor = pos.method_10093(dir);
-       class_2680 state = mc.field_1687.method_8320(neighbor);
-       if (!state.method_45474() && !state.method_51176() && state.method_26212((class_1922)mc.field_1687, neighbor)) {
+   private Direction getPlaceSide(BlockPos pos) {
+     Direction[] priority = { Direction.field_11033, Direction.field_11036, Direction.field_11043, Direction.field_11035, Direction.field_11039, Direction.field_11034 };
+     for (Direction dir : priority) {
+       BlockPos neighbor = pos.method_10093(dir);
+       BlockState state = mc.field_1687.method_8320(neighbor);
+       if (!state.method_45474() && !state.method_51176() && state.method_26212((BlockView)mc.field_1687, neighbor)) {
          return dir;
        }
      } 
-     for (class_2350 dir : priority) {
-       class_2338 neighbor = pos.method_10093(dir);
-       class_2680 state = mc.field_1687.method_8320(neighbor);
+     for (Direction dir : priority) {
+       BlockPos neighbor = pos.method_10093(dir);
+       BlockState state = mc.field_1687.method_8320(neighbor);
        if (!state.method_45474() && !state.method_51176()) {
          return dir;
        }
@@ -290,21 +290,21 @@ package shame.nazuna.client.modules.impl.combat;
    }
  
    
-   private void placeBlock(class_2338 pos) {
-     class_2350 side = getPlaceSide(pos);
+   private void placeBlock(BlockPos pos) {
+     Direction side = getPlaceSide(pos);
      if (side == null)
        return; 
-     class_2338 neighbor = pos.method_10093(side);
-     class_2350 opposite = side.method_10153();
-     class_243 hitVec = getHitVec(neighbor, opposite);
+     BlockPos neighbor = pos.method_10093(side);
+     Direction opposite = side.method_10153();
+     Vec3d hitVec = getHitVec(neighbor, opposite);
      
-     class_3965 result = new class_3965(hitVec, opposite, neighbor, false);
-     mc.field_1761.method_2896(mc.field_1724, class_1268.field_5808, result);
-     mc.field_1724.method_6104(class_1268.field_5808);
+     BlockHitResult result = new BlockHitResult(hitVec, opposite, neighbor, false);
+     mc.field_1761.method_2896(mc.field_1724, Hand.field_5808, result);
+     mc.field_1724.method_6104(Hand.field_5808);
    }
    
    private int findItemSlot() {
-     class_1792 item = this.mode.is("Obsidian") ? class_1802.field_8281 : class_1802.field_8786;
+     Item item = this.mode.is("Obsidian") ? Items.field_8281 : Items.field_8786;
      for (int i = 0; i < 36; i++) {
        if (mc.field_1724.method_31548().method_5438(i).method_7909() == item) {
          return i;
@@ -313,25 +313,25 @@ package shame.nazuna.client.modules.impl.combat;
      return -1;
    }
    
-   private class_1657 findTarget() {
+   private PlayerEntity findTarget() {
      if (this.targets.is("Себя")) {
-       return (class_1657)mc.field_1724;
+       return (PlayerEntity)mc.field_1724;
      }
      
-     List<class_1657> playerTargets = new ArrayList<>();
-     for (class_1297 entity : mc.field_1687.method_18112()) {
-       if (entity instanceof class_1657) { class_1657 player = (class_1657)entity;
+     List<PlayerEntity> playerTargets = new ArrayList<>();
+     for (Entity entity : mc.field_1687.method_18112()) {
+       if (entity instanceof PlayerEntity) { PlayerEntity player = (PlayerEntity)entity;
          if (player == mc.field_1724 || 
            !player.method_5805() || 
-           AntiBot.checkBot((class_1309)player) || 
+           AntiBot.checkBot((LivingEntity)player) || 
            !this.targets.is("Игроки") || (
-           player.method_6059(class_1294.field_5905) && !this.targets.is("Невидимые")) || 
+           player.method_6059(StatusEffects.field_5905) && !this.targets.is("Невидимые")) || 
            astra.INSTANCE.friendStorage.isFriend(player.method_5477().getString()) || 
-           mc.field_1724.method_5739((class_1297)player) > this.distance.getValue().floatValue())
+           mc.field_1724.method_5739((Entity)player) > this.distance.getValue().floatValue())
            continue;  playerTargets.add(player); }
      
      }  if (playerTargets.isEmpty()) return null; 
-     playerTargets.sort(Comparator.comparingDouble(p -> mc.field_1724.method_5739((class_1297)p)));
+     playerTargets.sort(Comparator.comparingDouble(p -> mc.field_1724.method_5739((Entity)p)));
      return playerTargets.get(0);
    }
  

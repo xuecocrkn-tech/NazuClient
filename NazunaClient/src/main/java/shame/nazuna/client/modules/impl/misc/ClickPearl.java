@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.misc;
- import net.minecraft.class_1268;
- import net.minecraft.class_1657;
- import net.minecraft.class_1802;
+ import net.minecraft.Hand;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.Items;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventBinding;
  import shame.nazuna.api.events.implement.EventUpdate;
@@ -47,7 +47,7 @@ package shame.nazuna.client.modules.impl.misc;
        return;
      } 
      int oldSlot = (mc.field_1724.method_31548()).field_7545;
-     int pearlSlot = InventoryUtils.find(class_1802.field_8634, 0, 36);
+     int pearlSlot = InventoryUtils.find(Items.field_8634, 0, 36);
      
      if (pearlSlot == -1) {
        this.use = false;
@@ -60,10 +60,10 @@ package shame.nazuna.client.modules.impl.misc;
      
      if (this.bypass.isState()) {
        (mc.field_1724.method_31548()).field_7545 = pearlSlot;
-       mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
+       mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
        (mc.field_1724.method_31548()).field_7545 = oldSlot;
      } else {
-       InventoryUtils.swapAndUseHvH(class_1802.field_8634);
+       InventoryUtils.swapAndUseHvH(Items.field_8634);
      } 
      
      this.use = false;

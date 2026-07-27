@@ -3,7 +3,7 @@ package shame.nazuna.api.storages.implement;
  import com.mojang.brigadier.exceptions.CommandSyntaxException;
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_124;
+ import net.minecraft.Formatting;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.events.EventInvoker;
  import shame.nazuna.api.events.EventLink;
@@ -85,7 +85,7 @@ package shame.nazuna.api.storages.implement;
              .getSource());
        }
        catch (CommandSyntaxException ignored) {
-         ChatUtils.sendMessage(String.valueOf(class_124.field_1061) + "Ошибка в использовании макроса " + String.valueOf(class_124.field_1061) + "!");
+         ChatUtils.sendMessage(String.valueOf(Formatting.field_1061) + "Ошибка в использовании макроса " + String.valueOf(Formatting.field_1061) + "!");
        } 
        
        return;

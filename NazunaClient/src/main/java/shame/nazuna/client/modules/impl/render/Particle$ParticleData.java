@@ -1,11 +1,11 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_1922;
- import net.minecraft.class_2338;
- import net.minecraft.class_243;
- import net.minecraft.class_2680;
- import net.minecraft.class_310;
- import net.minecraft.class_3532;
+ import net.minecraft.BlockView;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BlockState;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.MathHelper;
  
  
  
@@ -375,8 +375,8 @@ package shame.nazuna.client.modules.impl.render;
  
  class ParticleData
  {
-   class_243 position;
-   class_243 velocity;
+   Vec3d position;
+   Vec3d velocity;
    int color;
    float size;
    long lifeTime;
@@ -386,7 +386,7 @@ package shame.nazuna.client.modules.impl.render;
    long lastUpdateNs;
    double gravity;
    
-   ParticleData(class_243 position, class_243 velocity, int color, float size, long lifeTime, float smooth, double gravity) {
+   ParticleData(Vec3d position, Vec3d velocity, int color, float size, long lifeTime, float smooth, double gravity) {
      this.position = position;
      this.velocity = velocity;
      this.color = color;
@@ -402,7 +402,7 @@ package shame.nazuna.client.modules.impl.render;
      return (System.currentTimeMillis() - this.birthTime >= this.lifeTime);
    }
    
-   void update(class_310 mc) {
+   void update(MinecraftClient mc) {
      long nowNs = System.nanoTime();
      double deltaSec = (nowNs - this.lastUpdateNs) / 1.0E9D;
      this.lastUpdateNs = nowNs;
@@ -436,28 +436,28 @@ package shame.nazuna.client.modules.impl.render;
        newZ = this.position.field_1350;
      } 
      
-     this.position = new class_243(newX, newY, newZ);
-     this.velocity = new class_243(vx * 0.9999D, vy * 0.9999D - this.gravity, vz * 0.9999D);
+     this.position = new Vec3d(newX, newY, newZ);
+     this.velocity = new Vec3d(vx * 0.9999D, vy * 0.9999D - this.gravity, vz * 0.9999D);
      this.alpha = 1.0F - progress;
    }
    
-   static boolean checkCollision(double x, double y, double z, float size, class_310 mc) {
+   static boolean checkCollision(double x, double y, double z, float size, MinecraftClient mc) {
      if (mc.field_1687 == null) return false; 
      double half = size * 0.5D;
-     int minX = class_3532.method_15357(x - half);
-     int maxX = class_3532.method_15357(x + half);
-     int minY = class_3532.method_15357(y - half);
-     int maxY = class_3532.method_15357(y + half);
-     int minZ = class_3532.method_15357(z - half);
-     int maxZ = class_3532.method_15357(z + half);
+     int minX = MathHelper.method_15357(x - half);
+     int maxX = MathHelper.method_15357(x + half);
+     int minY = MathHelper.method_15357(y - half);
+     int maxY = MathHelper.method_15357(y + half);
+     int minZ = MathHelper.method_15357(z - half);
+     int maxZ = MathHelper.method_15357(z + half);
      
-     class_2338.class_2339 pos = new class_2338.class_2339();
+     BlockPos.class_2339 pos = new BlockPos.class_2339();
      for (int bx = minX; bx <= maxX; bx++) {
        for (int by = minY; by <= maxY; by++) {
          for (int bz = minZ; bz <= maxZ; bz++) {
            pos.method_10103(bx, by, bz);
-           class_2680 state = mc.field_1687.method_8320((class_2338)pos);
-           if (!state.method_26215() && state.method_26212((class_1922)mc.field_1687, (class_2338)pos)) {
+           BlockState state = mc.field_1687.method_8320((BlockPos)pos);
+           if (!state.method_26215() && state.method_26212((BlockView)mc.field_1687, (BlockPos)pos)) {
              return false;
            }
          } 

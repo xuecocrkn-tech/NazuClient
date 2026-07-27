@@ -1,20 +1,20 @@
 package shame.nazuna.api.utils.render.blur;
  
  import com.mojang.blaze3d.systems.RenderSystem;
- import net.minecraft.class_276;
- import net.minecraft.class_284;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_293;
- import net.minecraft.class_5944;
- import net.minecraft.class_6367;
+ import net.minecraft.Framebuffer;
+ import net.minecraft.GlUniform;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.ShaderProgram;
+ import net.minecraft.SimpleFramebuffer;
  import org.lwjgl.opengl.GL30;
  import shame.nazuna.api.utils.render.ShaderUtils;
  
  public class BlurProgram implements QClient {
    private static BlurProgram instance;
    
-   public static class_276 getBuffer2() {
+   public static Framebuffer getBuffer2() {
      return buffer2;
    }
    
@@ -64,8 +64,8 @@ package shame.nazuna.api.utils.render.blur;
        if (buffer2 != null) {
          buffer2.method_1238();
        }
-       buffer1 = (class_276)new class_6367(width, height, false);
-       buffer2 = (class_276)new class_6367(width, height, false);
+       buffer1 = (Framebuffer)new SimpleFramebuffer(width, height, false);
+       buffer2 = (Framebuffer)new SimpleFramebuffer(width, height, false);
        
        setLinearFiltering(buffer1);
        setLinearFiltering(buffer2);
@@ -77,8 +77,8 @@ package shame.nazuna.api.utils.render.blur;
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      
-     class_5944 kawaseDown = mc.method_62887().method_62947(ShaderUtils.kawaseDown);
-     class_5944 kawaseUp = mc.method_62887().method_62947(ShaderUtils.kawaseUp);
+     ShaderProgram kawaseDown = mc.method_62887().method_62947(ShaderUtils.kawaseDown);
+     ShaderProgram kawaseUp = mc.method_62887().method_62947(ShaderUtils.kawaseUp);
      
      buffer1.method_1236(0.0F, 0.0F, 0.0F, 0.0F);
      buffer1.method_1230();
@@ -94,14 +94,14 @@ package shame.nazuna.api.utils.render.blur;
      mc.method_1522().method_1242();
      buffer1.method_1240();
      
-     class_276[] buffers = { buffer1, buffer2 };
+     Framebuffer[] buffers = { buffer1, buffer2 };
      int i;
      for (i = 1; i < 4; i++) {
        int srcIndex = (i + 1) % 2;
        int dstIndex = i % 2;
        
-       class_276 src = buffers[srcIndex];
-       class_276 dst = buffers[dstIndex];
+       Framebuffer src = buffers[srcIndex];
+       Framebuffer dst = buffers[dstIndex];
        
        dst.method_1236(0.0F, 0.0F, 0.0F, 0.0F);
        dst.method_1230();
@@ -122,8 +122,8 @@ package shame.nazuna.api.utils.render.blur;
        int srcIndex = i % 2;
        int dstIndex = (i + 1) % 2;
        
-       class_276 src = buffers[srcIndex];
-       class_276 dst = buffers[dstIndex];
+       Framebuffer src = buffers[srcIndex];
+       Framebuffer dst = buffers[dstIndex];
        
        dst.method_1236(0.0F, 0.0F, 0.0F, 0.0F);
        dst.method_1230();
@@ -145,19 +145,19 @@ package shame.nazuna.api.utils.render.blur;
      RenderSystem.setShaderTexture(0, 0);
    }
    
-   private void setLinearFiltering(class_276 framebuffer) {
+   private void setLinearFiltering(Framebuffer framebuffer) {
      RenderSystem.bindTexture(framebuffer.method_30277());
      GL30.glTexParameteri(3553, 10241, 9729);
      GL30.glTexParameteri(3553, 10240, 9729);
      RenderSystem.bindTexture(0);
    }
    
-   private void setKawaseUniforms(class_5944 shader, int texWidth, int texHeight) {
-     class_284 resolutionUniform = shader.method_34582("Resolution");
-     class_284 offsetUniform = shader.method_34582("Offset");
-     class_284 saturationUniform = shader.method_34582("Saturation");
-     class_284 tintIntensityUniform = shader.method_34582("TintIntensity");
-     class_284 tintColorUniform = shader.method_34582("TintColor");
+   private void setKawaseUniforms(ShaderProgram shader, int texWidth, int texHeight) {
+     GlUniform resolutionUniform = shader.method_34582("Resolution");
+     GlUniform offsetUniform = shader.method_34582("Offset");
+     GlUniform saturationUniform = shader.method_34582("Saturation");
+     GlUniform tintIntensityUniform = shader.method_34582("TintIntensity");
+     GlUniform tintColorUniform = shader.method_34582("TintColor");
      
      if (resolutionUniform != null) resolutionUniform.method_1255(1.0F / texWidth, 1.0F / texHeight); 
      if (offsetUniform != null) offsetUniform.method_1251(this.blurOffset); 
@@ -167,12 +167,12 @@ package shame.nazuna.api.utils.render.blur;
    }
    
    private void drawQuad(float width, float height) {
-     class_287 builder = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder builder = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      builder.method_22912(0.0F, 0.0F, 0.0F).method_22913(0.0F, 1.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      builder.method_22912(0.0F, height, 0.0F).method_22913(0.0F, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      builder.method_22912(width, height, 0.0F).method_22913(1.0F, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      builder.method_22912(width, 0.0F, 0.0F).method_22913(1.0F, 1.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
-     class_286.method_43433(builder.method_60800());
+     BufferRenderer.method_43433(builder.method_60800());
    }
    
    public static int getTexture() {

@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_2596;
- import net.minecraft.class_2743;
+ import net.minecraft.Packet;
+ import net.minecraft.EntityVelocityUpdateS2CPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventPacket;
  import shame.nazuna.api.events.implement.EventUpdate;
@@ -44,7 +44,7 @@ package shame.nazuna.client.modules.impl.combat;
      if (mc.field_1724 == null || mc.field_1687 == null)
        return;  if (event.getType() != EventPacket.Type.RECEIVE)
        return; 
-     class_2596 class_2596 = event.getPacket(); if (class_2596 instanceof class_2743) { class_2743 packet = (class_2743)class_2596;
+     Packet Packet = event.getPacket(); if (Packet instanceof EntityVelocityUpdateS2CPacket) { EntityVelocityUpdateS2CPacket packet = (EntityVelocityUpdateS2CPacket)Packet;
        if (packet.method_11818() != mc.field_1724.method_5628())
          return; 
        if (this.mode.is("Vanilla")) {
@@ -71,7 +71,7 @@ package shame.nazuna.client.modules.impl.combat;
        }  }
  
      
-     if (this.explosions.isState() && event.getPacket() instanceof net.minecraft.class_2664 && (
+     if (this.explosions.isState() && event.getPacket() instanceof net.minecraft.ExplosionS2CPacket && (
        this.mode.is("Vanilla") || this.mode.is("Grim"))) {
        event.cancel();
      }

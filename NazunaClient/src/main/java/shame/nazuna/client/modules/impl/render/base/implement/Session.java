@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render.base.implement;
  
- import net.minecraft.class_642;
+ import net.minecraft.ServerInfo;
  import shame.nazuna.api.events.implement.EventRender;
  import shame.nazuna.api.utils.color.ColorUtils;
  import shame.nazuna.api.utils.draggable.Draggable;
@@ -25,7 +25,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      
      String serverName = "local";
      if (mc != null) {
-       class_642 info = mc.method_1558();
+       ServerInfo info = mc.method_1558();
        if (info != null && info.field_3761 != null && !info.field_3761.isEmpty()) {
          serverName = info.field_3761;
        }

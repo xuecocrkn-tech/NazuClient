@@ -4,17 +4,17 @@ package shame.nazuna.client.modules.impl.render;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_1297;
- import net.minecraft.class_276;
- import net.minecraft.class_284;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_5944;
- import net.minecraft.class_6367;
- import net.minecraft.class_761;
+ import net.minecraft.Entity;
+ import net.minecraft.Framebuffer;
+ import net.minecraft.GlUniform;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.ShaderProgram;
+ import net.minecraft.SimpleFramebuffer;
+ import net.minecraft.WorldRenderer;
  import org.lwjgl.opengl.GL11;
  import org.lwjgl.opengl.GL30;
  import shame.nazuna.api.events.EventLink;
@@ -51,8 +51,8 @@ package shame.nazuna.client.modules.impl.render;
    
    private final BooleanSetting fill = new BooleanSetting("Заливка", false);
    
-   private final List<class_276> bloomBuffers = new ArrayList<>();
-   private class_276 depthCopyBuffer;
+   private final List<Framebuffer> bloomBuffers = new ArrayList<>();
+   private Framebuffer depthCopyBuffer;
    private int bloomWidth = -1;
    private int bloomHeight = -1;
    private boolean outlineReady;
@@ -74,7 +74,7 @@ package shame.nazuna.client.modules.impl.render;
  
    
    public void onDisable() {
-     for (class_276 fb : this.bloomBuffers) {
+     for (Framebuffer fb : this.bloomBuffers) {
        fb.method_1238();
      }
      this.bloomBuffers.clear();
@@ -117,10 +117,10 @@ package shame.nazuna.client.modules.impl.render;
        return;  if (!this.hasOutlineTargetsCached)
        return;  if (!tryEnsureOutlineProcessor())
        return; 
-     class_276 outlineBuffer = getOutlineSourceFramebuffer();
+     Framebuffer outlineBuffer = getOutlineSourceFramebuffer();
      if (outlineBuffer == null || outlineBuffer.method_30277() == 0)
        return; 
-     class_276 mainBuffer = mc.method_1522();
+     Framebuffer mainBuffer = mc.method_1522();
      
      ensureDepthCopyBuffer(mainBuffer.field_1482, mainBuffer.field_1481);
      
@@ -141,7 +141,7 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.colorMask(true, true, true, false);
      
      if (hasFill) {
-       class_5944 fillShader = mc.method_62887().method_62947(ShaderUtils.shaderEspFill);
+       ShaderProgram fillShader = mc.method_62887().method_62947(ShaderUtils.shaderEspFill);
        if (fillShader != null) {
          RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE);
  
@@ -160,7 +160,7 @@ package shame.nazuna.client.modules.impl.render;
      } 
      
      if (hasGlow) {
-       class_5944 glowShader = mc.method_62887().method_62947(ShaderUtils.shaderEspGlow);
+       ShaderProgram glowShader = mc.method_62887().method_62947(ShaderUtils.shaderEspGlow);
        if (glowShader != null) {
          RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE);
  
@@ -190,7 +190,7 @@ package shame.nazuna.client.modules.impl.render;
      mainBuffer.method_1235(true);
    }
    
-   private void drawFullscreenQuadWithDepthTest(class_276 mainBuffer, class_276 outlineBuffer) {
+   private void drawFullscreenQuadWithDepthTest(Framebuffer mainBuffer, Framebuffer outlineBuffer) {
      if (this.depthCopyBuffer == null) {
        drawFullscreenQuad();
        
@@ -244,7 +244,7 @@ package shame.nazuna.client.modules.impl.render;
      } 
      
      if (this.depthCopyBuffer == null) {
-       this.depthCopyBuffer = (class_276)new class_6367(width, height, true);
+       this.depthCopyBuffer = (Framebuffer)new SimpleFramebuffer(width, height, true);
      }
    }
    
@@ -253,7 +253,7 @@ package shame.nazuna.client.modules.impl.render;
        this.outlineReady = false;
        return false;
      } 
-     class_276 outlines = getOutlineSourceFramebuffer();
+     Framebuffer outlines = getOutlineSourceFramebuffer();
      if (outlines != null && outlines.method_30277() != 0) {
        this.outlineReady = true;
        return true;
@@ -279,9 +279,9 @@ package shame.nazuna.client.modules.impl.render;
      } 
    }
    
-   private class_276 getOutlineSourceFramebuffer() {
-     class_761 class_761 = mc.field_1769; if (class_761 instanceof WorldRendererAccessor) { WorldRendererAccessor accessor = (WorldRendererAccessor)class_761;
-       class_276 raw = accessor.astra$getEntityOutlineFramebufferRaw();
+   private Framebuffer getOutlineSourceFramebuffer() {
+     WorldRenderer WorldRenderer = mc.field_1769; if (WorldRenderer instanceof WorldRendererAccessor) { WorldRendererAccessor accessor = (WorldRendererAccessor)WorldRenderer;
+       Framebuffer raw = accessor.astra$getEntityOutlineFramebufferRaw();
        if (raw != null && raw.method_30277() != 0) {
          return raw;
        } }
@@ -289,20 +289,20 @@ package shame.nazuna.client.modules.impl.render;
      return mc.field_1769.method_22990();
    }
    
-   public boolean shouldOutline(class_1297 entity) {
+   public boolean shouldOutline(Entity entity) {
      if (!isEnable() || entity == null || mc.field_1724 == null || mc.field_1687 == null) return false; 
      if (!entity.method_5805()) return false; 
      if (entity.method_31481()) return false; 
      if (entity == mc.field_1724 && !this.targets.is("Себя")) return false; 
-     if (entity.method_5858((class_1297)mc.field_1724) > 65536.0D) return false;
+     if (entity.method_5858((Entity)mc.field_1724) > 65536.0D) return false;
      
-     if (entity instanceof net.minecraft.class_1657) {
+     if (entity instanceof net.minecraft.PlayerEntity) {
        return this.targets.is("Игроки");
      }
-     if (entity instanceof net.minecraft.class_1511) {
+     if (entity instanceof net.minecraft.EndCrystalEntity) {
        return this.targets.is("Кристаллы");
      }
-     if (entity instanceof net.minecraft.class_1542) {
+     if (entity instanceof net.minecraft.ItemEntity) {
        return this.targets.is("Предметы");
      }
      return false;
@@ -312,7 +312,7 @@ package shame.nazuna.client.modules.impl.render;
      if (mc.field_1687 == null || mc.field_1724 == null) {
        return false;
      }
-     for (class_1297 entity : mc.field_1687.method_18112()) {
+     for (Entity entity : mc.field_1687.method_18112()) {
        if (shouldOutline(entity)) {
          return true;
        }
@@ -331,14 +331,14 @@ package shame.nazuna.client.modules.impl.render;
      }
      
      int currentTexture = sourceTexture;
-     class_5944 downShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsKawaseDown);
-     class_5944 upShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsKawaseUp);
+     ShaderProgram downShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsKawaseDown);
+     ShaderProgram upShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsKawaseUp);
      if (downShader == null || upShader == null) {
        return currentTexture;
      }
      int i;
      for (i = 0; i < iterations; i++) {
-       class_276 dst = this.bloomBuffers.get(i);
+       Framebuffer dst = this.bloomBuffers.get(i);
        dst.method_1236(0.0F, 0.0F, 0.0F, 0.0F);
        dst.method_1230();
        dst.method_1235(true);
@@ -351,7 +351,7 @@ package shame.nazuna.client.modules.impl.render;
      } 
      
      for (i = iterations - 1; i >= 1; i--) {
-       class_276 dst = this.bloomBuffers.get(i - 1);
+       Framebuffer dst = this.bloomBuffers.get(i - 1);
        dst.method_1236(0.0F, 0.0F, 0.0F, 0.0F);
        dst.method_1230();
        dst.method_1235(true);
@@ -373,7 +373,7 @@ package shame.nazuna.client.modules.impl.render;
      int h = mc.method_22683().method_4506();
      
      if (this.bloomWidth != w || this.bloomHeight != h) {
-       for (class_276 fb : this.bloomBuffers) {
+       for (Framebuffer fb : this.bloomBuffers) {
          fb.method_1238();
        }
        this.bloomBuffers.clear();
@@ -383,7 +383,7 @@ package shame.nazuna.client.modules.impl.render;
      
      while (this.bloomBuffers.size() > iterations) {
        int last = this.bloomBuffers.size() - 1;
-       ((class_276)this.bloomBuffers.get(last)).method_1238();
+       ((Framebuffer)this.bloomBuffers.get(last)).method_1238();
        this.bloomBuffers.remove(last);
      } 
      
@@ -391,45 +391,45 @@ package shame.nazuna.client.modules.impl.render;
        int tw = Math.max(2, w >> i + 1);
        int th = Math.max(2, h >> i + 1);
        if (i >= this.bloomBuffers.size()) {
-         class_6367 class_6367 = new class_6367(tw, th, false);
-         setLinearFiltering((class_276)class_6367);
-         this.bloomBuffers.add(class_6367);
+         SimpleFramebuffer SimpleFramebuffer = new SimpleFramebuffer(tw, th, false);
+         setLinearFiltering((Framebuffer)SimpleFramebuffer);
+         this.bloomBuffers.add(SimpleFramebuffer);
        }
        else {
          
-         class_276 fb = this.bloomBuffers.get(i);
+         Framebuffer fb = this.bloomBuffers.get(i);
          if (fb.field_1482 != tw || fb.field_1481 != th) {
            fb.method_1238();
-           class_6367 class_6367 = new class_6367(tw, th, false);
-           setLinearFiltering((class_276)class_6367);
-           this.bloomBuffers.set(i, class_6367);
+           SimpleFramebuffer SimpleFramebuffer = new SimpleFramebuffer(tw, th, false);
+           setLinearFiltering((Framebuffer)SimpleFramebuffer);
+           this.bloomBuffers.set(i, SimpleFramebuffer);
          } 
        } 
      } 
    }
-   private void setLinearFiltering(class_276 fb) {
+   private void setLinearFiltering(Framebuffer fb) {
      RenderSystem.bindTexture(fb.method_30277());
      GL11.glTexParameteri(3553, 10241, 9729);
      GL11.glTexParameteri(3553, 10240, 9729);
      RenderSystem.bindTexture(0);
    }
    
-   private void setUniform(class_5944 shader, String name, float value) {
-     class_284 uniform = shader.method_34582(name);
+   private void setUniform(ShaderProgram shader, String name, float value) {
+     GlUniform uniform = shader.method_34582(name);
      if (uniform != null) uniform.method_1251(value); 
    }
    
-   private void setUniform(class_5944 shader, String name, float x, float y) {
-     class_284 uniform = shader.method_34582(name);
+   private void setUniform(ShaderProgram shader, String name, float x, float y) {
+     GlUniform uniform = shader.method_34582(name);
      if (uniform != null) uniform.method_1255(x, y); 
    }
    
-   private void setUniform(class_5944 shader, String name, float x, float y, float z) {
-     class_284 uniform = shader.method_34582(name);
+   private void setUniform(ShaderProgram shader, String name, float x, float y, float z) {
+     GlUniform uniform = shader.method_34582(name);
      if (uniform != null) uniform.method_1249(x, y, z); 
    }
    
-   private void setHandsKawaseUniforms(class_5944 shader, int texWidth, int texHeight, float offset) {
+   private void setHandsKawaseUniforms(ShaderProgram shader, int texWidth, int texHeight, float offset) {
      setUniform(shader, "uSize", Math.max(1, texWidth), Math.max(1, texHeight));
      setUniform(shader, "uOffset", offset, offset);
      setUniform(shader, "uHalfPixel", 0.5F / Math.max(1, texWidth), 0.5F / Math.max(1, texHeight));
@@ -438,12 +438,12 @@ package shame.nazuna.client.modules.impl.render;
    private void drawFullscreenQuad() {
      float width = Math.max(mc.method_22683().method_4486(), 1);
      float height = Math.max(mc.method_22683().method_4502(), 1);
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      buffer.method_22912(0.0F, 0.0F, 0.0F).method_22913(0.0F, 1.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      buffer.method_22912(0.0F, height, 0.0F).method_22913(0.0F, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      buffer.method_22912(width, height, 0.0F).method_22913(1.0F, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      buffer.method_22912(width, 0.0F, 0.0F).method_22913(1.0F, 1.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
  }
 

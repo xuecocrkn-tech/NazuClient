@@ -3,12 +3,12 @@ package shame.nazuna.client.modules.impl.combat;
  import java.util.ArrayList;
  import java.util.Comparator;
  import java.util.List;
- import net.minecraft.class_1297;
- import net.minecraft.class_1802;
- import net.minecraft.class_239;
- import net.minecraft.class_243;
- import net.minecraft.class_3959;
- import net.minecraft.class_3965;
+ import net.minecraft.Entity;
+ import net.minecraft.Items;
+ import net.minecraft.HitResult;
+ import net.minecraft.Vec3d;
+ import net.minecraft.RaycastContext;
+ import net.minecraft.BlockHitResult;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.api.utils.player.InventoryUtils;
@@ -26,10 +26,10 @@ package shame.nazuna.client.modules.impl.combat;
    private static final float MIN_HEIGHT = 4.0F;
    
    private boolean escaping;
-   private class_243 escapePos;
+   private Vec3d escapePos;
    private long escapeStartTime;
    private int returnFireworkTicks = -1;
-   private class_243 lastEscapeDirection;
+   private Vec3d lastEscapeDirection;
    
    public ElytraResolver() {
      super("ElytraResolver", "Отлет на элитрах", Module.ModuleCategory.COMBAT);
@@ -49,7 +49,7 @@ package shame.nazuna.client.modules.impl.combat;
    public void onAuraAttack() {
      if (!isEnable() || mc.field_1724 == null || !mc.field_1724.method_6128())
        return; 
-     class_243 bestPos = calculateSmartEscape(mc.field_1724.method_19538(), this.distance.get());
+     Vec3d bestPos = calculateSmartEscape(mc.field_1724.method_19538(), this.distance.get());
      if (bestPos != null) {
        this.escapePos = bestPos;
        this.escaping = true;
@@ -93,36 +93,36 @@ package shame.nazuna.client.modules.impl.combat;
      return (isEnable() && this.escaping && this.escapePos != null && mc.field_1724 != null && mc.field_1724.method_6128());
    }
    
-   public class_243 getEscapePos() {
+   public Vec3d getEscapePos() {
      return this.escapePos;
    }
    
-   private class_243 calculateSmartEscape(class_243 pPos, float d) {
-     class_243 playerLook = mc.field_1724.method_5720();
-     class_243 playerVelocity = mc.field_1724.method_18798();
+   private Vec3d calculateSmartEscape(Vec3d pPos, float d) {
+     Vec3d playerLook = mc.field_1724.method_5720();
+     Vec3d playerVelocity = mc.field_1724.method_18798();
      
-     class_243[] directions = generateSmartDirections(playerLook, playerVelocity);
+     Vec3d[] directions = generateSmartDirections(playerLook, playerVelocity);
      List<EscapePoint> validPoints = new ArrayList<>();
      
-     for (class_243 dir : directions) {
-       class_243 target = pPos.method_1019(dir.method_1021(d));
+     for (Vec3d dir : directions) {
+       Vec3d target = pPos.method_1019(dir.method_1021(d));
        
        if (target.field_1351 < pPos.field_1351 + 4.0D) {
          continue;
        }
        
-       class_3959 context = new class_3959(pPos, target, class_3959.class_3960.field_17558, class_3959.class_242.field_1348, (class_1297)mc.field_1724);
+       RaycastContext context = new RaycastContext(pPos, target, RaycastContext.class_3960.field_17558, RaycastContext.class_242.field_1348, (Entity)mc.field_1724);
  
  
  
  
  
        
-       class_3965 hit = mc.field_1687.method_17742(context);
+       BlockHitResult hit = mc.field_1687.method_17742(context);
        double actualDistance = d;
-       class_243 finalPos = target;
+       Vec3d finalPos = target;
        
-       if (hit.method_17783() != class_239.class_240.field_1333) {
+       if (hit.method_17783() != HitResult.class_240.field_1333) {
          double hitDist = hit.method_17784().method_1022(pPos);
          if (hitDist > 2.0D) {
            actualDistance = hitDist;
@@ -143,13 +143,13 @@ package shame.nazuna.client.modules.impl.combat;
      return ((EscapePoint)validPoints.get(0)).pos;
    }
    
-   private class_243[] generateSmartDirections(class_243 playerLook, class_243 velocity) {
-     class_243 back = (new class_243(-playerLook.field_1352, 0.0D, -playerLook.field_1350)).method_1029();
-     class_243 right = (new class_243(-playerLook.field_1350, 0.0D, playerLook.field_1352)).method_1029();
-     class_243 left = right.method_1021(-1.0D);
-     class_243 up = new class_243(0.0D, 1.0D, 0.0D);
+   private Vec3d[] generateSmartDirections(Vec3d playerLook, Vec3d velocity) {
+     Vec3d back = (new Vec3d(-playerLook.field_1352, 0.0D, -playerLook.field_1350)).method_1029();
+     Vec3d right = (new Vec3d(-playerLook.field_1350, 0.0D, playerLook.field_1352)).method_1029();
+     Vec3d left = right.method_1021(-1.0D);
+     Vec3d up = new Vec3d(0.0D, 1.0D, 0.0D);
      
-     List<class_243> dirs = new ArrayList<>();
+     List<Vec3d> dirs = new ArrayList<>();
      
      dirs.add(back.method_1019(up).method_1029());
      dirs.add(back.method_1019(right).method_1019(up).method_1029());
@@ -168,20 +168,20 @@ package shame.nazuna.client.modules.impl.combat;
      dirs.add(left.method_1021(0.8D).method_1019(up.method_1021(1.3D)).method_1029());
      
      if (velocity.method_1027() > 0.01D) {
-       class_243 perpendicular = (new class_243(-velocity.field_1350, 0.0D, velocity.field_1352)).method_1029();
+       Vec3d perpendicular = (new Vec3d(-velocity.field_1350, 0.0D, velocity.field_1352)).method_1029();
        dirs.add(perpendicular.method_1019(up).method_1029());
        dirs.add(perpendicular.method_1021(-1.0D).method_1019(up).method_1029());
        dirs.add(perpendicular.method_1019(up.method_1021(1.5D)).method_1029());
        dirs.add(perpendicular.method_1021(-1.0D).method_1019(up.method_1021(1.5D)).method_1029());
      } 
      
-     return dirs.<class_243>toArray(new class_243[0]);
+     return dirs.<Vec3d>toArray(new Vec3d[0]);
    }
    
-   private double calculateEscapeScore(class_243 direction, class_243 playerLook, class_243 velocity, double distance, class_243 finalPos) {
+   private double calculateEscapeScore(Vec3d direction, Vec3d playerLook, Vec3d velocity, double distance, Vec3d finalPos) {
      double score = 0.0D;
      
-     double backwardBonus = -direction.method_1026((new class_243(playerLook.field_1352, 0.0D, playerLook.field_1350)).method_1029());
+     double backwardBonus = -direction.method_1026((new Vec3d(playerLook.field_1352, 0.0D, playerLook.field_1350)).method_1029());
      score += backwardBonus * 30.0D;
      
      score += direction.field_1351 * 25.0D;
@@ -189,8 +189,8 @@ package shame.nazuna.client.modules.impl.combat;
      score += distance * 2.0D;
      
      if (velocity.method_1027() > 0.01D) {
-       class_243 velNorm = velocity.method_1029();
-       double perpendicular = Math.abs(direction.method_1026(new class_243(-velNorm.field_1350, 0.0D, velNorm.field_1352)));
+       Vec3d velNorm = velocity.method_1029();
+       double perpendicular = Math.abs(direction.method_1026(new Vec3d(-velNorm.field_1350, 0.0D, velNorm.field_1352)));
        score += perpendicular * 15.0D;
      } 
      
@@ -211,18 +211,18 @@ package shame.nazuna.client.modules.impl.combat;
    
    private void useFirework() {
      if (mc.field_1724 == null)
-       return;  int slotFirework = InventoryUtils.getItemSlot(class_1802.field_8639);
+       return;  int slotFirework = InventoryUtils.getItemSlot(Items.field_8639);
      if (slotFirework != -1)
-       InventoryUtils.swapAndUseHvH(class_1802.field_8639); 
+       InventoryUtils.swapAndUseHvH(Items.field_8639); 
    }
    
    private static class EscapePoint
    {
-     class_243 pos;
+     Vec3d pos;
      double distance;
      double score;
      
-     EscapePoint(class_243 pos, double distance, double score) {
+     EscapePoint(Vec3d pos, double distance, double score) {
        this.pos = pos;
        this.distance = distance;
        this.score = score;

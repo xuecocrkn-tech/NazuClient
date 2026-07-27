@@ -3,16 +3,16 @@ package shame.nazuna.client.modules.impl.render;
  import java.lang.reflect.Field;
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_1703;
- import net.minecraft.class_1735;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_332;
- import net.minecraft.class_437;
- import net.minecraft.class_4587;
- import net.minecraft.class_465;
- import net.minecraft.class_9288;
- import net.minecraft.class_9334;
+ import net.minecraft.ScreenHandler;
+ import net.minecraft.Slot;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.DrawContext;
+ import net.minecraft.Screen;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.HandledScreen;
+ import net.minecraft.ContainerComponent;
+ import net.minecraft.DataComponentTypes;
  import org.lwjgl.glfw.GLFW;
  import org.lwjgl.opengl.GL11;
  import shame.nazuna.api.utils.color.ColorUtils;
@@ -48,7 +48,7 @@ package shame.nazuna.client.modules.impl.render;
    
    private void initReflection() {
      try {
-       for (Field field : class_465.class.getDeclaredFields()) {
+       for (Field field : HandledScreen.class.getDeclaredFields()) {
          if (field.getType() == int.class) {
            field.setAccessible(true);
            String name = field.getName();
@@ -62,7 +62,7 @@ package shame.nazuna.client.modules.impl.render;
      } catch (Exception exception) {}
    }
    
-   private int getGuiLeft(class_465<?> screen) {
+   private int getGuiLeft(HandledScreen<?> screen) {
      try {
        if (this.guiLeftField != null) {
          return this.guiLeftField.getInt(screen);
@@ -71,7 +71,7 @@ package shame.nazuna.client.modules.impl.render;
      return (mc.method_22683().method_4486() - 176) / 2;
    }
    
-   private int getGuiTop(class_465<?> screen) {
+   private int getGuiTop(HandledScreen<?> screen) {
      try {
        if (this.guiTopField != null) {
          return this.guiTopField.getInt(screen);
@@ -79,33 +79,33 @@ package shame.nazuna.client.modules.impl.render;
      } catch (Exception exception) {}
      return (mc.method_22683().method_4502() - 166) / 2;
    }
-   public void renderFromMixin(class_332 context, int mouseX, int mouseY) {
-     class_465<?> handledScreen;
+   public void renderFromMixin(DrawContext context, int mouseX, int mouseY) {
+     HandledScreen<?> handledScreen;
      if (!isEnable())
        return;  if (mc == null || mc.field_1724 == null || mc.field_1755 == null)
        return; 
-     class_437 class_437 = mc.field_1755; if (class_437 instanceof class_465) { handledScreen = (class_465)class_437; }
+     Screen Screen = mc.field_1755; if (Screen instanceof HandledScreen) { handledScreen = (HandledScreen)Screen; }
      else { return; }
       long handle = mc.method_22683().method_4490();
      boolean isCtrlPressed = (GLFW.glfwGetKey(handle, 341) == 1);
      
      if (!isCtrlPressed)
        return; 
-     class_1735 hoveredSlot = getHoveredSlot(handledScreen);
+     Slot hoveredSlot = getHoveredSlot(handledScreen);
      if (hoveredSlot == null)
        return; 
-     class_1799 stack = hoveredSlot.method_7677();
+     ItemStack stack = hoveredSlot.method_7677();
      if (!isShulkerBox(stack))
        return; 
-     class_9288 container = (class_9288)stack.method_57824(class_9334.field_49622);
+     ContainerComponent container = (ContainerComponent)stack.method_57824(DataComponentTypes.field_49622);
      if (container == null)
        return; 
      renderShulkerPreview(context, stack, container, mouseX, mouseY);
    }
    
-   private class_1735 getHoveredSlot(class_465<?> screen) {
+   private Slot getHoveredSlot(HandledScreen<?> screen) {
      try {
-       class_1703 handler = screen.method_17577();
+       ScreenHandler handler = screen.method_17577();
        if (handler == null || handler.field_7761 == null) return null;
        
        double mouseX = mc.field_1729.method_1603() * mc.method_22683().method_4486() / mc.method_22683().method_4480();
@@ -114,7 +114,7 @@ package shame.nazuna.client.modules.impl.render;
        int guiLeft = getGuiLeft(screen);
        int guiTop = getGuiTop(screen);
        
-       for (class_1735 slot : handler.field_7761) {
+       for (Slot slot : handler.field_7761) {
          int slotX = guiLeft + slot.field_7873;
          int slotY = guiTop + slot.field_7872;
          
@@ -126,50 +126,50 @@ package shame.nazuna.client.modules.impl.render;
      return null;
    }
    
-   private boolean isShulkerBox(class_1799 stack) {
+   private boolean isShulkerBox(ItemStack stack) {
      if (stack == null || stack.method_7960()) return false; 
-     return (stack.method_7909() == class_1802.field_8545 || stack
-       .method_7909() == class_1802.field_8722 || stack
-       .method_7909() == class_1802.field_8380 || stack
-       .method_7909() == class_1802.field_8050 || stack
-       .method_7909() == class_1802.field_8829 || stack
-       .method_7909() == class_1802.field_8271 || stack
-       .method_7909() == class_1802.field_8548 || stack
-       .method_7909() == class_1802.field_8520 || stack
-       .method_7909() == class_1802.field_8627 || stack
-       .method_7909() == class_1802.field_8451 || stack
-       .method_7909() == class_1802.field_8213 || stack
-       .method_7909() == class_1802.field_8816 || stack
-       .method_7909() == class_1802.field_8350 || stack
-       .method_7909() == class_1802.field_8584 || stack
-       .method_7909() == class_1802.field_8461 || stack
-       .method_7909() == class_1802.field_8676 || stack
-       .method_7909() == class_1802.field_8268);
+     return (stack.method_7909() == Items.field_8545 || stack
+       .method_7909() == Items.field_8722 || stack
+       .method_7909() == Items.field_8380 || stack
+       .method_7909() == Items.field_8050 || stack
+       .method_7909() == Items.field_8829 || stack
+       .method_7909() == Items.field_8271 || stack
+       .method_7909() == Items.field_8548 || stack
+       .method_7909() == Items.field_8520 || stack
+       .method_7909() == Items.field_8627 || stack
+       .method_7909() == Items.field_8451 || stack
+       .method_7909() == Items.field_8213 || stack
+       .method_7909() == Items.field_8816 || stack
+       .method_7909() == Items.field_8350 || stack
+       .method_7909() == Items.field_8584 || stack
+       .method_7909() == Items.field_8461 || stack
+       .method_7909() == Items.field_8676 || stack
+       .method_7909() == Items.field_8268);
    }
    
-   private int getShulkerColor(class_1799 stack) {
-     if (stack.method_7909() == class_1802.field_8545) return -6394435; 
-     if (stack.method_7909() == class_1802.field_8722) return -1; 
-     if (stack.method_7909() == class_1802.field_8380) return -425955; 
-     if (stack.method_7909() == class_1802.field_8050) return -3715395; 
-     if (stack.method_7909() == class_1802.field_8829) return -12930086; 
-     if (stack.method_7909() == class_1802.field_8271) return -75715; 
-     if (stack.method_7909() == class_1802.field_8548) return -8337633; 
-     if (stack.method_7909() == class_1802.field_8520) return -816214; 
-     if (stack.method_7909() == class_1802.field_8627) return -12103854; 
-     if (stack.method_7909() == class_1802.field_8451) return -6447721; 
-     if (stack.method_7909() == class_1802.field_8213) return -15295332; 
-     if (stack.method_7909() == class_1802.field_8816) return -7785800; 
-     if (stack.method_7909() == class_1802.field_8350) return -12827478; 
-     if (stack.method_7909() == class_1802.field_8584) return -8170446; 
-     if (stack.method_7909() == class_1802.field_8461) return -10585066; 
-     if (stack.method_7909() == class_1802.field_8676) return -5231066; 
-     if (stack.method_7909() == class_1802.field_8268) return -14869215; 
+   private int getShulkerColor(ItemStack stack) {
+     if (stack.method_7909() == Items.field_8545) return -6394435; 
+     if (stack.method_7909() == Items.field_8722) return -1; 
+     if (stack.method_7909() == Items.field_8380) return -425955; 
+     if (stack.method_7909() == Items.field_8050) return -3715395; 
+     if (stack.method_7909() == Items.field_8829) return -12930086; 
+     if (stack.method_7909() == Items.field_8271) return -75715; 
+     if (stack.method_7909() == Items.field_8548) return -8337633; 
+     if (stack.method_7909() == Items.field_8520) return -816214; 
+     if (stack.method_7909() == Items.field_8627) return -12103854; 
+     if (stack.method_7909() == Items.field_8451) return -6447721; 
+     if (stack.method_7909() == Items.field_8213) return -15295332; 
+     if (stack.method_7909() == Items.field_8816) return -7785800; 
+     if (stack.method_7909() == Items.field_8350) return -12827478; 
+     if (stack.method_7909() == Items.field_8584) return -8170446; 
+     if (stack.method_7909() == Items.field_8461) return -10585066; 
+     if (stack.method_7909() == Items.field_8676) return -5231066; 
+     if (stack.method_7909() == Items.field_8268) return -14869215; 
      return -6394435;
    }
    
-   private void renderShulkerPreview(class_332 context, class_1799 shulkerItem, class_9288 container, float mouseX, float mouseY) {
-     class_4587 matrices = context.method_51448();
+   private void renderShulkerPreview(DrawContext context, ItemStack shulkerItem, ContainerComponent container, float mouseX, float mouseY) {
+     MatrixStack matrices = context.method_51448();
      int screenWidth = context.method_51421();
      int screenHeight = context.method_51443();
      
@@ -235,7 +235,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
      
-     List<class_1799> items = new ArrayList<>();
+     List<ItemStack> items = new ArrayList<>();
      Objects.requireNonNull(items); container.method_57489().forEach(items::add);
      
      for (int i = 0; i < 27; i++) {
@@ -253,7 +253,7 @@ package shame.nazuna.client.modules.impl.render;
        context.method_25294(slotX + 18 - 3, slotY, slotX + 18 - 2, slotY + 18 - 2, -1);
        
        if (i < items.size()) {
-         class_1799 itemStack = items.get(i);
+         ItemStack itemStack = items.get(i);
          if (!itemStack.method_7960()) {
            context.method_51427(itemStack, slotX, slotY);
            context.method_51431(mc.field_1772, itemStack, slotX, slotY);

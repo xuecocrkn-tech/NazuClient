@@ -1,25 +1,25 @@
 package shame.nazuna.api.utils.render.glow;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.awt.Color;
- import net.minecraft.class_10366;
- import net.minecraft.class_276;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_293;
- import net.minecraft.class_310;
- import net.minecraft.class_4587;
- import net.minecraft.class_6367;
+ import net.minecraft.ProjectionType;
+ import net.minecraft.Framebuffer;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.SimpleFramebuffer;
  import org.joml.Matrix4f;
  import org.joml.Matrix4fc;
  import org.lwjgl.opengl.GL11;
  import org.lwjgl.opengl.GL30;
  
  public class GlowProgram {
-   private static final class_310 mc = class_310.method_1551();
+   private static final MinecraftClient mc = MinecraftClient.method_1551();
    
    private static GlowProgram instance;
-   private class_276 glowBuffer;
+   private Framebuffer glowBuffer;
    private int lastWidth;
    private int lastHeight;
    private float glowRadius = 10.0F;
@@ -48,7 +48,7 @@ package shame.nazuna.api.utils.render.glow;
        if (this.glowBuffer != null) {
          this.glowBuffer.method_1238();
        }
-       this.glowBuffer = (class_276)new class_6367(width, height, false);
+       this.glowBuffer = (Framebuffer)new SimpleFramebuffer(width, height, false);
        this.lastWidth = width;
        this.lastHeight = height;
      } 
@@ -72,13 +72,13 @@ package shame.nazuna.api.utils.render.glow;
      GL11.glViewport(0, 0, this.lastWidth, this.lastHeight);
      RenderSystem.clearColor(0.0F, 0.0F, 0.0F, 0.0F);
      RenderSystem.clear(16384);
-     RenderSystem.setProjectionMatrix(this.savedProjection, class_10366.field_54954);
+     RenderSystem.setProjectionMatrix(this.savedProjection, ProjectionType.field_54954);
    }
    
-   public void end(class_4587 matrices, GlowCallback contentCallback) {
+   public void end(MatrixStack matrices, GlowCallback contentCallback) {
      GL30.glBindFramebuffer(36160, this.savedFbo);
      GL11.glViewport(0, 0, mc.method_22683().method_4489(), mc.method_22683().method_4506());
-     RenderSystem.setProjectionMatrix(this.savedProjection, class_10366.field_54954);
+     RenderSystem.setProjectionMatrix(this.savedProjection, ProjectionType.field_54954);
      
      renderGlow(matrices);
      
@@ -91,7 +91,7 @@ package shame.nazuna.api.utils.render.glow;
      return (float)Math.exp((-(x * x) / 2.0F * sigma * sigma));
    }
    
-   private void renderGlow(class_4587 matrices) {
+   private void renderGlow(MatrixStack matrices) {
      RenderSystem.enableBlend();
      RenderSystem.blendFunc(770, 1);
      RenderSystem.disableDepthTest();
@@ -100,7 +100,7 @@ package shame.nazuna.api.utils.render.glow;
      int height = mc.method_22683().method_4502();
      
      RenderSystem.setShaderTexture(0, this.glowBuffer.method_30277());
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      
      GL11.glTexParameteri(3553, 10241, 9729);
      GL11.glTexParameteri(3553, 10240, 9729);
@@ -130,7 +130,7 @@ package shame.nazuna.api.utils.render.glow;
      }
  
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
  
  
  
@@ -176,7 +176,7 @@ package shame.nazuna.api.utils.render.glow;
          } 
        } 
      } 
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
  
      
      GL11.glTexParameteri(3553, 10241, 9728);
@@ -188,11 +188,11 @@ package shame.nazuna.api.utils.render.glow;
      RenderSystem.disableBlend();
    }
    
-   public static void startGlow(float radius, int color, GlowCallback callback, class_4587 matrices) {
+   public static void startGlow(float radius, int color, GlowCallback callback, MatrixStack matrices) {
      startGlow(radius, 1.0F, color, callback, matrices);
    }
    
-   public static void startGlow(float radius, float intensity, int color, GlowCallback callback, class_4587 matrices) {
+   public static void startGlow(float radius, float intensity, int color, GlowCallback callback, MatrixStack matrices) {
      int a = color >> 24 & 0xFF;
      int r = color >> 16 & 0xFF;
      int g = color >> 8 & 0xFF;

@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_1297;
- import net.minecraft.class_243;
+ import net.minecraft.Entity;
+ import net.minecraft.Vec3d;
  
  
  
@@ -354,8 +354,8 @@ package shame.nazuna.client.modules.impl.render;
  final class EntityHit
    extends Record
  {
-   private final class_1297 entity;
-   private final class_243 hitPos;
+   private final Entity entity;
+   private final Vec3d hitPos;
    
    public final String toString() {
      // Byte code:
@@ -398,8 +398,8 @@ package shame.nazuna.client.modules.impl.render;
      //   0	8	1	o	Ljava/lang/Object;
    }
    
-   private EntityHit(class_1297 entity, class_243 hitPos) {
-     this.entity = entity; this.hitPos = hitPos; } public class_1297 entity() { return this.entity; } public class_243 hitPos() { return this.hitPos; }
+   private EntityHit(Entity entity, Vec3d hitPos) {
+     this.entity = entity; this.hitPos = hitPos; } public Entity entity() { return this.entity; } public Vec3d hitPos() { return this.hitPos; }
  
  }
 

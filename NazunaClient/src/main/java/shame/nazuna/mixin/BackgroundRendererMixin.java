@@ -1,9 +1,9 @@
 package shame.nazuna.mixin;
- import net.minecraft.class_1297;
- import net.minecraft.class_4184;
- import net.minecraft.class_6854;
- import net.minecraft.class_758;
- import net.minecraft.class_9958;
+ import net.minecraft.Entity;
+ import net.minecraft.Camera;
+ import net.minecraft.FogShape;
+ import net.minecraft.BackgroundRenderer;
+ import net.minecraft.Fog;
  import org.joml.Vector4f;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
@@ -14,10 +14,10 @@ package shame.nazuna.mixin;
  import shame.nazuna.client.modules.impl.render.Removals;
  import shame.nazuna.client.modules.impl.render.WorldTweaks;
  
- @Mixin({class_758.class})
+ @Mixin({BackgroundRenderer.class})
  public class BackgroundRendererMixin {
    @Inject(method = {"method_42588"}, at = {@At("HEAD")}, cancellable = true)
-   private static void astra$getFogModifier(class_1297 entity, float tickDelta, CallbackInfoReturnable<Object> cir) {
+   private static void astra$getFogModifier(Entity entity, float tickDelta, CallbackInfoReturnable<Object> cir) {
      if (ModuleClass.INSTANCE == null)
        return; 
      Removals removals = ModuleClass.removals;
@@ -35,7 +35,7 @@ package shame.nazuna.mixin;
  
    
    @Inject(method = {"method_3211"}, at = {@At("RETURN")}, cancellable = true)
-   private static void astra$applyFog(class_4184 camera, class_758.class_4596 fogType, Vector4f color, float viewDistance, boolean thickenFog, float tickDelta, CallbackInfoReturnable<class_9958> cir) {
+   private static void astra$applyFog(Camera camera, BackgroundRenderer.class_4596 fogType, Vector4f color, float viewDistance, boolean thickenFog, float tickDelta, CallbackInfoReturnable<Fog> cir) {
      if (ModuleClass.INSTANCE == null)
        return; 
      WorldTweaks tweaks = ModuleClass.worldTweaks;
@@ -46,7 +46,7 @@ package shame.nazuna.mixin;
      float fogStart = Math.max(0.0F, fogEnd * 0.05F);
      int color1 = tweaks.getFogColor();
      
-     cir.setReturnValue(new class_9958(fogStart, fogEnd, class_6854.field_36350, 
+     cir.setReturnValue(new Fog(fogStart, fogEnd, FogShape.field_36350, 
  
  
            

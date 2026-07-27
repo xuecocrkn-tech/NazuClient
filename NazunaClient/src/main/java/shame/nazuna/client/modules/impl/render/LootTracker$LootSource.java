@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_2338;
+ import net.minecraft.BlockPos;
  
  
  
@@ -273,7 +273,7 @@ package shame.nazuna.client.modules.impl.render;
  final class LootSource
    extends Record
  {
-   private final class_2338 pos;
+   private final BlockPos pos;
    private final LootTracker.LootType type;
    private final boolean isLooted;
    
@@ -318,8 +318,8 @@ package shame.nazuna.client.modules.impl.render;
      //   0	8	1	o	Ljava/lang/Object;
    }
    
-   private LootSource(class_2338 pos, LootTracker.LootType type, boolean isLooted) {
-     this.pos = pos; this.type = type; this.isLooted = isLooted; } public class_2338 pos() { return this.pos; } public LootTracker.LootType type() { return this.type; } public boolean isLooted() { return this.isLooted; }
+   private LootSource(BlockPos pos, LootTracker.LootType type, boolean isLooted) {
+     this.pos = pos; this.type = type; this.isLooted = isLooted; } public BlockPos pos() { return this.pos; } public LootTracker.LootType type() { return this.type; } public boolean isLooted() { return this.isLooted; }
  
  }
 

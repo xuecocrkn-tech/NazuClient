@@ -1,8 +1,8 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_1309;
- import net.minecraft.class_1657;
- import net.minecraft.class_1764;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.CrossbowItem;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -35,20 +35,20 @@ package shame.nazuna.client.modules.impl.combat;
      if (mc.field_1724 == null || mc.field_1687 == null)
        return; 
      if (this.items.is("Лук") && 
-       mc.field_1724.method_6047().method_7909() instanceof net.minecraft.class_1753 && mc.field_1724.method_6115() && mc.field_1724.method_6048() >= this.tickBow.getValue().floatValue()) {
-       mc.field_1761.method_2897((class_1657)mc.field_1724);
+       mc.field_1724.method_6047().method_7909() instanceof net.minecraft.BowItem && mc.field_1724.method_6115() && mc.field_1724.method_6048() >= this.tickBow.getValue().floatValue()) {
+       mc.field_1761.method_2897((PlayerEntity)mc.field_1724);
      }
  
      
      if (this.items.is("Трезубец") && 
-       mc.field_1724.method_6047().method_7909() instanceof net.minecraft.class_1835 && mc.field_1724.method_6115() && mc.field_1724.method_6048() >= 10) {
-       mc.field_1761.method_2897((class_1657)mc.field_1724);
+       mc.field_1724.method_6047().method_7909() instanceof net.minecraft.TridentItem && mc.field_1724.method_6115() && mc.field_1724.method_6048() >= 10) {
+       mc.field_1761.method_2897((PlayerEntity)mc.field_1724);
      }
  
      
      if (this.items.is("Арбалет") && 
-       mc.field_1724.method_6047().method_7909() instanceof class_1764 && mc.field_1724.method_6115() && mc.field_1724.method_6048() >= class_1764.method_7775(mc.field_1724.method_6047(), (class_1309)mc.field_1724))
-       mc.field_1761.method_2897((class_1657)mc.field_1724); 
+       mc.field_1724.method_6047().method_7909() instanceof CrossbowItem && mc.field_1724.method_6115() && mc.field_1724.method_6048() >= CrossbowItem.method_7775(mc.field_1724.method_6047(), (LivingEntity)mc.field_1724))
+       mc.field_1761.method_2897((PlayerEntity)mc.field_1724); 
    }
  }
 

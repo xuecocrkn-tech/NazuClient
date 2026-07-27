@@ -5,7 +5,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  import java.util.List;
  import java.util.Map;
  import java.util.Set;
- import net.minecraft.class_4587;
+ import net.minecraft.MatrixStack;
  import shame.nazuna.api.events.implement.EventRender;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.api.utils.animation.AnimationUtils;
@@ -81,7 +81,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      this.lastRenderTime = currentTime;
      
      List<NotificationManager.Entry> entries = NotificationManager.getActive();
-     boolean isChatOpen = mc.field_1755 instanceof net.minecraft.class_408;
+     boolean isChatOpen = mc.field_1755 instanceof net.minecraft.ChatScreen;
      
      boolean shouldRender = (!entries.isEmpty() || isChatOpen);
      
@@ -138,7 +138,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        
        float cx = x + previewWidth * 0.5F;
        float cy = renderY + height * 0.5F;
-       class_4587 ms = eventRender.getContext().method_51448();
+       MatrixStack ms = eventRender.getContext().method_51448();
        ms.method_22903();
        ms.method_46416(cx, cy, 0.0F);
        ms.method_22905(scale, scale, 1.0F);
@@ -206,7 +206,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        
        float cx = x + width * 0.5F;
        float cy = renderY + height * 0.5F;
-       class_4587 ms = eventRender.getContext().method_51448();
+       MatrixStack ms = eventRender.getContext().method_51448();
        ms.method_22903();
        ms.method_46416(cx, cy, 0.0F);
        ms.method_22905(scale, scale, 1.0F);
@@ -330,7 +330,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        
        float cx = x + width * 0.5F;
        float cy = y + height * 0.5F;
-       class_4587 ms = eventRender.getContext().method_51448();
+       MatrixStack ms = eventRender.getContext().method_51448();
        ms.method_22903();
        ms.method_46416(cx, cy, 0.0F);
        ms.method_22905(scale, scale, 1.0F);

@@ -3,13 +3,13 @@ package shame.nazuna.client.modules.impl.render;
  import java.util.HashMap;
  import java.util.List;
  import java.util.Map;
- import net.minecraft.class_1297;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_1935;
- import net.minecraft.class_243;
- import net.minecraft.class_3532;
- import net.minecraft.class_4587;
+ import net.minecraft.Entity;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.ItemConvertible;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MathHelper;
+ import net.minecraft.MatrixStack;
  import org.joml.Matrix4f;
  import org.joml.Matrix4fc;
  import org.joml.Quaternionf;
@@ -34,7 +34,7 @@ package shame.nazuna.client.modules.impl.render;
    
    private final Matrix4f lastProjectionMatrix = new Matrix4f();
    private final Quaternionf lastCameraRotation = new Quaternionf();
-   private class_243 lastCameraPos = class_243.field_1353;
+   private Vec3d lastCameraPos = Vec3d.field_1353;
    private float lastTickDelta;
    private final Map<Integer, FireworkData> fireworks = new HashMap<>();
    
@@ -61,21 +61,21 @@ package shame.nazuna.client.modules.impl.render;
      long currentTime = System.currentTimeMillis();
      
      this.fireworks.entrySet().removeIf(entry -> {
-           class_1297 entity = mc.field_1687.method_8469(((Integer)entry.getKey()).intValue());
+           Entity entity = mc.field_1687.method_8469(((Integer)entry.getKey()).intValue());
            boolean isDead = (entity == null || !entity.method_5805());
            ((FireworkData)entry.getValue()).points.removeIf(());
            return (isDead && ((FireworkData)entry.getValue()).points.isEmpty());
          });
      
-     for (class_1297 entity : mc.field_1687.method_18112()) {
-       if (entity instanceof net.minecraft.class_1671 && entity.method_5805()) {
+     for (Entity entity : mc.field_1687.method_18112()) {
+       if (entity instanceof net.minecraft.FireworkRocketEntity && entity.method_5805()) {
          FireworkData data = this.fireworks.computeIfAbsent(Integer.valueOf(entity.method_5628()), k -> new FireworkData());
          
          if ((float)(currentTime - data.lastSpawnTime) >= this.interval.get()) {
  
  
            
-           class_243 pos = new class_243(class_3532.method_16436(this.lastTickDelta, entity.field_6038, entity.method_23317()), class_3532.method_16436(this.lastTickDelta, entity.field_5971, entity.method_23318()) + 0.5D, class_3532.method_16436(this.lastTickDelta, entity.field_5989, entity.method_23321()));
+           Vec3d pos = new Vec3d(MathHelper.method_16436(this.lastTickDelta, entity.field_6038, entity.method_23317()), MathHelper.method_16436(this.lastTickDelta, entity.field_5971, entity.method_23318()) + 0.5D, MathHelper.method_16436(this.lastTickDelta, entity.field_5989, entity.method_23321()));
            
            float ageInSeconds = entity.field_6012 / 20.0F;
            data.points.add(new TrailPoint(pos, currentTime, ageInSeconds));
@@ -89,8 +89,8 @@ package shame.nazuna.client.modules.impl.render;
    public void onRender2D(EventRender.Default event) {
      if (mc.field_1724 == null || mc.field_1687 == null)
        return; 
-     class_4587 matrices = event.getContext().method_51448();
-     class_1799 icon = new class_1799((class_1935)class_1802.field_8639);
+     MatrixStack matrices = event.getContext().method_51448();
+     ItemStack icon = new ItemStack((ItemConvertible)Items.field_8639);
      Font font = Fonts.getFont("sf_regular", 14);
      long currentTime = System.currentTimeMillis();
      
@@ -98,24 +98,24 @@ package shame.nazuna.client.modules.impl.render;
        FireworkData data = entry.getValue();
        
        for (TrailPoint p : data.points) {
-         class_243 screen = worldToScreen(p.pos);
+         Vec3d screen = worldToScreen(p.pos);
          if (screen == null)
            continue; 
          float progress = 1.0F - (float)(currentTime - p.timestamp) / this.lifetime.get();
-         progress = class_3532.method_15363(progress, 0.0F, 1.0F);
+         progress = MathHelper.method_15363(progress, 0.0F, 1.0F);
          String text = String.format("%.1fs", new Object[] { Float.valueOf(p.ageSec) });
          
          renderIconRect(event, matrices, font, icon, screen, progress, text);
        } 
        
-       class_1297 entity = mc.field_1687.method_8469(((Integer)entry.getKey()).intValue());
-       if (entity instanceof net.minecraft.class_1671 && entity.method_5805()) {
+       Entity entity = mc.field_1687.method_8469(((Integer)entry.getKey()).intValue());
+       if (entity instanceof net.minecraft.FireworkRocketEntity && entity.method_5805()) {
  
  
          
-         class_243 currentPos = new class_243(class_3532.method_16436(this.lastTickDelta, entity.field_6038, entity.method_23317()), class_3532.method_16436(this.lastTickDelta, entity.field_5971, entity.method_23318()) + 0.5D, class_3532.method_16436(this.lastTickDelta, entity.field_5989, entity.method_23321()));
+         Vec3d currentPos = new Vec3d(MathHelper.method_16436(this.lastTickDelta, entity.field_6038, entity.method_23317()), MathHelper.method_16436(this.lastTickDelta, entity.field_5971, entity.method_23318()) + 0.5D, MathHelper.method_16436(this.lastTickDelta, entity.field_5989, entity.method_23321()));
          
-         class_243 screen = worldToScreen(currentPos);
+         Vec3d screen = worldToScreen(currentPos);
          if (screen != null) {
            String text = String.format("%.1fs", new Object[] { Float.valueOf(entity.field_6012 / 20.0F) });
            renderIconRect(event, matrices, font, icon, screen, 1.0F, text);
@@ -124,7 +124,7 @@ package shame.nazuna.client.modules.impl.render;
      } 
    }
    
-   private void renderIconRect(EventRender.Default event, class_4587 matrices, Font font, class_1799 icon, class_243 screen, float progress, String text) {
+   private void renderIconRect(EventRender.Default event, MatrixStack matrices, Font font, ItemStack icon, Vec3d screen, float progress, String text) {
      float iconScale = 0.6F;
      float rectHeight = 12.0F;
      float padding = 2.5F;
@@ -165,7 +165,7 @@ package shame.nazuna.client.modules.impl.render;
      matrices.method_22909();
    }
    
-   private class_243 worldToScreen(class_243 worldPos) {
+   private Vec3d worldToScreen(Vec3d worldPos) {
      Vector3f relative = new Vector3f((float)(worldPos.field_1352 - this.lastCameraPos.field_1352), (float)(worldPos.field_1351 - this.lastCameraPos.field_1351), (float)(worldPos.field_1350 - this.lastCameraPos.field_1350));
  
  
@@ -191,7 +191,7 @@ package shame.nazuna.client.modules.impl.render;
        return null;
      }
      
-     return new class_243(screenX, screenY, ndcZ);
+     return new Vec3d(screenX, screenY, ndcZ);
    }
    
    private static class FireworkData {
@@ -200,11 +200,11 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private static class TrailPoint {
-     final class_243 pos;
+     final Vec3d pos;
      final long timestamp;
      final float ageSec;
      
-     TrailPoint(class_243 pos, long timestamp, float ageSec) {
+     TrailPoint(Vec3d pos, long timestamp, float ageSec) {
        this.pos = pos;
        this.timestamp = timestamp;
        this.ageSec = ageSec;

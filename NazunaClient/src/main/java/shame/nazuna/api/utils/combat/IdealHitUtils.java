@@ -1,16 +1,16 @@
 package shame.nazuna.api.utils.combat;
- import net.minecraft.class_1294;
- import net.minecraft.class_1309;
- import net.minecraft.class_1802;
- import net.minecraft.class_1922;
- import net.minecraft.class_2246;
- import net.minecraft.class_2248;
- import net.minecraft.class_2338;
- import net.minecraft.class_2374;
- import net.minecraft.class_238;
- import net.minecraft.class_243;
- import net.minecraft.class_2680;
- import net.minecraft.class_3532;
+ import net.minecraft.StatusEffects;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Items;
+ import net.minecraft.BlockView;
+ import net.minecraft.Blocks;
+ import net.minecraft.Block;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Position;
+ import net.minecraft.Box;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BlockState;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  
@@ -24,26 +24,26 @@ package shame.nazuna.api.utils.combat;
    private static int lastWaterCritIntentAge = Integer.MIN_VALUE;
    
    public static float getAICooldown() {
-     if (mc.field_1724.method_6047().method_7909() == class_1802.field_8162) return 0.9F;
+     if (mc.field_1724.method_6047().method_7909() == Items.field_8162) return 0.9F;
      
-     if (mc.field_1724.method_6047().method_7909() instanceof net.minecraft.class_1743 || mc.field_1724.method_6047().method_7909() instanceof net.minecraft.class_1821)
+     if (mc.field_1724.method_6047().method_7909() instanceof net.minecraft.AxeItem || mc.field_1724.method_6047().method_7909() instanceof net.minecraft.ShovelItem)
        return 0.95F; 
      return 0.93F;
    }
    
    public static boolean canAIFall() {
-     class_2338 posWater = class_2338.method_49638((class_2374)mc.field_1724.method_19538().method_1031(0.0D, -0.4000000059604645D, 0.0D));
-     if (mc.field_1687.method_8320(posWater).method_27852(class_2246.field_10382)) return true; 
-     return ((getBlock(0.0D, 3.0D, 0.0D) == class_2246.field_10124 && getBlock(0.0D, 2.0D, 0.0D) == class_2246.field_10124 && getBlock(0.0D, 1.0D, 0.0D) == class_2246.field_10124) || mc.field_1724.field_6017 < (
-       (getBlock(0.0D, 2.0D, 0.0D) != class_2246.field_10124) ? 0.08F : 0.6F) || mc.field_1724.field_6017 > 1.2F);
+     BlockPos posWater = BlockPos.method_49638((Position)mc.field_1724.method_19538().method_1031(0.0D, -0.4000000059604645D, 0.0D));
+     if (mc.field_1687.method_8320(posWater).method_27852(Blocks.field_10382)) return true; 
+     return ((getBlock(0.0D, 3.0D, 0.0D) == Blocks.field_10124 && getBlock(0.0D, 2.0D, 0.0D) == Blocks.field_10124 && getBlock(0.0D, 1.0D, 0.0D) == Blocks.field_10124) || mc.field_1724.field_6017 < (
+       (getBlock(0.0D, 2.0D, 0.0D) != Blocks.field_10124) ? 0.08F : 0.6F) || mc.field_1724.field_6017 > 1.2F);
    }
  
    
-   public static boolean canCritical(class_1309 target) {
+   public static boolean canCritical(LivingEntity target) {
      updateWaterCritState();
      
      boolean packetCrits = ModuleClass.packetCriticals.isEnable();
-     boolean hasSlowFalling = mc.field_1724.method_6059(class_1294.field_5906);
+     boolean hasSlowFalling = mc.field_1724.method_6059(StatusEffects.field_5906);
      boolean inCobweb = isInCobweb();
      boolean smartCrit = ModuleClass.aura.smartCrit.isState();
      
@@ -121,9 +121,9 @@ package shame.nazuna.api.utils.combat;
          !mc.field_1724.method_6101() && 
          !mc.field_1724.method_5765() && 
          !(mc.field_1724.method_31549()).field_7479 && 
-         !mc.field_1724.method_6059(class_1294.field_5902) && 
-         !mc.field_1724.method_6059(class_1294.field_5906) && 
-         !mc.field_1724.method_6059(class_1294.field_5919) && 
+         !mc.field_1724.method_6059(StatusEffects.field_5902) && 
+         !mc.field_1724.method_6059(StatusEffects.field_5906) && 
+         !mc.field_1724.method_6059(StatusEffects.field_5919) && 
          !mc.field_1724.method_6128() && 
          !isInCobweb()); 
      return false;
@@ -133,8 +133,8 @@ package shame.nazuna.api.utils.combat;
        return false;
      }
      
-     class_238 box = mc.field_1724.method_5829().method_1011(0.03D);
-     class_238 headBox = new class_238(box.field_1323, box.field_1325, box.field_1321, box.field_1320, box.field_1325 + 0.32D, box.field_1324);
+     Box box = mc.field_1724.method_5829().method_1011(0.03D);
+     Box headBox = new Box(box.field_1323, box.field_1325, box.field_1321, box.field_1320, box.field_1325 + 0.32D, box.field_1324);
  
  
  
@@ -143,11 +143,11 @@ package shame.nazuna.api.utils.combat;
  
  
      
-     for (class_2338 pos : class_2338.method_10094(
-         class_3532.method_15357(headBox.field_1323), class_3532.method_15357(headBox.field_1322), class_3532.method_15357(headBox.field_1321), 
-         class_3532.method_15357(headBox.field_1320), class_3532.method_15357(headBox.field_1325), class_3532.method_15357(headBox.field_1324))) {
-       class_2680 state = mc.field_1687.method_8320(pos);
-       if (!state.method_26215() && !state.method_26220((class_1922)mc.field_1687, pos).method_1110()) {
+     for (BlockPos pos : BlockPos.method_10094(
+         MathHelper.method_15357(headBox.field_1323), MathHelper.method_15357(headBox.field_1322), MathHelper.method_15357(headBox.field_1321), 
+         MathHelper.method_15357(headBox.field_1320), MathHelper.method_15357(headBox.field_1325), MathHelper.method_15357(headBox.field_1324))) {
+       BlockState state = mc.field_1687.method_8320(pos);
+       if (!state.method_26215() && !state.method_26220((BlockView)mc.field_1687, pos).method_1110()) {
          return true;
        }
      } 
@@ -156,7 +156,7 @@ package shame.nazuna.api.utils.combat;
    }
    
    public static boolean canPacketCrit() {
-     return (isInCobweb() || mc.field_1724.method_6059(class_1294.field_5906));
+     return (isInCobweb() || mc.field_1724.method_6059(StatusEffects.field_5906));
    }
    
    private static void updateWaterCritState() {
@@ -212,27 +212,27 @@ package shame.nazuna.api.utils.combat;
        return false;
      }
      
-     class_2338 below = class_2338.method_49638((class_2374)mc.field_1724.method_19538().method_1031(0.0D, -0.4000000059604645D, 0.0D));
+     BlockPos below = BlockPos.method_49638((Position)mc.field_1724.method_19538().method_1031(0.0D, -0.4000000059604645D, 0.0D));
      return (mc.field_1724.method_5799() || mc.field_1724
        .method_5869() || mc.field_1687
-       .method_8320(below).method_27852(class_2246.field_10382));
+       .method_8320(below).method_27852(Blocks.field_10382));
    }
    
    private static boolean cannotPerformCrit() {
      double effectiveJumpHeight = mc.field_1724.method_49476();
-     class_243 jumpVec = new class_243(0.0D, effectiveJumpHeight, 0.0D);
-     class_243 allowedMovement = ((IEntity)mc.field_1724).invokeAdjustMovementForCollisions(jumpVec);
+     Vec3d jumpVec = new Vec3d(0.0D, effectiveJumpHeight, 0.0D);
+     Vec3d allowedMovement = ((IEntity)mc.field_1724).invokeAdjustMovementForCollisions(jumpVec);
      
      boolean cobweb = isInCobweb();
      
-     class_2338 posWater = class_2338.method_49638((class_2374)mc.field_1724.method_19538().method_1031(0.0D, (mc.field_1724.method_17682() / 2.0F), 0.0D));
+     BlockPos posWater = BlockPos.method_49638((Position)mc.field_1724.method_19538().method_1031(0.0D, (mc.field_1724.method_17682() / 2.0F), 0.0D));
      
      return (mc.field_1724.method_5771() || mc.field_1724
        .method_6101() || mc.field_1687
-       .method_8320(posWater).method_27852(class_2246.field_10382) || mc.field_1724
-       .method_6059(class_1294.field_5902) || mc.field_1724
-       .method_6059(class_1294.field_5906) || mc.field_1724
-       .method_6059(class_1294.field_5919) || cobweb || mc.field_1724
+       .method_8320(posWater).method_27852(Blocks.field_10382) || mc.field_1724
+       .method_6059(StatusEffects.field_5902) || mc.field_1724
+       .method_6059(StatusEffects.field_5906) || mc.field_1724
+       .method_6059(StatusEffects.field_5919) || cobweb || mc.field_1724
        
        .method_6128() || mc.field_1724
        .method_5765() || 
@@ -242,31 +242,31 @@ package shame.nazuna.api.utils.combat;
    }
    
    public static boolean isInCobweb() {
-     class_238 box = mc.field_1724.method_5829();
-     for (class_2338 pos : class_2338.method_10094(
-         class_3532.method_15357(box.field_1323), class_3532.method_15357(box.field_1322), class_3532.method_15357(box.field_1321), 
-         class_3532.method_15357(box.field_1320), class_3532.method_15357(box.field_1325), class_3532.method_15357(box.field_1324))) {
-       if (mc.field_1687.method_8320(pos).method_27852(class_2246.field_10343)) {
+     Box box = mc.field_1724.method_5829();
+     for (BlockPos pos : BlockPos.method_10094(
+         MathHelper.method_15357(box.field_1323), MathHelper.method_15357(box.field_1322), MathHelper.method_15357(box.field_1321), 
+         MathHelper.method_15357(box.field_1320), MathHelper.method_15357(box.field_1325), MathHelper.method_15357(box.field_1324))) {
+       if (mc.field_1687.method_8320(pos).method_27852(Blocks.field_10343)) {
          return true;
        }
      } 
      return false;
    }
    
-   public static class_2248 getBlock(double x, double y, double z) {
+   public static Block getBlock(double x, double y, double z) {
      return mc.field_1687.method_8320(mc.field_1724.method_24515().method_10069((int)x, (int)y, (int)z)).method_26204();
    }
    
    public static boolean findFall(float fallDistance) {
-     class_243 rotationVec = mc.field_1724.method_5720();
+     Vec3d rotationVec = mc.field_1724.method_5720();
      double tempVelocityX = (mc.field_1724.method_18798()).field_1352;
      double tempVelocityY = (mc.field_1724.method_18798()).field_1351;
      double tempVelocityZ = (mc.field_1724.method_18798()).field_1350;
      
-     float n = class_3532.method_15362(mc.field_1724.method_36455() * 0.017453292F);
+     float n = MathHelper.method_15362(mc.field_1724.method_36455() * 0.017453292F);
      n = (float)((n * n) * Math.min(rotationVec.method_1033() / 0.4D, 1.0D));
      
-     class_243 vec3d = (new class_243(tempVelocityX, tempVelocityY, tempVelocityZ)).method_1031(0.0D, 0.08D * (-1.0D + n * 0.75D), 0.0D);
+     Vec3d vec3d = (new Vec3d(tempVelocityX, tempVelocityY, tempVelocityZ)).method_1031(0.0D, 0.08D * (-1.0D + n * 0.75D), 0.0D);
      tempVelocityY = vec3d.field_1351 * 0.9800000190734863D;
      
      return (tempVelocityY < fallDistance);

@@ -1,14 +1,14 @@
 package shame.nazuna.mixin;
 
-import net.minecraft.class_1297;
-import net.minecraft.class_243;
+import net.minecraft.Entity;
+import net.minecraft.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin({class_1297.class})
+@Mixin({Entity.class})
 public interface IEntity {
   @Invoker("method_17835")
-  class_243 invokeAdjustMovementForCollisions(class_243 paramclass_243);
+  Vec3d invokeAdjustMovementForCollisions(Vec3d paramclass_243);
 }
 
 

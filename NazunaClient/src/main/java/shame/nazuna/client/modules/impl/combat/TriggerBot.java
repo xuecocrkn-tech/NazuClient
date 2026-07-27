@@ -1,13 +1,13 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_1268;
- import net.minecraft.class_1294;
- import net.minecraft.class_1297;
- import net.minecraft.class_1309;
- import net.minecraft.class_1657;
- import net.minecraft.class_1675;
- import net.minecraft.class_243;
- import net.minecraft.class_3966;
+ import net.minecraft.Hand;
+ import net.minecraft.StatusEffects;
+ import net.minecraft.Entity;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.ProjectileUtil;
+ import net.minecraft.Vec3d;
+ import net.minecraft.EntityHitResult;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventMoveInput;
  import shame.nazuna.api.events.implement.EventUpdate;
@@ -43,10 +43,10 @@ package shame.nazuna.client.modules.impl.combat;
    
    private final ListSetting targets = new ListSetting("Таргеты", new BooleanSetting[] { new BooleanSetting("Игроки", true), new BooleanSetting("Невидимки", true), new BooleanSetting("Мирные", false), new BooleanSetting("Мобы", true) });
    
-   private class_1309 target;
+   private LivingEntity target;
  
    
-   public class_1309 getTarget() {
+   public LivingEntity getTarget() {
      return this.target;
    }
    
@@ -113,22 +113,22 @@ package shame.nazuna.client.modules.impl.combat;
    }
  
    
-   private class_1309 getTargetUnderCrosshair() {
-     class_243 eyePos = mc.field_1724.method_5836(1.0F);
-     class_243 lookVec = mc.field_1724.method_5828(1.0F);
+   private LivingEntity getTargetUnderCrosshair() {
+     Vec3d eyePos = mc.field_1724.method_5836(1.0F);
+     Vec3d lookVec = mc.field_1724.method_5828(1.0F);
      float rangeValue = this.range.getValue().floatValue();
-     class_243 reachVec = eyePos.method_1019(lookVec.method_1021(rangeValue));
+     Vec3d reachVec = eyePos.method_1019(lookVec.method_1021(rangeValue));
      
-     class_3966 result = class_1675.method_18075((class_1297)mc.field_1724, eyePos, reachVec, mc.field_1724
+     EntityHitResult result = ProjectileUtil.method_18075((Entity)mc.field_1724, eyePos, reachVec, mc.field_1724
  
  
          
          .method_5829().method_1014(rangeValue), entity -> 
-         (entity != mc.field_1724 && entity.method_5805() && entity instanceof class_1309), (rangeValue * rangeValue));
+         (entity != mc.field_1724 && entity.method_5805() && entity instanceof LivingEntity), (rangeValue * rangeValue));
  
  
      
-     if (result != null) { class_1297 class_1297 = result.method_17782(); if (class_1297 instanceof class_1309) { class_1309 living = (class_1309)class_1297;
+     if (result != null) { Entity Entity = result.method_17782(); if (Entity instanceof LivingEntity) { LivingEntity living = (LivingEntity)Entity;
          if (isValidTarget(living)) {
            return living;
          } }
@@ -151,23 +151,23 @@ package shame.nazuna.client.modules.impl.combat;
      //   4: ldc 'Отжимать щит'
      //   6: invokevirtual is : (Ljava/lang/String;)Z
      //   9: ifeq -> 39
-     //   12: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/class_310;
-     //   15: getfield field_1724 : Lnet/minecraft/class_746;
+     //   12: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/MinecraftClient;
+     //   15: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   18: invokevirtual method_6039 : ()Z
      //   21: ifeq -> 39
-     //   24: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/class_310;
-     //   27: getfield field_1761 : Lnet/minecraft/class_636;
-     //   30: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/class_310;
-     //   33: getfield field_1724 : Lnet/minecraft/class_746;
-     //   36: invokevirtual method_2897 : (Lnet/minecraft/class_1657;)V
+     //   24: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/MinecraftClient;
+     //   27: getfield field_1761 : Lnet/minecraft/ClientPlayerInteractionManager;
+     //   30: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/MinecraftClient;
+     //   33: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
+     //   36: invokevirtual method_2897 : (Lnet/minecraft/PlayerEntity;)V
      //   39: aload_0
-     //   40: getfield target : Lnet/minecraft/class_1309;
+     //   40: getfield target : Lnet/minecraft/LivingEntity;
      //   43: astore_2
      //   44: aload_2
-     //   45: instanceof net/minecraft/class_1657
+     //   45: instanceof net/minecraft/PlayerEntity
      //   48: ifeq -> 83
      //   51: aload_2
-     //   52: checkcast net/minecraft/class_1657
+     //   52: checkcast net/minecraft/PlayerEntity
      //   55: astore_1
      //   56: aload_1
      //   57: invokevirtual method_6039 : ()Z
@@ -179,19 +179,19 @@ package shame.nazuna.client.modules.impl.combat;
      //   72: ifeq -> 83
      //   75: aload_0
      //   76: aload_1
-     //   77: invokevirtual shieldBreak : (Lnet/minecraft/class_1657;)V
+     //   77: invokevirtual shieldBreak : (Lnet/minecraft/PlayerEntity;)V
      //   80: goto -> 102
-     //   83: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/class_310;
-     //   86: getfield field_1761 : Lnet/minecraft/class_636;
-     //   89: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/class_310;
-     //   92: getfield field_1724 : Lnet/minecraft/class_746;
+     //   83: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/MinecraftClient;
+     //   86: getfield field_1761 : Lnet/minecraft/ClientPlayerInteractionManager;
+     //   89: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/MinecraftClient;
+     //   92: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   95: aload_0
-     //   96: getfield target : Lnet/minecraft/class_1309;
-     //   99: invokevirtual method_2918 : (Lnet/minecraft/class_1657;Lnet/minecraft/class_1297;)V
-     //   102: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/class_310;
-     //   105: getfield field_1724 : Lnet/minecraft/class_746;
-     //   108: getstatic net/minecraft/class_1268.field_5808 : Lnet/minecraft/class_1268;
-     //   111: invokevirtual method_6104 : (Lnet/minecraft/class_1268;)V
+     //   96: getfield target : Lnet/minecraft/LivingEntity;
+     //   99: invokevirtual method_2918 : (Lnet/minecraft/PlayerEntity;Lnet/minecraft/Entity;)V
+     //   102: getstatic shame/astra/client/modules/impl/combat/TriggerBot.mc : Lnet/minecraft/MinecraftClient;
+     //   105: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
+     //   108: getstatic net/minecraft/Hand.field_5808 : Lnet/minecraft/Hand;
+     //   111: invokevirtual method_6104 : (Lnet/minecraft/Hand;)V
      //   114: aload_0
      //   115: getfield attackTimer : Lshame/astra/api/utils/math/TimerUtils;
      //   118: invokevirtual reset : ()V
@@ -208,7 +208,7 @@ package shame.nazuna.client.modules.impl.combat;
      //   #156	-> 121
      // Local variable table:
      //   start	length	slot	name	descriptor
-     //   56	27	1	player	Lnet/minecraft/class_1657;
+     //   56	27	1	player	Lnet/minecraft/PlayerEntity;
      //   0	122	0	this	Lshame/astra/client/modules/impl/combat/TriggerBot;
    }
  
@@ -218,41 +218,41 @@ package shame.nazuna.client.modules.impl.combat;
  
  
    
-   private void shieldBreak(class_1657 entity) {
+   private void shieldBreak(PlayerEntity entity) {
      int axeSlot = findAxeSlot();
      
      if (axeSlot != -1) {
        int prevSlot = (mc.field_1724.method_31548()).field_7545;
        (mc.field_1724.method_31548()).field_7545 = axeSlot;
-       mc.field_1761.method_2918((class_1657)mc.field_1724, (class_1297)entity);
-       mc.field_1724.method_6104(class_1268.field_5808);
+       mc.field_1761.method_2918((PlayerEntity)mc.field_1724, (Entity)entity);
+       mc.field_1724.method_6104(Hand.field_5808);
        (mc.field_1724.method_31548()).field_7545 = prevSlot;
      } else {
-       mc.field_1761.method_2918((class_1657)mc.field_1724, (class_1297)entity);
+       mc.field_1761.method_2918((PlayerEntity)mc.field_1724, (Entity)entity);
      } 
    }
    
    private int findAxeSlot() {
      for (int i = 0; i < 9; i++) {
-       if (mc.field_1724.method_31548().method_5438(i).method_7909() instanceof net.minecraft.class_1743) {
+       if (mc.field_1724.method_31548().method_5438(i).method_7909() instanceof net.minecraft.AxeItem) {
          return i;
        }
      } 
      return -1;
    }
    
-   private boolean isValidTarget(class_1309 entity) {
+   private boolean isValidTarget(LivingEntity entity) {
      if (entity == null || entity == mc.field_1724) return false; 
      if (!entity.method_5805() || entity.method_6032() <= 0.0F) return false; 
-     if (entity instanceof net.minecraft.class_1531) return false;
+     if (entity instanceof net.minecraft.ArmorStandEntity) return false;
      
-     if (entity instanceof class_1657) { class_1657 player = (class_1657)entity;
+     if (entity instanceof PlayerEntity) { PlayerEntity player = (PlayerEntity)entity;
        if (!this.targets.is("Игроки")) return false; 
-       if (player.method_6059(class_1294.field_5905) && !this.targets.is("Невидимки")) return false; 
+       if (player.method_6059(StatusEffects.field_5905) && !this.targets.is("Невидимки")) return false; 
        if (astra.INSTANCE.friendStorage.isFriend(entity.method_5477().getString())) return false;  }
-     else if (entity instanceof net.minecraft.class_1296 || entity instanceof net.minecraft.class_1431)
+     else if (entity instanceof net.minecraft.PassiveEntity || entity instanceof net.minecraft.CodEntity)
      { if (!this.targets.is("Мирные")) return false;  }
-     else if (entity instanceof net.minecraft.class_1588 && 
+     else if (entity instanceof net.minecraft.HostileEntity && 
        !this.targets.is("Мобы")) { return false; }
  
      
@@ -260,7 +260,7 @@ package shame.nazuna.client.modules.impl.combat;
        return false;
      }
      
-     if (!this.options.is("Бить через стены") && !mc.field_1724.method_6057((class_1297)entity)) {
+     if (!this.options.is("Бить через стены") && !mc.field_1724.method_6057((Entity)entity)) {
        return false;
      }
      
@@ -273,12 +273,12 @@ package shame.nazuna.client.modules.impl.combat;
      }
      
      if (this.options.is("Проверка на наведение")) {
-       class_243 eyePos = mc.field_1724.method_5836(1.0F);
-       class_243 lookVec = mc.field_1724.method_5828(1.0F);
+       Vec3d eyePos = mc.field_1724.method_5836(1.0F);
+       Vec3d lookVec = mc.field_1724.method_5828(1.0F);
        float rangeValue = this.range.getValue().floatValue();
-       class_243 reachVec = eyePos.method_1019(lookVec.method_1021(rangeValue));
+       Vec3d reachVec = eyePos.method_1019(lookVec.method_1021(rangeValue));
        
-       class_3966 result = class_1675.method_18075((class_1297)mc.field_1724, eyePos, reachVec, mc.field_1724
+       EntityHitResult result = ProjectileUtil.method_18075((Entity)mc.field_1724, eyePos, reachVec, mc.field_1724
  
  
            

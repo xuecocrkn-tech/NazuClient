@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_1306;
- import net.minecraft.class_4587;
+ import net.minecraft.Arm;
+ import net.minecraft.MatrixStack;
  import shame.nazuna.client.modules.Module;
  import shame.nazuna.client.modules.settings.Setting;
  import shame.nazuna.client.modules.settings.implement.BooleanSetting;
@@ -25,8 +25,8 @@ package shame.nazuna.client.modules.impl.render;
      addSettings(new Setting[] { (Setting)this.mainHandX, (Setting)this.mainHandY, (Setting)this.mainHandZ, (Setting)this.offHandX, (Setting)this.offHandY, (Setting)this.offHandZ, (Setting)this.onlyAura });
    }
    
-   public void applyHandPosition(class_4587 matrices, class_1306 arm) {
-     if (arm == class_1306.field_6183) {
+   public void applyHandPosition(MatrixStack matrices, Arm arm) {
+     if (arm == Arm.field_6183) {
        matrices.method_46416(this.mainHandX.get(), this.mainHandY.get(), this.mainHandZ.get());
      } else {
        matrices.method_46416(this.offHandX.get(), this.offHandY.get(), this.offHandZ.get());

@@ -3,10 +3,10 @@ package shame.nazuna.client.modules.impl.misc;
  import java.util.LinkedHashMap;
  import java.util.List;
  import java.util.Map;
- import net.minecraft.class_2561;
- import net.minecraft.class_342;
- import net.minecraft.class_408;
- import net.minecraft.class_437;
+ import net.minecraft.Text;
+ import net.minecraft.TextFieldWidget;
+ import net.minecraft.ChatScreen;
+ import net.minecraft.Screen;
  import shame.nazuna.api.utils.replace.ReplaceUtils;
  import shame.nazuna.astra;
  import shame.nazuna.client.modules.Module;
@@ -65,7 +65,7 @@ package shame.nazuna.client.modules.impl.misc;
      return patch(text);
    }
    
-   public class_2561 patchText(class_2561 text) {
+   public Text patchText(Text text) {
      if (text == null) {
        return null;
      }
@@ -74,7 +74,7 @@ package shame.nazuna.client.modules.impl.misc;
        return text;
      }
      
-     class_2561 output = text;
+     Text output = text;
      String replacement = getReplacementName();
      output = ReplaceUtils.replace(output, mc.method_1548().method_1676(), replacement);
      if (this.friends.isState() && astra.INSTANCE != null && astra.INSTANCE.friendStorage != null) {
@@ -154,12 +154,12 @@ package shame.nazuna.client.modules.impl.misc;
      return (isEnable() && mc != null && mc.field_1724 != null && mc.field_1687 != null && !isFriendRemoveInputActive());
    }
    private boolean isFriendRemoveInputActive() {
-     class_408 chatScreen;
-     class_437 class_437 = mc.field_1755; if (class_437 instanceof class_408) { chatScreen = (class_408)class_437; }
+     ChatScreen chatScreen;
+     Screen Screen = mc.field_1755; if (Screen instanceof ChatScreen) { chatScreen = (ChatScreen)Screen; }
      else { return false; }
  
      
-     class_342 chatField = ((ChatScreenAccessor)chatScreen).astra$getChatField();
+     TextFieldWidget chatField = ((ChatScreenAccessor)chatScreen).astra$getChatField();
      if (chatField == null) {
        return false;
      }

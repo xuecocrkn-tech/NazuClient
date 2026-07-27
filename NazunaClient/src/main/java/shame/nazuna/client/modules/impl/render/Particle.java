@@ -3,27 +3,27 @@ package shame.nazuna.client.modules.impl.render;
  import java.util.ArrayList;
  import java.util.List;
  import java.util.Random;
- import net.minecraft.class_1297;
- import net.minecraft.class_1684;
- import net.minecraft.class_1685;
- import net.minecraft.class_1922;
- import net.minecraft.class_2338;
- import net.minecraft.class_2374;
- import net.minecraft.class_238;
- import net.minecraft.class_243;
- import net.minecraft.class_2596;
- import net.minecraft.class_2663;
- import net.minecraft.class_2680;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_2960;
- import net.minecraft.class_310;
- import net.minecraft.class_3532;
- import net.minecraft.class_3959;
- import net.minecraft.class_3965;
- import net.minecraft.class_4587;
- import net.minecraft.class_7833;
+ import net.minecraft.Entity;
+ import net.minecraft.EnderPearlEntity;
+ import net.minecraft.TridentEntity;
+ import net.minecraft.BlockView;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Position;
+ import net.minecraft.Box;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Packet;
+ import net.minecraft.EntityStatusS2CPacket;
+ import net.minecraft.BlockState;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.Identifier;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.MathHelper;
+ import net.minecraft.RaycastContext;
+ import net.minecraft.BlockHitResult;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.RotationAxis;
  import org.joml.Matrix4f;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.Event3DRender;
@@ -39,11 +39,11 @@ package shame.nazuna.client.modules.impl.render;
  
  public class Particle extends Module {
    public static Particle INSTANCE = new Particle();
-   private static final class_2960 STAR_TEXTURE = class_2960.method_60655("astra", "textures/particle/star.png");
-   private static final class_2960 HEART_TEXTURE = class_2960.method_60655("astra", "textures/particle/heart.png");
-   private static final class_2960 DOLLAR_TEXTURE = class_2960.method_60655("astra", "textures/particle/dollar.png");
-   private static final class_2960 BLOOM_TEXTURE = class_2960.method_60655("astra", "textures/particle/bloom.png");
-   private static final class_2960 SPARKLE_TEXTURE = class_2960.method_60655("astra", "textures/particle/sparkle.png");
+   private static final Identifier STAR_TEXTURE = Identifier.method_60655("astra", "textures/particle/star.png");
+   private static final Identifier HEART_TEXTURE = Identifier.method_60655("astra", "textures/particle/heart.png");
+   private static final Identifier DOLLAR_TEXTURE = Identifier.method_60655("astra", "textures/particle/dollar.png");
+   private static final Identifier BLOOM_TEXTURE = Identifier.method_60655("astra", "textures/particle/bloom.png");
+   private static final Identifier SPARKLE_TEXTURE = Identifier.method_60655("astra", "textures/particle/sparkle.png");
    
    private final ModeSetting type = new ModeSetting("Тип частиц", "Звездочки", new String[] { "Звездочки", "Сердечки", "Доллары", "Блум", "Сияние" });
  
@@ -74,7 +74,7 @@ package shame.nazuna.client.modules.impl.render;
      super.onDisable();
    }
    
-   private class_2960 getTexture() {
+   private Identifier getTexture() {
      switch (this.type.getIndex()) { case 1: case 2: case 3: case 4:  }  return 
  
  
@@ -84,21 +84,21 @@ package shame.nazuna.client.modules.impl.render;
    }
  
    
-   private boolean isPositionInBlock(class_243 position) {
+   private boolean isPositionInBlock(Vec3d position) {
      if (mc.field_1687 == null || mc.field_1724 == null) return true; 
-     class_2338 blockPos = class_2338.method_49638((class_2374)position);
-     if (mc.field_1687.method_8320(blockPos).method_26212((class_1922)mc.field_1687, blockPos)) {
+     BlockPos blockPos = BlockPos.method_49638((Position)position);
+     if (mc.field_1687.method_8320(blockPos).method_26212((BlockView)mc.field_1687, blockPos)) {
        return true;
      }
      
-     class_3959 context = new class_3959(new class_243(mc.field_1724.method_23317(), mc.field_1724.method_23318() + mc.field_1724.method_5751(), mc.field_1724.method_23321()), position, class_3959.class_3960.field_17558, class_3959.class_242.field_1348, (class_1297)mc.field_1724);
+     RaycastContext context = new RaycastContext(new Vec3d(mc.field_1724.method_23317(), mc.field_1724.method_23318() + mc.field_1724.method_5751(), mc.field_1724.method_23321()), position, RaycastContext.class_3960.field_17558, RaycastContext.class_242.field_1348, (Entity)mc.field_1724);
  
  
  
  
      
-     class_3965 result = mc.field_1687.method_17742(context);
-     return (result.method_17783() == class_239.class_240.field_1332);
+     BlockHitResult result = mc.field_1687.method_17742(context);
+     return (result.method_17783() == HitResult.class_240.field_1332);
    }
    
    private float random(float min, float max) {
@@ -114,20 +114,20 @@ package shame.nazuna.client.modules.impl.render;
      if (mc.field_1724 == null || mc.field_1687 == null)
        return;  if (this.reason.is("Ударе")) {
        
-       class_1297 target = event.getTarget();
+       Entity target = event.getTarget();
        if (target != null)
          for (int i = 0; i < 35; i++) {
            double targetX = target.method_23317() + random(-0.4F, 0.4F);
            double targetY = target.method_23318() + random(-0.4F, target.method_17682() + 0.4F);
            double targetZ = target.method_23321() + random(-0.4F, 0.4F);
            
-           if (!isPositionInBlock(new class_243(targetX, targetY, targetZ))) {
+           if (!isPositionInBlock(new Vec3d(targetX, targetY, targetZ))) {
              
              float baseMx = random(-0.8F, 0.8F) * 2.0F;
              float baseMy = random(-0.25F, 1.4F);
              float baseMz = random(-0.8F, 0.8F) * 2.0F;
              
-             class_243 velocity = new class_243((baseMx * 0.075F), (baseMy * 0.075F), (baseMz * 0.075F));
+             Vec3d velocity = new Vec3d((baseMx * 0.075F), (baseMy * 0.075F), (baseMz * 0.075F));
              long life = (long)random(1000.0F, 1200.0F);
              
              addParticle(targetX, targetY, targetZ, velocity, ColorUtils.getThemeColor(), 0.3F, life, 0.5F, 6.99999975040555E-4D);
@@ -141,9 +141,9 @@ package shame.nazuna.client.modules.impl.render;
      if (mc.field_1687 == null || mc.field_1724 == null)
        return;  if (!this.reason.is("Сносе тотема"))
        return; 
-     class_2596 class_2596 = e.getPacket(); if (class_2596 instanceof class_2663) { class_2663 packet = (class_2663)class_2596;
+     Packet Packet = e.getPacket(); if (Packet instanceof EntityStatusS2CPacket) { EntityStatusS2CPacket packet = (EntityStatusS2CPacket)Packet;
        if (packet.method_11470() == 35) {
-         class_1297 entity = packet.method_11469((class_1937)mc.field_1687);
+         Entity entity = packet.method_11469((World)mc.field_1687);
          if (entity != null) {
            double centerX = entity.method_23317();
            double centerY = entity.method_23318() + entity.method_17682() / 2.0D;
@@ -162,12 +162,12 @@ package shame.nazuna.client.modules.impl.render;
              double spawnY = centerY + random(-0.3F, 0.3F);
              double spawnZ = centerZ + random(-0.3F, 0.3F);
              
-             if (!isPositionInBlock(new class_243(spawnX, spawnY, spawnZ))) {
+             if (!isPositionInBlock(new Vec3d(spawnX, spawnY, spawnZ))) {
                
                int color = (this.rnd.nextDouble() < 0.7D) ? -16711936 : -256;
                long life = (long)random(1500.0F, 2000.0F);
                
-               addParticle(spawnX, spawnY, spawnZ, new class_243(vx, vy, vz), color, 0.3F, life, 2.0F, 4.999999873689376E-5D);
+               addParticle(spawnX, spawnY, spawnZ, new Vec3d(vx, vy, vz), color, 0.3F, life, 2.0F, 4.999999873689376E-5D);
              } 
            } 
          } 
@@ -181,7 +181,7 @@ package shame.nazuna.client.modules.impl.render;
      int particleCount = (int)this.count.get();
      
      if (this.reason.is("Бездействии")) {
-       class_243 base = new class_243(mc.field_1724.method_23317(), mc.field_1724.method_23318() + mc.field_1724.method_17682() / 2.0D, mc.field_1724.method_23321());
+       Vec3d base = new Vec3d(mc.field_1724.method_23317(), mc.field_1724.method_23318() + mc.field_1724.method_17682() / 2.0D, mc.field_1724.method_23321());
        
        for (int i = 0; i < particleCount; i++) {
          double distance = random(7.0F, 35.0F);
@@ -192,7 +192,7 @@ package shame.nazuna.client.modules.impl.render;
          double spawnY = base.field_1351 + height;
          double spawnZ = base.field_1350 + Math.sin(angle) * distance;
          
-         class_243 spawnPos = new class_243(spawnX, spawnY, spawnZ);
+         Vec3d spawnPos = new Vec3d(spawnX, spawnY, spawnZ);
          if (!isPositionInBlock(spawnPos)) {
            
            long life = (long)random(1500.0F, 2000.0F);
@@ -202,7 +202,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
            
-           class_243 velocity = new class_243(Math.cos(phi) * speed, random((float)(-speed * 0.10000000149011612D), (float)(speed * 0.10000000149011612D)), Math.sin(phi) * speed);
+           Vec3d velocity = new Vec3d(Math.cos(phi) * speed, random((float)(-speed * 0.10000000149011612D), (float)(speed * 0.10000000149011612D)), Math.sin(phi) * speed);
  
            
            addParticle(spawnX, spawnY, spawnZ, velocity, ColorUtils.getThemeColor(), 0.3F, life, 3.0F, 4.999999873689376E-5D);
@@ -210,7 +210,7 @@ package shame.nazuna.client.modules.impl.render;
        } 
      } 
      if (this.reason.is("Беге") && isMoving()) {
-       class_243 direction, motion = mc.field_1724.method_18798();
+       Vec3d direction, motion = mc.field_1724.method_18798();
        double speed = Math.sqrt(motion.field_1352 * motion.field_1352 + motion.field_1350 * motion.field_1350);
  
        
@@ -219,7 +219,7 @@ package shame.nazuna.client.modules.impl.render;
        } else if (mc.field_1724.method_6128()) {
          direction = motion.method_1029().method_1021(-1.0D);
        } else {
-         direction = new class_243(-motion.field_1352 / speed, 0.0D, -motion.field_1350 / speed);
+         direction = new Vec3d(-motion.field_1352 / speed, 0.0D, -motion.field_1350 / speed);
        } 
        
        double distanceBehind = (mc.field_1724.method_6128() ? 1.2D : 0.5D) + ((speed > 0.1D) ? (speed * 1.5D) : 0.0D);
@@ -232,13 +232,13 @@ package shame.nazuna.client.modules.impl.render;
        double posY = mc.field_1724.method_6128() ? (mc.field_1724.method_23318() + mc.field_1724.method_17682() / 2.0D + direction.field_1351 * distanceBehind + random(-0.35F, 0.35F)) : (mc.field_1724.method_23318() + random(0.2F, mc.field_1724.method_17682() + 0.1F));
        double posZ = mc.field_1724.method_23321() + direction.field_1350 * distanceBehind + offsetZ;
        
-       if (!isPositionInBlock(new class_243(posX, posY, posZ))) {
+       if (!isPositionInBlock(new Vec3d(posX, posY, posZ))) {
          double baseSpeed = 0.075D;
  
  
  
          
-         class_243 velocity = direction.method_1021(baseSpeed).method_1031(random(-0.01F, 0.01F), random(-0.05F, 0.01F), random(-0.01F, 0.01F)).method_1021(0.1D);
+         Vec3d velocity = direction.method_1021(baseSpeed).method_1031(random(-0.01F, 0.01F), random(-0.05F, 0.01F), random(-0.01F, 0.01F)).method_1021(0.1D);
          
          long life = (long)random(1500.0F, 2000.0F);
          addParticle(posX, posY, posZ, velocity, ColorUtils.getThemeColor(), 0.3F, life, 3.0F, 4.999999873689376E-5D);
@@ -248,17 +248,17 @@ package shame.nazuna.client.modules.impl.render;
      boolean trackPearls = this.reason.is("Падении перла");
      boolean trackTridents = this.reason.is("Падении трезубца");
      if (trackPearls || trackTridents) {
-       class_238 searchBox = mc.field_1724.method_5829().method_1014(100.0D);
-       List<class_1297> entities = mc.field_1687.method_8333(null, searchBox, e2 -> true);
+       Box searchBox = mc.field_1724.method_5829().method_1014(100.0D);
+       List<Entity> entities = mc.field_1687.method_8333(null, searchBox, e2 -> true);
        
-       for (class_1297 entity : entities) {
-         if (trackPearls && entity instanceof class_1684) { class_1684 pearl = (class_1684)entity;
+       for (Entity entity : entities) {
+         if (trackPearls && entity instanceof EnderPearlEntity) { EnderPearlEntity pearl = (EnderPearlEntity)entity;
            if (!pearl.method_24828()) {
              createProjectileParticles(pearl.method_19538(), 1);
            } }
  
          
-         if (trackTridents && entity instanceof class_1685) { class_1685 trident = (class_1685)entity;
+         if (trackTridents && entity instanceof TridentEntity) { TridentEntity trident = (TridentEntity)entity;
            if (trident.method_18798().method_1027() > 0.01D) {
              createProjectileParticles(trident.method_19538(), 1);
            } }
@@ -267,12 +267,12 @@ package shame.nazuna.client.modules.impl.render;
      } 
    }
    
-   private void createProjectileParticles(class_243 position, int cnt) {
+   private void createProjectileParticles(Vec3d position, int cnt) {
      int particleColor = ColorUtils.getThemeColor();
      
      for (int i = 0; i < cnt * 2.5D; i++) {
        double dy = random(0.1F, 0.35F);
-       class_243 particlePos = new class_243(position.field_1352, position.field_1351 + dy, position.field_1350);
+       Vec3d particlePos = new Vec3d(position.field_1352, position.field_1351 + dy, position.field_1350);
        
        if (!isPositionInBlock(particlePos)) {
          
@@ -286,7 +286,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
          
-         class_243 velocity = new class_243(Math.cos(angleVel) * speedFinal, random((float)-speedFinalY, (float)speedFinalY), Math.sin(angleVel) * speedFinal);
+         Vec3d velocity = new Vec3d(Math.cos(angleVel) * speedFinal, random((float)-speedFinalY, (float)speedFinalY), Math.sin(angleVel) * speedFinal);
  
          
          long life = (long)random(2400.0F, 2800.0F);
@@ -294,10 +294,10 @@ package shame.nazuna.client.modules.impl.render;
        } 
      } 
    }
-   private void addParticle(double x, double y, double z, class_243 velocity, int color, float size, long lifeTime, float smooth, double gravity) {
+   private void addParticle(double x, double y, double z, Vec3d velocity, int color, float size, long lifeTime, float smooth, double gravity) {
      if (ParticleData.checkCollision(x, y, z, size, mc))
        synchronized (this.particles) {
-         this.particles.add(new ParticleData(new class_243(x, y, z), velocity, color, size, lifeTime, smooth, gravity));
+         this.particles.add(new ParticleData(new Vec3d(x, y, z), velocity, color, size, lifeTime, smooth, gravity));
        }  
    }
    
@@ -312,9 +312,9 @@ package shame.nazuna.client.modules.impl.render;
      
      if (this.particles.isEmpty())
        return; 
-     class_4587 matrices = e.getMatrices();
-     class_243 camera = mc.field_1773.method_19418().method_19326();
-     class_2960 texture = getTexture();
+     MatrixStack matrices = e.getMatrices();
+     Vec3d camera = mc.field_1773.method_19418().method_19326();
+     Identifier texture = getTexture();
      
      RenderSystem.enableBlend();
      RenderSystem.disableDepthTest();
@@ -328,7 +328,7 @@ package shame.nazuna.client.modules.impl.render;
      } 
      
      RenderSystem.setShaderTexture(0, texture);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
  
      
      synchronized (this.particles) {
@@ -344,8 +344,8 @@ package shame.nazuna.client.modules.impl.render;
        
        matrices.method_22903();
        matrices.method_46416((float)x, (float)y, (float)z);
-       matrices.method_22907(class_7833.field_40716.rotationDegrees(-mc.field_1773.method_19418().method_19330()));
-       matrices.method_22907(class_7833.field_40714.rotationDegrees(mc.field_1773.method_19418().method_19329()));
+       matrices.method_22907(RotationAxis.field_40716.rotationDegrees(-mc.field_1773.method_19418().method_19330()));
+       matrices.method_22907(RotationAxis.field_40714.rotationDegrees(mc.field_1773.method_19418().method_19329()));
        
        Matrix4f matrix = matrices.method_23760().method_23761();
        
@@ -355,14 +355,14 @@ package shame.nazuna.client.modules.impl.render;
        int g = particle.color >> 8 & 0xFF;
        int b = particle.color & 0xFF;
        
-       class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+       BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
        
        buffer.method_22918(matrix, -half, -half, 0.0F).method_22913(0.0F, 1.0F).method_1336(r, g, b, alpha);
        buffer.method_22918(matrix, -half, half, 0.0F).method_22913(0.0F, 0.0F).method_1336(r, g, b, alpha);
        buffer.method_22918(matrix, half, half, 0.0F).method_22913(1.0F, 0.0F).method_1336(r, g, b, alpha);
        buffer.method_22918(matrix, half, -half, 0.0F).method_22913(1.0F, 1.0F).method_1336(r, g, b, alpha);
        
-       class_286.method_43433(buffer.method_60800());
+       BufferRenderer.method_43433(buffer.method_60800());
        
        matrices.method_22909();
      } 
@@ -375,8 +375,8 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    static class ParticleData {
-     class_243 position;
-     class_243 velocity;
+     Vec3d position;
+     Vec3d velocity;
      int color;
      float size;
      long lifeTime;
@@ -386,7 +386,7 @@ package shame.nazuna.client.modules.impl.render;
      long lastUpdateNs;
      double gravity;
      
-     ParticleData(class_243 position, class_243 velocity, int color, float size, long lifeTime, float smooth, double gravity) {
+     ParticleData(Vec3d position, Vec3d velocity, int color, float size, long lifeTime, float smooth, double gravity) {
        this.position = position;
        this.velocity = velocity;
        this.color = color;
@@ -402,7 +402,7 @@ package shame.nazuna.client.modules.impl.render;
        return (System.currentTimeMillis() - this.birthTime >= this.lifeTime);
      }
      
-     void update(class_310 mc) {
+     void update(MinecraftClient mc) {
        long nowNs = System.nanoTime();
        double deltaSec = (nowNs - this.lastUpdateNs) / 1.0E9D;
        this.lastUpdateNs = nowNs;
@@ -436,28 +436,28 @@ package shame.nazuna.client.modules.impl.render;
          newZ = this.position.field_1350;
        } 
        
-       this.position = new class_243(newX, newY, newZ);
-       this.velocity = new class_243(vx * 0.9999D, vy * 0.9999D - this.gravity, vz * 0.9999D);
+       this.position = new Vec3d(newX, newY, newZ);
+       this.velocity = new Vec3d(vx * 0.9999D, vy * 0.9999D - this.gravity, vz * 0.9999D);
        this.alpha = 1.0F - progress;
      }
      
-     static boolean checkCollision(double x, double y, double z, float size, class_310 mc) {
+     static boolean checkCollision(double x, double y, double z, float size, MinecraftClient mc) {
        if (mc.field_1687 == null) return false; 
        double half = size * 0.5D;
-       int minX = class_3532.method_15357(x - half);
-       int maxX = class_3532.method_15357(x + half);
-       int minY = class_3532.method_15357(y - half);
-       int maxY = class_3532.method_15357(y + half);
-       int minZ = class_3532.method_15357(z - half);
-       int maxZ = class_3532.method_15357(z + half);
+       int minX = MathHelper.method_15357(x - half);
+       int maxX = MathHelper.method_15357(x + half);
+       int minY = MathHelper.method_15357(y - half);
+       int maxY = MathHelper.method_15357(y + half);
+       int minZ = MathHelper.method_15357(z - half);
+       int maxZ = MathHelper.method_15357(z + half);
        
-       class_2338.class_2339 pos = new class_2338.class_2339();
+       BlockPos.class_2339 pos = new BlockPos.class_2339();
        for (int bx = minX; bx <= maxX; bx++) {
          for (int by = minY; by <= maxY; by++) {
            for (int bz = minZ; bz <= maxZ; bz++) {
              pos.method_10103(bx, by, bz);
-             class_2680 state = mc.field_1687.method_8320((class_2338)pos);
-             if (!state.method_26215() && state.method_26212((class_1922)mc.field_1687, (class_2338)pos)) {
+             BlockState state = mc.field_1687.method_8320((BlockPos)pos);
+             if (!state.method_26215() && state.method_26212((BlockView)mc.field_1687, (BlockPos)pos)) {
                return false;
              }
            } 

@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.movement;
  
  import java.util.concurrent.ThreadLocalRandom;
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -25,7 +25,7 @@ package shame.nazuna.client.modules.impl.movement;
      if (mc.field_1724 == null || mc.field_1687 == null || !mc.field_1724.method_6128())
        return; 
      this.ticksTwo++;
-     class_243 pos = mc.field_1724.method_19538();
+     Vec3d pos = mc.field_1724.method_19538();
      float yaw = mc.field_1724.method_36454();
      double forward = (mc.field_1724.field_6012 % 2 == 0) ? 0.087D : 0.09D;
      

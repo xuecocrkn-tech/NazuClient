@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.render;
  
  import java.util.List;
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -1117,13 +1117,13 @@ package shame.nazuna.client.modules.impl.render;
  
  class TotemSphereEffect
  {
-   private final class_243 origin;
+   private final Vec3d origin;
    private final long startTime;
    private final float baseRotation;
    private final List<TotemAngel.SphereParticle> particles;
    private final List<TotemAngel.OrbitLine> orbitLines;
    
-   private TotemSphereEffect(class_243 origin, long startTime, float baseRotation, List<TotemAngel.SphereParticle> particles, List<TotemAngel.OrbitLine> orbitLines) {
+   private TotemSphereEffect(Vec3d origin, long startTime, float baseRotation, List<TotemAngel.SphereParticle> particles, List<TotemAngel.OrbitLine> orbitLines) {
      this.origin = origin;
      this.startTime = startTime;
      this.baseRotation = baseRotation;

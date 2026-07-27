@@ -14,37 +14,37 @@ package shame.nazuna.api.utils.bot;
  import java.util.Set;
  import java.util.UUID;
  import java.util.concurrent.CopyOnWriteArrayList;
- import net.minecraft.class_10264;
- import net.minecraft.class_1268;
- import net.minecraft.class_243;
- import net.minecraft.class_2535;
- import net.minecraft.class_2561;
- import net.minecraft.class_2596;
- import net.minecraft.class_2670;
- import net.minecraft.class_2708;
- import net.minecraft.class_2720;
- import net.minecraft.class_2749;
- import net.minecraft.class_2793;
- import net.minecraft.class_2827;
- import net.minecraft.class_2828;
- import net.minecraft.class_2856;
- import net.minecraft.class_2879;
- import net.minecraft.class_2886;
- import net.minecraft.class_310;
- import net.minecraft.class_320;
- import net.minecraft.class_3532;
- import net.minecraft.class_412;
- import net.minecraft.class_437;
- import net.minecraft.class_442;
- import net.minecraft.class_500;
- import net.minecraft.class_634;
- import net.minecraft.class_636;
- import net.minecraft.class_6373;
- import net.minecraft.class_6374;
- import net.minecraft.class_638;
- import net.minecraft.class_639;
- import net.minecraft.class_642;
- import net.minecraft.class_746;
+ import net.minecraft.EntityPositionSyncS2CPacket;
+ import net.minecraft.Hand;
+ import net.minecraft.Vec3d;
+ import net.minecraft.ClientConnection;
+ import net.minecraft.Text;
+ import net.minecraft.Packet;
+ import net.minecraft.KeepAliveS2CPacket;
+ import net.minecraft.PlayerPositionLookS2CPacket;
+ import net.minecraft.ResourcePackSendS2CPacket;
+ import net.minecraft.HealthUpdateS2CPacket;
+ import net.minecraft.TeleportConfirmC2SPacket;
+ import net.minecraft.KeepAliveC2SPacket;
+ import net.minecraft.PlayerMoveC2SPacket;
+ import net.minecraft.ResourcePackStatusC2SPacket;
+ import net.minecraft.HandSwingC2SPacket;
+ import net.minecraft.PlayerInteractItemC2SPacket;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.Session;
+ import net.minecraft.MathHelper;
+ import net.minecraft.ConnectScreen;
+ import net.minecraft.Screen;
+ import net.minecraft.TitleScreen;
+ import net.minecraft.MultiplayerScreen;
+ import net.minecraft.ClientPlayNetworkHandler;
+ import net.minecraft.ClientPlayerInteractionManager;
+ import net.minecraft.CommonPingS2CPacket;
+ import net.minecraft.CommonPongC2SPacket;
+ import net.minecraft.ClientWorld;
+ import net.minecraft.ServerAddress;
+ import net.minecraft.ServerInfo;
+ import net.minecraft.ClientPlayerEntity;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.client.modules.impl.player.AutoForest;
  import shame.nazuna.mixin.IMinecraftClientAccessor;
@@ -68,7 +68,7 @@ package shame.nazuna.api.utils.bot;
    }
    
    public static String getCurrentSessionName() {
-     class_310 mc = class_310.method_1551();
+     MinecraftClient mc = MinecraftClient.method_1551();
      return (mc.method_1548() == null) ? "" : mc.method_1548().method_1676();
    }
    
@@ -100,15 +100,15 @@ package shame.nazuna.api.utils.bot;
    }
    
    public static void connect(String name, String address) {
-     class_310 mc = class_310.method_1551();
+     MinecraftClient mc = MinecraftClient.method_1551();
      if (mc.method_1548() == null || name == null || name.isBlank() || address == null || address.isBlank()) {
        return;
      }
      
-     class_320 originalSession = mc.method_1548();
-     class_642 originalServerInfo = mc.method_1558();
+     Session originalSession = mc.method_1548();
+     ServerInfo originalServerInfo = mc.method_1558();
      pruneDeadConnections();
-     disconnectSessionsByName(name, (class_2561)class_2561.method_43470("Replaced"));
+     disconnectSessionsByName(name, (Text)Text.method_43470("Replaced"));
      BotConnection previous = freezeCurrentSession();
      ModuleClass.autoForest.resetToDefaults();
      ((IMinecraftClientAccessor)mc).setSession(createSessionWithName(mc.method_1548(), name));
@@ -122,7 +122,7 @@ package shame.nazuna.api.utils.bot;
            try {
  
              
-             class_412.method_36877((class_437)new class_500((class_437)new class_442()), mc, class_639.method_2950(address), new class_642(address, address, class_642.class_8678.field_45611), false, null);
+             ConnectScreen.method_36877((Screen)new MultiplayerScreen((Screen)new TitleScreen()), mc, ServerAddress.method_2950(address), new ServerInfo(address, address, ServerInfo.class_8678.field_45611), false, null);
            } catch (Exception ignored) {
              bypassResourcePacksDuringBotConnect = false;
              restoreAfterConnectFailure(mc, previous, originalSession, originalServerInfo);
@@ -134,9 +134,9 @@ package shame.nazuna.api.utils.bot;
      for (BotConnection bot : connections) {
        if (!isConnectionUsable(bot))
          continue;  if (rightClick) {
-         bot.handler().method_52787((class_2596)new class_2886(class_1268.field_5808, 0, bot.player().method_36454(), bot.player().method_36455())); continue;
+         bot.handler().method_52787((Packet)new PlayerInteractItemC2SPacket(Hand.field_5808, 0, bot.player().method_36454(), bot.player().method_36455())); continue;
        } 
-       bot.handler().method_52787((class_2596)new class_2879(class_1268.field_5808));
+       bot.handler().method_52787((Packet)new HandSwingC2SPacket(Hand.field_5808));
      } 
    }
  
@@ -158,7 +158,7 @@ package shame.nazuna.api.utils.bot;
      }
      
      pruneDeadConnections();
-     class_310 mc = class_310.method_1551();
+     MinecraftClient mc = MinecraftClient.method_1551();
      if (mc.field_1724 != null && mc.field_1687 != null && name.equalsIgnoreCase(getCurrentSessionName())) {
        return true;
      }
@@ -209,7 +209,7 @@ package shame.nazuna.api.utils.bot;
        return false;
      }
      
-     return (disconnectSessionsByName(name, (class_2561)class_2561.method_43470("Removed")) > 0);
+     return (disconnectSessionsByName(name, (Text)Text.method_43470("Removed")) > 0);
    }
    
    public static boolean restore() {
@@ -225,12 +225,12 @@ package shame.nazuna.api.utils.bot;
    }
    
    private static BotConnection freezeCurrentSession() {
-     class_310 mc = class_310.method_1551();
+     MinecraftClient mc = MinecraftClient.method_1551();
      if (mc.method_1562() == null || mc.field_1687 == null || mc.field_1724 == null) {
        return null;
      }
      
-     class_634 handler = mc.method_1562();
+     ClientPlayNetworkHandler handler = mc.method_1562();
      makeNettyBot(handler, mc.method_1548().method_1676(), mc.field_1724);
  
  
@@ -254,7 +254,7 @@ package shame.nazuna.api.utils.bot;
        return false;
      }
      
-     class_310 mc = class_310.method_1551();
+     MinecraftClient mc = MinecraftClient.method_1551();
      IMinecraftClientAccessor accessor = (IMinecraftClientAccessor)mc;
      
      Channel channel = getChannel(bot.connection());
@@ -263,14 +263,14 @@ package shame.nazuna.api.utils.bot;
      }
      
      try {
-       setMinecraftClientField(mc, class_634.class, bot.handler());
+       setMinecraftClientField(mc, ClientPlayNetworkHandler.class, bot.handler());
        accessor.setSession((bot.session() != null) ? bot.session() : createSessionWithName(mc.method_1548(), bot.name()));
-       setMinecraftClientField(mc, class_642.class, (bot.serverInfo() != null) ? bot.serverInfo() : createServerInfo(bot.name(), bot.address()));
+       setMinecraftClientField(mc, ServerInfo.class, (bot.serverInfo() != null) ? bot.serverInfo() : createServerInfo(bot.name(), bot.address()));
        accessor.setItemUseCooldown(0);
        
        mc.field_1687 = bot.world();
        mc.field_1724 = bot.player();
-       mc.field_1719 = (class_1297)bot.player();
+       mc.field_1719 = (Entity)bot.player();
        mc.field_1761 = bot.interactionManager();
        
        if (mc.field_1769 != null) {
@@ -278,7 +278,7 @@ package shame.nazuna.api.utils.bot;
        }
        
        ModuleClass.autoForest.applyState(bot.autoForestState());
-       bot.handler().method_52787((class_2596)new class_2828.class_2830(bot
+       bot.handler().method_52787((Packet)new PlayerMoveC2SPacket.class_2830(bot
              .player().method_23317(), bot
              .player().method_23318(), bot
              .player().method_23321(), bot
@@ -294,9 +294,9 @@ package shame.nazuna.api.utils.bot;
      } 
    }
    
-   private static void clearActiveSession(class_310 mc) {
+   private static void clearActiveSession(MinecraftClient mc) {
      IMinecraftClientAccessor accessor = (IMinecraftClientAccessor)mc;
-     setMinecraftClientField(mc, class_634.class, null);
+     setMinecraftClientField(mc, ClientPlayNetworkHandler.class, null);
      accessor.setItemUseCooldown(0);
      mc.field_1687 = null;
      mc.field_1724 = null;
@@ -308,11 +308,11 @@ package shame.nazuna.api.utils.bot;
    }
    
    private static void replaceConnection(BotConnection connection) {
-     disconnectSessionsByName(connection.name(), (class_2561)class_2561.method_43470("Replaced"));
+     disconnectSessionsByName(connection.name(), (Text)Text.method_43470("Replaced"));
      connections.add(connection);
    }
    
-   private static void makeNettyBot(final class_634 handler, final String name, final class_746 botPlayer) {
+   private static void makeNettyBot(final ClientPlayNetworkHandler handler, final String name, final ClientPlayerEntity botPlayer) {
      Channel channel = getChannel(handler.method_48296());
      if (channel == null)
        return;  if (channel.pipeline().get("bot_filter") != null) {
@@ -325,33 +325,33 @@ package shame.nazuna.api.utils.bot;
      channel.pipeline().addBefore("packet_handler", "bot_filter", (ChannelHandler)new ChannelDuplexHandler()
          {
            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-             if (msg instanceof class_2670) { class_2670 packet = (class_2670)msg;
-               handler.method_48296().method_10743((class_2596)new class_2827(packet.method_11517()));
+             if (msg instanceof KeepAliveS2CPacket) { KeepAliveS2CPacket packet = (KeepAliveS2CPacket)msg;
+               handler.method_48296().method_10743((Packet)new KeepAliveC2SPacket(packet.method_11517()));
                if (botPlayer != null) {
-                 handler.method_52787((class_2596)new class_2828.class_5911(botPlayer.method_24828(), botPlayer.field_5976));
+                 handler.method_52787((Packet)new PlayerMoveC2SPacket.class_5911(botPlayer.method_24828(), botPlayer.field_5976));
                }
                ReferenceCountUtil.release(msg);
                
                return; }
              
-             if (msg instanceof class_6373) { class_6373 packet = (class_6373)msg;
-               handler.method_48296().method_10743((class_2596)new class_6374(packet.method_36950()));
+             if (msg instanceof CommonPingS2CPacket) { CommonPingS2CPacket packet = (CommonPingS2CPacket)msg;
+               handler.method_48296().method_10743((Packet)new CommonPongC2SPacket(packet.method_36950()));
                ReferenceCountUtil.release(msg);
                
                return; }
              
-             if (msg instanceof class_2720) { class_2720 packet = (class_2720)msg;
-               handler.method_52787((class_2596)new class_2856(packet.comp_2158(), class_2856.class_2857.field_13016));
-               handler.method_52787((class_2596)new class_2856(packet.comp_2158(), class_2856.class_2857.field_13017));
+             if (msg instanceof ResourcePackSendS2CPacket) { ResourcePackSendS2CPacket packet = (ResourcePackSendS2CPacket)msg;
+               handler.method_52787((Packet)new ResourcePackStatusC2SPacket(packet.comp_2158(), ResourcePackStatusC2SPacket.class_2857.field_13016));
+               handler.method_52787((Packet)new ResourcePackStatusC2SPacket(packet.comp_2158(), ResourcePackStatusC2SPacket.class_2857.field_13017));
                ReferenceCountUtil.release(msg);
                
                return; }
              
-             if (msg instanceof class_2708) { class_2708 packet = (class_2708)msg;
+             if (msg instanceof PlayerPositionLookS2CPacket) { PlayerPositionLookS2CPacket packet = (PlayerPositionLookS2CPacket)msg;
                BotSessionManager.applyFrozenPositionLook(botPlayer, packet);
-               handler.method_52787((class_2596)new class_2793(packet.comp_3133()));
+               handler.method_52787((Packet)new TeleportConfirmC2SPacket(packet.comp_3133()));
                if (botPlayer != null) {
-                 handler.method_52787((class_2596)new class_2828.class_2830(botPlayer
+                 handler.method_52787((Packet)new PlayerMoveC2SPacket.class_2830(botPlayer
                        .method_23317(), botPlayer
                        .method_23318(), botPlayer
                        .method_23321(), botPlayer
@@ -365,13 +365,13 @@ package shame.nazuna.api.utils.bot;
                
                return; }
              
-             if (msg instanceof class_10264) { class_10264 packet = (class_10264)msg;
+             if (msg instanceof EntityPositionSyncS2CPacket) { EntityPositionSyncS2CPacket packet = (EntityPositionSyncS2CPacket)msg;
                BotSessionManager.applyFrozenEntityPositionSync(botPlayer, packet);
                ReferenceCountUtil.release(msg);
                
                return; }
              
-             if (msg instanceof class_2749) { class_2749 packet = (class_2749)msg;
+             if (msg instanceof HealthUpdateS2CPacket) { HealthUpdateS2CPacket packet = (HealthUpdateS2CPacket)msg;
                if (botPlayer != null) {
                  botPlayer.method_6033(packet.method_11833());
                }
@@ -379,7 +379,7 @@ package shame.nazuna.api.utils.bot;
                
                return; }
              
-             if (msg instanceof net.minecraft.class_2661) {
+             if (msg instanceof net.minecraft.DisconnectS2CPacket) {
                BotSessionManager.connections.removeIf(bot -> BotSessionManager.matchesName(bot.name(), name));
                ctx.close();
                ReferenceCountUtil.release(msg);
@@ -422,9 +422,9 @@ package shame.nazuna.api.utils.bot;
        .contains("Overlay"));
    }
    
-   private static Channel getChannel(class_2535 connection) {
+   private static Channel getChannel(ClientConnection connection) {
      try {
-       for (Field field : class_2535.class.getDeclaredFields()) {
+       for (Field field : ClientConnection.class.getDeclaredFields()) {
          if (Channel.class.isAssignableFrom(field.getType())) {
            field.setAccessible(true);
            return (Channel)field.get(connection);
@@ -435,7 +435,7 @@ package shame.nazuna.api.utils.bot;
      return null;
    }
    
-   private static void applyFrozenPositionLook(class_746 botPlayer, class_2708 packet) {
+   private static void applyFrozenPositionLook(ClientPlayerEntity botPlayer, PlayerPositionLookS2CPacket packet) {
      if (botPlayer == null || packet == null) {
        return;
      }
@@ -466,24 +466,24 @@ package shame.nazuna.api.utils.bot;
        pitch += botPlayer.method_36455();
      }
      
-     pitch = class_3532.method_15363(pitch, -90.0F, 90.0F);
+     pitch = MathHelper.method_15363(pitch, -90.0F, 90.0F);
      botPlayer.method_5808(x, y, z, yaw, pitch);
      botPlayer.method_36456(yaw);
      botPlayer.method_36457(pitch);
    }
    
-   private static void applyFrozenEntityPositionSync(class_746 botPlayer, class_10264 packet) {
+   private static void applyFrozenEntityPositionSync(ClientPlayerEntity botPlayer, EntityPositionSyncS2CPacket packet) {
      if (botPlayer == null || packet == null || packet.comp_3223() != botPlayer.method_5628() || packet.comp_3224() == null) {
        return;
      }
      
-     class_243 position = packet.comp_3224().comp_3148();
+     Vec3d position = packet.comp_3224().comp_3148();
      if (position == null) {
        return;
      }
      
      float yaw = packet.comp_3224().comp_3150();
-     float pitch = class_3532.method_15363(packet.comp_3224().comp_3151(), -90.0F, 90.0F);
+     float pitch = MathHelper.method_15363(packet.comp_3224().comp_3151(), -90.0F, 90.0F);
      botPlayer.method_5808(position.field_1352, position.field_1351, position.field_1350, yaw, pitch);
      botPlayer.method_36456(yaw);
      botPlayer.method_36457(pitch);
@@ -555,9 +555,9 @@ package shame.nazuna.api.utils.bot;
          return false;
        }  }
      
-     return false; } private static class_320 createSessionWithName(class_320 current, String name) {
+     return false; } private static Session createSessionWithName(Session current, String name) {
      try {
-       Constructor<class_320> constructor = class_320.class.getDeclaredConstructor(new Class[] { String.class, UUID.class, String.class, Optional.class, Optional.class, class_320.class_321.class });
+       Constructor<Session> constructor = Session.class.getDeclaredConstructor(new Class[] { String.class, UUID.class, String.class, Optional.class, Optional.class, Session.class_321.class });
  
  
  
@@ -571,7 +571,7 @@ package shame.nazuna.api.utils.bot;
              UUID.randomUUID(), 
              (current == null) ? "" : current.method_1674(), 
              Optional.empty(), 
-             Optional.empty(), class_320.class_321.field_1988 });
+             Optional.empty(), Session.class_321.field_1988 });
      
      }
      catch (Exception e) {
@@ -579,9 +579,9 @@ package shame.nazuna.api.utils.bot;
      } 
    }
    
-   private static void setMinecraftClientField(class_310 mc, Class<?> fieldType, Object value) {
+   private static void setMinecraftClientField(MinecraftClient mc, Class<?> fieldType, Object value) {
      try {
-       for (Field field : class_310.class.getDeclaredFields()) {
+       for (Field field : MinecraftClient.class.getDeclaredFields()) {
          if (field.getType() == fieldType) {
            field.setAccessible(true);
            field.set(mc, value);
@@ -592,13 +592,13 @@ package shame.nazuna.api.utils.bot;
    }
  
    
-   private static class_642 createServerInfo(String name, String address) {
+   private static ServerInfo createServerInfo(String name, String address) {
      String safeAddress = (address == null) ? "" : address;
      String safeName = (name == null || name.isBlank()) ? safeAddress : name;
-     return new class_642(safeName, safeAddress, class_642.class_8678.field_45611);
+     return new ServerInfo(safeName, safeAddress, ServerInfo.class_8678.field_45611);
    }
    
-   private static void restoreAfterConnectFailure(class_310 mc, BotConnection previous, class_320 originalSession, class_642 originalServerInfo) {
+   private static void restoreAfterConnectFailure(MinecraftClient mc, BotConnection previous, Session originalSession, ServerInfo originalServerInfo) {
      try {
        bypassResourcePacksDuringBotConnect = false;
        if (previous != null && activateSession(previous)) {
@@ -608,12 +608,12 @@ package shame.nazuna.api.utils.bot;
        } 
        IMinecraftClientAccessor accessor = (IMinecraftClientAccessor)mc;
        accessor.setSession(originalSession);
-       setMinecraftClientField(mc, class_642.class, originalServerInfo);
+       setMinecraftClientField(mc, ServerInfo.class, originalServerInfo);
      } catch (Exception exception) {}
    }
  
    
-   private static int disconnectSessionsByName(String name, class_2561 reason) {
+   private static int disconnectSessionsByName(String name, Text reason) {
      if (name == null || name.isBlank()) {
        return 0;
      }
@@ -662,16 +662,16 @@ package shame.nazuna.api.utils.bot;
    public static final class BotConnection {
      private final String name;
      private final String address;
-     private final class_2535 connection;
-     private final class_634 handler;
-     private final class_638 world;
-     private final class_746 player;
-     private final class_636 interactionManager;
-     private final class_320 session;
-     private final class_642 serverInfo;
+     private final ClientConnection connection;
+     private final ClientPlayNetworkHandler handler;
+     private final ClientWorld world;
+     private final ClientPlayerEntity player;
+     private final ClientPlayerInteractionManager interactionManager;
+     private final Session session;
+     private final ServerInfo serverInfo;
      private final AutoForest.SessionState autoForestState;
      
-     public BotConnection(String name, String address, class_2535 connection, class_634 handler, class_638 world, class_746 player, class_636 interactionManager, class_320 session, class_642 serverInfo, AutoForest.SessionState autoForestState) {
+     public BotConnection(String name, String address, ClientConnection connection, ClientPlayNetworkHandler handler, ClientWorld world, ClientPlayerEntity player, ClientPlayerInteractionManager interactionManager, Session session, ServerInfo serverInfo, AutoForest.SessionState autoForestState) {
        this.name = name;
        this.address = address;
        this.connection = connection;
@@ -686,13 +686,13 @@ package shame.nazuna.api.utils.bot;
      
      public String name() { return this.name; }
      public String address() { return this.address; }
-     public class_2535 connection() { return this.connection; }
-     public class_634 handler() { return this.handler; }
-     public class_638 world() { return this.world; }
-     public class_746 player() { return this.player; }
-     public class_636 interactionManager() { return this.interactionManager; }
-     public class_320 session() { return this.session; }
-     public class_642 serverInfo() { return this.serverInfo; } public AutoForest.SessionState autoForestState() {
+     public ClientConnection connection() { return this.connection; }
+     public ClientPlayNetworkHandler handler() { return this.handler; }
+     public ClientWorld world() { return this.world; }
+     public ClientPlayerEntity player() { return this.player; }
+     public ClientPlayerInteractionManager interactionManager() { return this.interactionManager; }
+     public Session session() { return this.session; }
+     public ServerInfo serverInfo() { return this.serverInfo; } public AutoForest.SessionState autoForestState() {
        return this.autoForestState;
      }
    }

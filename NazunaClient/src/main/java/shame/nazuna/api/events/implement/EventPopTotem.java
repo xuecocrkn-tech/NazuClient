@@ -1,9 +1,9 @@
 package shame.nazuna.api.events.implement;
  
- import net.minecraft.class_1657;
+ import net.minecraft.PlayerEntity;
  
  public class EventPopTotem extends Event {
-   public class_1657 getPlayer() {
+   public PlayerEntity getPlayer() {
      return this.player;
    }
  }

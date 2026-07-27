@@ -8,7 +8,7 @@ package shame.nazuna.api.commands.impl;
  import com.mojang.brigadier.suggestion.SuggestionsBuilder;
  import java.util.function.Consumer;
  import java.util.function.Supplier;
- import net.minecraft.class_2172;
+ import net.minecraft.CommandSource;
  import shame.nazuna.api.utils.chat.ChatUtils;
  import shame.nazuna.client.modules.impl.player.AutoForest;
  
@@ -18,7 +18,7 @@ package shame.nazuna.api.commands.impl;
    }
  
    
-   public void execute(LiteralArgumentBuilder<class_2172> builder) {
+   public void execute(LiteralArgumentBuilder<CommandSource> builder) {
      builder.executes(ctx -> {
            sendStatus();
            
@@ -88,8 +88,8 @@ package shame.nazuna.api.commands.impl;
            }));
    }
    
-   private LiteralArgumentBuilder<class_2172> booleanSetting(String name, Consumer<Boolean> setter, Supplier<Boolean> getter) {
-     return (LiteralArgumentBuilder<class_2172>)literal(name).then(arg("value", (ArgumentType)BoolArgumentType.bool())
+   private LiteralArgumentBuilder<CommandSource> booleanSetting(String name, Consumer<Boolean> setter, Supplier<Boolean> getter) {
+     return (LiteralArgumentBuilder<CommandSource>)literal(name).then(arg("value", (ArgumentType)BoolArgumentType.bool())
          .suggests((ctx, suggestions) -> {
              suggestions.suggest("true");
              
@@ -103,8 +103,8 @@ package shame.nazuna.api.commands.impl;
            }));
    }
    
-   private LiteralArgumentBuilder<class_2172> floatSetting(String name, Consumer<Float> setter, Supplier<Float> getter) {
-     return (LiteralArgumentBuilder<class_2172>)literal(name).then(arg("value", (ArgumentType)FloatArgumentType.floatArg())
+   private LiteralArgumentBuilder<CommandSource> floatSetting(String name, Consumer<Float> setter, Supplier<Float> getter) {
+     return (LiteralArgumentBuilder<CommandSource>)literal(name).then(arg("value", (ArgumentType)FloatArgumentType.floatArg())
          .executes(ctx -> {
              float value = FloatArgumentType.getFloat(ctx, "value");
              setter.accept(Float.valueOf(value));

@@ -3,10 +3,10 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_1799;
- import net.minecraft.class_1935;
- import net.minecraft.class_332;
- import net.minecraft.class_4587;
+ import net.minecraft.ItemStack;
+ import net.minecraft.ItemConvertible;
+ import net.minecraft.DrawContext;
+ import net.minecraft.MatrixStack;
  import shame.nazuna.api.events.implement.EventRender;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.api.utils.animation.AnimationUtils;
@@ -70,7 +70,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    }
    
    private void DefaultStyle(EventRender.Default eventRender, List<ServerHelper.HelperBind> binds) {
-     class_4587 matrices = eventRender.getContext().method_51448();
+     MatrixStack matrices = eventRender.getContext().method_51448();
      float x = this.draggable.getX();
      float y = this.draggable.getY();
      int colorTheme = getThemeColor();
@@ -104,7 +104,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    }
    
    private void WaveStyle(EventRender.Default eventRender, List<ServerHelper.HelperBind> binds) {
-     class_4587 matrices = eventRender.getContext().method_51448();
+     MatrixStack matrices = eventRender.getContext().method_51448();
      float x = this.draggable.getX();
      float y = this.draggable.getY();
      
@@ -166,8 +166,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    }
  
    
-   private void drawCompactBinds(class_332 context, List<ServerHelper.HelperBind> binds, Font keyFont, float x, float y, float height, float itemSize, float itemScale, float fontGap, float cellGap, float sidePadding, float textOffsetY) {
-     class_4587 matrices = context.method_51448();
+   private void drawCompactBinds(DrawContext context, List<ServerHelper.HelperBind> binds, Font keyFont, float x, float y, float height, float itemSize, float itemScale, float fontGap, float cellGap, float sidePadding, float textOffsetY) {
+     MatrixStack matrices = context.method_51448();
      float offsetX = x + sidePadding;
      float itemY = y + (height - itemSize) * 0.5F;
      float textY = y + textOffsetY;
@@ -175,7 +175,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      for (int i = 0; i < binds.size(); i++) {
        ServerHelper.HelperBind bind = binds.get(i);
        String keyName = KeyBoardUtils.getBindName(bind.bind().getKey());
-       drawItemIcon(context, new class_1799((class_1935)bind.item()), offsetX, itemY, itemScale);
+       drawItemIcon(context, new ItemStack((ItemConvertible)bind.item()), offsetX, itemY, itemScale);
        keyFont.draw(matrices, keyName, offsetX + itemSize + fontGap, textY, ColorUtils.rgba(255, 255, 255, 240));
        
        offsetX += itemSize + fontGap + keyFont.getWidth(keyName);
@@ -185,8 +185,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      } 
    }
    
-   private void drawItemIcon(class_332 context, class_1799 stack, float x, float y, float scale) {
-     class_4587 matrices = context.method_51448();
+   private void drawItemIcon(DrawContext context, ItemStack stack, float x, float y, float scale) {
+     MatrixStack matrices = context.method_51448();
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      RenderSystem.disableDepthTest();
@@ -200,7 +200,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      RenderSystem.disableDepthTest();
    }
    
-   private void drawDefaultPanel(class_4587 matrices, float x, float y, float width, float height, int colorTheme) {
+   private void drawDefaultPanel(MatrixStack matrices, float x, float y, float width, float height, int colorTheme) {
      RenderUtils.drawDefaultHudThemedPanel(matrices, x, y, width, height, 3.0F, 3.5F, colorTheme);
      if (isUnusualRectType()) {
        RenderUtils.drawHudSquarePattern(matrices, x, y, width, height, colorTheme);

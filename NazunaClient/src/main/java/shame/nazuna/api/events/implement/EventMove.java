@@ -2,12 +2,12 @@ package shame.nazuna.api.events.implement;
  
  
  public class EventMove extends Event {
-   private class_243 movePos;
+   private Vec3d movePos;
    
    public EventMove() {}
    
-   public EventMove(class_243 movePos) {
-   public class_243 getMovePos() {
+   public EventMove(Vec3d movePos) {
+   public Vec3d getMovePos() {
      return this.movePos;
    }
  }

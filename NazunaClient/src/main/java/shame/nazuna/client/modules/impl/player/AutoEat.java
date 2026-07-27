@@ -1,13 +1,13 @@
 package shame.nazuna.client.modules.impl.player;
- import net.minecraft.class_1268;
- import net.minecraft.class_1657;
- import net.minecraft.class_1713;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_2596;
- import net.minecraft.class_2815;
- import net.minecraft.class_2868;
- import net.minecraft.class_746;
+ import net.minecraft.Hand;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.Packet;
+ import net.minecraft.CloseHandledScreenC2SPacket;
+ import net.minecraft.UpdateSelectedSlotC2SPacket;
+ import net.minecraft.ClientPlayerEntity;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -72,7 +72,7 @@ package shame.nazuna.client.modules.impl.player;
    }
    
    private void tickEating() {
-     class_746 player = mc.field_1724;
+     ClientPlayerEntity player = mc.field_1724;
      if (player == null) {
        stopEating();
        
@@ -99,7 +99,7 @@ package shame.nazuna.client.modules.impl.player;
        
        return;
      } 
-     class_1268 eatingHand = getEatingHand(player);
+     Hand eatingHand = getEatingHand(player);
      if (eatingHand == null) {
        stopEating();
        
@@ -108,7 +108,7 @@ package shame.nazuna.client.modules.impl.player;
      mc.field_1690.field_1904.method_23481(true);
      
      if (!player.method_6115() || player.method_6058() != eatingHand) {
-       mc.field_1761.method_2919((class_1657)player, eatingHand);
+       mc.field_1761.method_2919((PlayerEntity)player, eatingHand);
      }
    }
    
@@ -127,7 +127,7 @@ package shame.nazuna.client.modules.impl.player;
    }
    
    private boolean ensureFoodReady() {
-     class_746 player = mc.field_1724;
+     ClientPlayerEntity player = mc.field_1724;
      if (player == null) {
        return false;
      }
@@ -159,21 +159,21 @@ package shame.nazuna.client.modules.impl.player;
      return isValidFood(player.method_6047());
    }
    
-   private class_1268 getEatingHand(class_746 player) {
+   private Hand getEatingHand(ClientPlayerEntity player) {
      if (player == null) {
        return null;
      }
      if (isValidFood(player.method_6079())) {
-       return class_1268.field_5810;
+       return Hand.field_5810;
      }
      if (isValidFood(player.method_6047())) {
-       return class_1268.field_5808;
+       return Hand.field_5808;
      }
      return null;
    }
    
    private int findFoodSlot() {
-     class_746 player = mc.field_1724;
+     ClientPlayerEntity player = mc.field_1724;
      if (player == null) {
        return -1;
      }
@@ -201,16 +201,16 @@ package shame.nazuna.client.modules.impl.player;
      return -1;
    }
    
-   private boolean isValidFood(class_1799 stack) {
+   private boolean isValidFood(ItemStack stack) {
      if (stack == null || stack.method_7960()) {
        return false;
      }
      
-     if (stack.method_31574(class_1802.field_8463) || stack.method_31574(class_1802.field_8367) || stack.method_31574(class_1802.field_8233)) {
+     if (stack.method_31574(Items.field_8463) || stack.method_31574(Items.field_8367) || stack.method_31574(Items.field_8233)) {
        return false;
      }
      
-     return (stack.method_7976() == class_1839.field_8950);
+     return (stack.method_7976() == UseAction.field_8950);
    }
    
    private void selectHotbarSlot(int slot) {
@@ -220,7 +220,7 @@ package shame.nazuna.client.modules.impl.player;
      
      (mc.field_1724.method_31548()).field_7545 = slot;
      if (mc.method_1562() != null) {
-       mc.method_1562().method_52787((class_2596)new class_2868(slot));
+       mc.method_1562().method_52787((Packet)new UpdateSelectedSlotC2SPacket(slot));
      }
    }
    
@@ -229,9 +229,9 @@ package shame.nazuna.client.modules.impl.player;
        return;
      }
      
-     mc.field_1761.method_2906(0, inventorySlot, hotbarSlot, class_1713.field_7791, (class_1657)mc.field_1724);
+     mc.field_1761.method_2906(0, inventorySlot, hotbarSlot, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
      if (mc.method_1562() != null) {
-       mc.method_1562().method_52787((class_2596)new class_2815(0));
+       mc.method_1562().method_52787((Packet)new CloseHandledScreenC2SPacket(0));
      }
    }
    

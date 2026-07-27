@@ -1,6 +1,6 @@
 package shame.nazuna.api.utils.render.fonts.msdf;
  
- import net.minecraft.class_4588;
+ import net.minecraft.VertexConsumer;
  import org.joml.Matrix4f;
  
  
@@ -47,7 +47,7 @@ package shame.nazuna.api.utils.render.fonts.msdf;
  
  
    
-   public float apply(Matrix4f matrix, class_4588 consumer, float size, float x, float y, float z, int red, int green, int blue, int alpha) {
+   public float apply(Matrix4f matrix, VertexConsumer consumer, float size, float x, float y, float z, int red, int green, int blue, int alpha) {
      y -= this.topPosition * size;
      y--;
      

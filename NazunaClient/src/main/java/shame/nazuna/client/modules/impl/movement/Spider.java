@@ -1,13 +1,13 @@
 package shame.nazuna.client.modules.impl.movement;
  
- import net.minecraft.class_1268;
- import net.minecraft.class_1657;
- import net.minecraft.class_1713;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_2596;
- import net.minecraft.class_2868;
- import net.minecraft.class_2886;
+ import net.minecraft.Hand;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.Packet;
+ import net.minecraft.UpdateSelectedSlotC2SPacket;
+ import net.minecraft.PlayerInteractItemC2SPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.api.storages.implement.RotationStorage;
@@ -83,7 +83,7 @@ package shame.nazuna.client.modules.impl.movement;
      } 
      
      if (this.swapBackSlot != -1) {
-       mc.field_1761.method_2906(0, this.swapBackSlot, 0, class_1713.field_7794, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(0, this.swapBackSlot, 0, SlotActionType.field_7794, (PlayerEntity)mc.field_1724);
        this.swapBackSlot = -1;
      } 
      
@@ -116,13 +116,13 @@ package shame.nazuna.client.modules.impl.movement;
        boolean bool = (bucketSlot >= 9 && bucketSlot <= 35);
        
        if (bool) {
-         mc.field_1761.method_2906(0, bucketSlot, currentSlot, class_1713.field_7791, (class_1657)mc.field_1724);
-         mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
-         mc.field_1761.method_2906(0, bucketSlot, currentSlot, class_1713.field_7791, (class_1657)mc.field_1724);
+         mc.field_1761.method_2906(0, bucketSlot, currentSlot, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+         mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
+         mc.field_1761.method_2906(0, bucketSlot, currentSlot, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
        } else {
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2868(bucketSlot));
-         mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2868(currentSlot));
+         mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(bucketSlot));
+         mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
+         mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(currentSlot));
        } 
        
        return;
@@ -130,7 +130,7 @@ package shame.nazuna.client.modules.impl.movement;
      boolean isInventorySwap = (bucketSlot >= 9 && bucketSlot <= 35);
      
      if (isInventorySwap) {
-       mc.field_1761.method_2906(0, bucketSlot, (mc.field_1724.method_31548()).field_7545, class_1713.field_7791, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(0, bucketSlot, (mc.field_1724.method_31548()).field_7545, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
        this.swapBackSlot = bucketSlot;
      } else if ((mc.field_1724.method_31548()).field_7545 != bucketSlot) {
        if (this.lastSlot == -1) {
@@ -139,13 +139,13 @@ package shame.nazuna.client.modules.impl.movement;
        (mc.field_1724.method_31548()).field_7545 = bucketSlot;
      } 
      
-     mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
+     mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
    }
    
    private void keepChargeHeld() {
      if (isChargeItem(mc.field_1724.method_6079())) {
        if (!this.charging || this.spookyTicks % 12 == 0) {
-         sendChargeUsePacket(class_1268.field_5810);
+         sendChargeUsePacket(Hand.field_5810);
        }
        this.charging = true;
        
@@ -158,24 +158,24 @@ package shame.nazuna.client.modules.impl.movement;
      if (this.chargeSlot == -1)
        return; 
      if ((mc.field_1724.method_31548()).field_7545 != this.chargeSlot) {
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2868(this.chargeSlot));
+       mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(this.chargeSlot));
        (mc.field_1724.method_31548()).field_7545 = this.chargeSlot;
        this.charging = false;
      } 
      
      if (!this.charging || this.spookyTicks % 12 == 0) {
-       sendChargeUsePacket(class_1268.field_5808);
+       sendChargeUsePacket(Hand.field_5808);
      }
      this.charging = true;
    }
    
-   private void sendChargeUsePacket(class_1268 hand) {
-     mc.field_1724.field_3944.method_52787((class_2596)new class_2886(hand, 0, mc.field_1724.method_36454(), mc.field_1724.method_36455()));
+   private void sendChargeUsePacket(Hand hand) {
+     mc.field_1724.field_3944.method_52787((Packet)new PlayerInteractItemC2SPacket(hand, 0, mc.field_1724.method_36454(), mc.field_1724.method_36455()));
    }
    private int getBucketSlot(boolean allowLava) {
      int i;
      for (i = 0; i < 9; i++) {
-       class_1799 stack = mc.field_1724.method_31548().method_5438(i);
+       ItemStack stack = mc.field_1724.method_31548().method_5438(i);
        if (isBucket(stack, allowLava)) {
          return i;
        }
@@ -183,7 +183,7 @@ package shame.nazuna.client.modules.impl.movement;
      
      if (!this.legit.isState() || this.mode.is("SpookyTime")) {
        for (i = 9; i < 36; i++) {
-         class_1799 stack = mc.field_1724.method_31548().method_5438(i);
+         ItemStack stack = mc.field_1724.method_31548().method_5438(i);
          if (isBucket(stack, allowLava)) {
            return i;
          }
@@ -202,12 +202,12 @@ package shame.nazuna.client.modules.impl.movement;
      return -1;
    }
    
-   private boolean isBucket(class_1799 stack, boolean allowLava) {
-     return (stack.method_7909() == class_1802.field_8705 || (allowLava && stack.method_7909() == class_1802.field_8187));
+   private boolean isBucket(ItemStack stack, boolean allowLava) {
+     return (stack.method_7909() == Items.field_8705 || (allowLava && stack.method_7909() == Items.field_8187));
    }
    
-   private boolean isChargeItem(class_1799 stack) {
-     return (stack.method_7909() instanceof net.minecraft.class_1753 || stack.method_7909() instanceof net.minecraft.class_1835);
+   private boolean isChargeItem(ItemStack stack) {
+     return (stack.method_7909() instanceof net.minecraft.BowItem || stack.method_7909() instanceof net.minecraft.TridentItem);
    }
  }
 

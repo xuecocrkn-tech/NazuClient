@@ -2,14 +2,14 @@ package shame.nazuna.client.modules.impl.player;
  import java.util.Comparator;
  import java.util.HashSet;
  import java.util.Set;
- import net.minecraft.class_1268;
- import net.minecraft.class_1922;
- import net.minecraft.class_2338;
- import net.minecraft.class_2350;
- import net.minecraft.class_2382;
- import net.minecraft.class_243;
- import net.minecraft.class_2680;
- import net.minecraft.class_7923;
+ import net.minecraft.Hand;
+ import net.minecraft.BlockView;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Direction;
+ import net.minecraft.Vec3i;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BlockState;
+ import net.minecraft.Registries;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
  import shame.nazuna.client.modules.settings.Setting;
@@ -24,7 +24,7 @@ package shame.nazuna.client.modules.impl.player;
    private final BooleanSetting swing = new BooleanSetting("Анимация руки", true);
    
    private final Set<String> targetBlocks = new HashSet<>();
-   private class_2338 currentTargetBlock;
+   private BlockPos currentTargetBlock;
    
    public Nuker() {
      super("Nuker", "Автоматически ломает блоки в радиусе", Module.ModuleCategory.PLAYER);
@@ -58,29 +58,29 @@ package shame.nazuna.client.modules.impl.player;
        shouldBreak(this.currentTargetBlock));
    }
    
-   private class_2338 findNewTarget() {
+   private BlockPos findNewTarget() {
      int range = Math.round(this.radius.get());
-     class_2338 playerPos = mc.field_1724.method_24515();
+     BlockPos playerPos = mc.field_1724.method_24515();
      
-     return class_2338.method_20437(playerPos
+     return BlockPos.method_20437(playerPos
          .method_10069(-range, 0, -range), playerPos
          .method_10069(range, range, range))
        
-       .map(class_2338::method_10062)
+       .map(BlockPos::method_10062)
        .filter(this::isInRange)
        .filter(this::shouldBreak)
-       .min(Comparator.comparingDouble(pos -> mc.field_1724.method_5707(class_243.method_24953((class_2382)pos))))
+       .min(Comparator.comparingDouble(pos -> mc.field_1724.method_5707(Vec3d.method_24953((Vec3i)pos))))
        .orElse(null);
    }
    
-   private boolean isInRange(class_2338 pos) {
+   private boolean isInRange(BlockPos pos) {
      double maxDistance = this.radius.get();
-     return (mc.field_1724.method_5707(class_243.method_24953((class_2382)pos)) <= maxDistance * maxDistance);
+     return (mc.field_1724.method_5707(Vec3d.method_24953((Vec3i)pos)) <= maxDistance * maxDistance);
    }
    
-   private boolean shouldBreak(class_2338 pos) {
-     class_2680 state = mc.field_1687.method_8320(pos);
-     if (state == null || state.method_26215() || state.method_26214((class_1922)mc.field_1687, pos) < 0.0F) {
+   private boolean shouldBreak(BlockPos pos) {
+     BlockState state = mc.field_1687.method_8320(pos);
+     if (state == null || state.method_26215() || state.method_26214((BlockView)mc.field_1687, pos) < 0.0F) {
        return false;
      }
      
@@ -88,7 +88,7 @@ package shame.nazuna.client.modules.impl.player;
        return true;
      }
      
-     String blockName = class_7923.field_41175.method_10221(state.method_26204()).method_12832().toLowerCase();
+     String blockName = Registries.field_41175.method_10221(state.method_26204()).method_12832().toLowerCase();
      return this.targetBlocks.contains(blockName);
    }
    
@@ -97,11 +97,11 @@ package shame.nazuna.client.modules.impl.player;
        return;
      }
      
-     mc.field_1761.method_2910(this.currentTargetBlock, class_2350.field_11036);
-     mc.field_1761.method_2902(this.currentTargetBlock, class_2350.field_11036);
+     mc.field_1761.method_2910(this.currentTargetBlock, Direction.field_11036);
+     mc.field_1761.method_2902(this.currentTargetBlock, Direction.field_11036);
      
      if (this.swing.isState()) {
-       mc.field_1724.method_6104(class_1268.field_5808);
+       mc.field_1724.method_6104(Hand.field_5808);
      }
      
      if (mc.field_1687.method_8320(this.currentTargetBlock).method_26215()) {

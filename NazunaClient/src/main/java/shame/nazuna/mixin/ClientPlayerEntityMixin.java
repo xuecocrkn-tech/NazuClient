@@ -1,13 +1,13 @@
 package shame.nazuna.mixin;
  import com.mojang.authlib.GameProfile;
- import net.minecraft.class_1313;
- import net.minecraft.class_1657;
- import net.minecraft.class_1937;
- import net.minecraft.class_2338;
- import net.minecraft.class_243;
- import net.minecraft.class_2596;
- import net.minecraft.class_304;
- import net.minecraft.class_746;
+ import net.minecraft.MovementType;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.World;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Packet;
+ import net.minecraft.KeyBinding;
+ import net.minecraft.ClientPlayerEntity;
  import org.jetbrains.annotations.NotNull;
  import org.spongepowered.asm.mixin.Final;
  import org.spongepowered.asm.mixin.Shadow;
@@ -29,27 +29,27 @@ package shame.nazuna.mixin;
  import shame.nazuna.api.utils.player.ViaProtocolUtils;
  import shame.nazuna.client.modules.impl.combat.Aura;
  
- @Mixin({class_746.class})
- public abstract class ClientPlayerEntityMixin extends class_1657 implements QClient {
-   public ClientPlayerEntityMixin(class_1937 world, class_2338 pos, float yaw, GameProfile gameProfile) {
+ @Mixin({ClientPlayerEntity.class})
+ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements QClient {
+   public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
      super(world, pos, yaw, gameProfile);
    }
    
    @Shadow
    @Final
-   public class_634 field_3944;
+   public ClientPlayNetworkHandler field_3944;
    
    @Shadow
    public abstract void method_3137();
    
-   @Inject(method = {"method_5773"}, at = {@At(value = "HEAD", target = "Lnet/minecraft/class_742;method_5773()V")})
+   @Inject(method = {"method_5773"}, at = {@At(value = "HEAD", target = "Lnet/minecraft/AbstractClientPlayerEntity;method_5773()V")})
    private void onTick(CallbackInfo ci) {
      if (EventInvoker.hasListeners(EventUpdate.class)) {
        (new EventUpdate()).call();
      }
    }
    
-   @Inject(method = {"method_5773"}, at = {@At(value = "TAIL", target = "Lnet/minecraft/class_742;method_5773()V")})
+   @Inject(method = {"method_5773"}, at = {@At(value = "TAIL", target = "Lnet/minecraft/AbstractClientPlayerEntity;method_5773()V")})
    private void onTickPost(CallbackInfo ci) {
      if (EventInvoker.hasListeners(EventUpdatePost.class)) {
        (new EventUpdatePost()).call();
@@ -74,8 +74,8 @@ package shame.nazuna.mixin;
  
  
    
-   @Redirect(method = {"method_6007"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/class_304;method_1434()Z", ordinal = 1), require = 0)
-   private boolean onSprintKeyPressed(class_304 instance) {
+   @Redirect(method = {"method_6007"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/KeyBinding;method_1434()Z", ordinal = 1), require = 0)
+   private boolean onSprintKeyPressed(KeyBinding instance) {
      if (ViaProtocolUtils.isTargetProtocolBelowOneNineteen() && (this.field_5976 || this.field_34927)) {
        return false;
      }
@@ -95,8 +95,8 @@ package shame.nazuna.mixin;
  
  
    
-   @Redirect(method = {"method_6007"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/class_746;method_6115()Z"), require = 0)
-   private boolean onSlowDownRedirect(class_746 player) {
+   @Redirect(method = {"method_6007"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/ClientPlayerEntity;method_6115()Z"), require = 0)
+   private boolean onSlowDownRedirect(ClientPlayerEntity player) {
      if (player.method_6115()) {
        EventSlowWalking event = new EventSlowWalking();
        event.call();
@@ -113,7 +113,7 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_5784"}, at = {@At("HEAD")}, cancellable = true)
-   private void onMoveHook(class_1313 movementType, class_243 movement, @NotNull CallbackInfo ci) {
+   private void onMoveHook(MovementType movementType, Vec3d movement, @NotNull CallbackInfo ci) {
      EventMove event = new EventMove(movement);
      event.call();
      
@@ -140,7 +140,7 @@ package shame.nazuna.mixin;
      EventCloseInv event = new EventCloseInv(syncId);
      event.call();
      if (!event.isCancelled()) {
-       this.field_3944.method_52787((class_2596)new class_2815(syncId));
+       this.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(syncId));
      }
      method_3137();
      ci.cancel();

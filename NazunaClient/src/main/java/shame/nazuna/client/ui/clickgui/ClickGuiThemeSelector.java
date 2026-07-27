@@ -1,8 +1,8 @@
 package shame.nazuna.client.ui.clickgui;
  
  import it.unimi.dsi.fastutil.objects.ObjectArrayList;
- import net.minecraft.class_1041;
- import net.minecraft.class_332;
+ import net.minecraft.Window;
+ import net.minecraft.DrawContext;
  import shame.nazuna.api.storages.implement.ThemeStorage;
  import shame.nazuna.api.utils.color.ColorUtils;
  import shame.nazuna.api.utils.math.HoveringUtils;
@@ -10,7 +10,7 @@ package shame.nazuna.client.ui.clickgui;
  import shame.nazuna.astra;
  
  public class ClickGuiThemeSelector {
-   public void render(class_332 context, class_1041 window, float offsetY, float alphaMul, int shadeColor) {
+   public void render(DrawContext context, Window window, float offsetY, float alphaMul, int shadeColor) {
      if (context == null || window == null) {
        return;
      }
@@ -70,7 +70,7 @@ package shame.nazuna.client.ui.clickgui;
    }
  
    
-   public boolean handleClick(class_1041 window, double mouseX, double mouseY, int button, float offsetY) {
+   public boolean handleClick(Window window, double mouseX, double mouseY, int button, float offsetY) {
      if (window == null || button != 0) {
        return false;
      }
@@ -110,7 +110,7 @@ package shame.nazuna.client.ui.clickgui;
      return color;
    }
    
-   private float getThemePanelX(class_1041 window, float panelWidth) {
+   private float getThemePanelX(Window window, float panelWidth) {
      return window.method_4486() / 2.0F - panelWidth / 2.0F;
    }
  }

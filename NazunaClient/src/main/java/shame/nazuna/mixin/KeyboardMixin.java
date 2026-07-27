@@ -1,6 +1,6 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_309;
+ import net.minecraft.Keyboard;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
@@ -10,7 +10,7 @@ package shame.nazuna.mixin;
  import shame.nazuna.api.events.implement.EventChunkReload;
  import shame.nazuna.api.utils.input.KeyBoardUtils;
  
- @Mixin({class_309.class})
+ @Mixin({Keyboard.class})
  public class KeyboardMixin
    implements QClient {
    @Inject(method = {"method_1466"}, at = {@At("HEAD")})

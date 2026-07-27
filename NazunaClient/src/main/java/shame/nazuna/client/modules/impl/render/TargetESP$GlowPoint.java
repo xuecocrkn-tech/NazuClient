@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_3532;
+ import net.minecraft.MathHelper;
  
  
  
@@ -1024,7 +1024,7 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    float getTimeProgress() {
-     return class_3532.method_15363((float)(System.currentTimeMillis() - this.startTime) / this.maxLife, 0.0F, 1.0F);
+     return MathHelper.method_15363((float)(System.currentTimeMillis() - this.startTime) / this.maxLife, 0.0F, 1.0F);
    }
    
    int getColor(float timePC) {

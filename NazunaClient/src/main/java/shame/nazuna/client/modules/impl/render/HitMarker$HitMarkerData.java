@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -171,13 +171,13 @@ package shame.nazuna.client.modules.impl.render;
  
  class HitMarkerData
  {
-   class_243 position;
+   Vec3d position;
    long birthTime;
    long fadeInTime;
    long displayTime;
    long fadeOutTime;
    
-   HitMarkerData(class_243 position, long birthTime, long fadeInTime, long displayTime, long fadeOutTime) {
+   HitMarkerData(Vec3d position, long birthTime, long fadeInTime, long displayTime, long fadeOutTime) {
      this.position = position;
      this.birthTime = birthTime;
      this.fadeInTime = fadeInTime;

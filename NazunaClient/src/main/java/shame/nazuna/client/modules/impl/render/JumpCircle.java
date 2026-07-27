@@ -4,17 +4,17 @@ package shame.nazuna.client.modules.impl.render;
  import java.util.ArrayList;
  import java.util.Iterator;
  import java.util.List;
- import net.minecraft.class_10142;
- import net.minecraft.class_243;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_2960;
- import net.minecraft.class_3532;
- import net.minecraft.class_4587;
- import net.minecraft.class_7833;
+ import net.minecraft.ShaderProgramKeys;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.Identifier;
+ import net.minecraft.MathHelper;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.RotationAxis;
  import org.joml.Matrix4f;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.Event3DRender;
@@ -41,7 +41,7 @@ package shame.nazuna.client.modules.impl.render;
    private final FloatSetting fadeSpeed = new FloatSetting("Скорость исчезновения", 1.5F, 1.0F, 5.0F, 0.5F);
    
    private final List<CircleData> circles = new ArrayList<>();
-   private final class_2960 circleTexture = class_2960.method_60655("astra", "textures/jumpcircle/circle.png");
+   private final Identifier circleTexture = Identifier.method_60655("astra", "textures/jumpcircle/circle.png");
    
    private boolean wasOnGround = true;
    
@@ -73,7 +73,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
        
-       class_243 pos = new class_243(mc.field_1724.method_23317(), Math.floor(mc.field_1724.method_23318()) + 0.001D, mc.field_1724.method_23321());
+       Vec3d pos = new Vec3d(mc.field_1724.method_23317(), Math.floor(mc.field_1724.method_23318()) + 0.001D, mc.field_1724.method_23321());
        
        this.circles.add(new CircleData(pos, System.currentTimeMillis()));
        while (this.circles.size() > 8) {
@@ -98,15 +98,15 @@ package shame.nazuna.client.modules.impl.render;
      if (this.circles.isEmpty())
        return; 
      long now = System.currentTimeMillis();
-     class_243 cameraPos = event.getCamera().method_19326();
-     class_4587 matrices = event.getMatrices();
+     Vec3d cameraPos = event.getCamera().method_19326();
+     MatrixStack matrices = event.getMatrices();
      
      RenderSystem.enableBlend();
      RenderSystem.enableDepthTest();
      RenderSystem.depthMask(false);
      RenderSystem.disableCull();
      RenderSystem.blendFunc(770, 1);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      RenderSystem.setShaderTexture(0, this.circleTexture);
      
      for (CircleData circle : this.circles) {
@@ -135,11 +135,11 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private float getAlpha(float progress) {
-     float fade = class_3532.method_15363(progress * this.fadeSpeed.get(), 0.0F, 1.0F);
+     float fade = MathHelper.method_15363(progress * this.fadeSpeed.get(), 0.0F, 1.0F);
      return 1.0F - fade;
    }
    
-   private void renderGlowCircle(class_4587 matrices, class_243 cameraPos, CircleData circle, float progress, float alpha, long now) {
+   private void renderGlowCircle(MatrixStack matrices, Vec3d cameraPos, CircleData circle, float progress, float alpha, long now) {
      float lifeTimeSec = (float)(now - circle.startTimeMs) / 1000.0F;
      float easedProgress = easeOutCubic(progress);
      float scale = Math.min(easedProgress * this.radius.get(), this.radius.get());
@@ -149,36 +149,36 @@ package shame.nazuna.client.modules.impl.render;
      
      float pulse = (float)Math.sin((lifeTimeSec * 7.0F * this.speed.get()));
      float pulseScale = 1.0F + pulse * 0.06F;
-     float pulseAlpha = class_3532.method_15363(alpha * (1.0F + pulse * 0.12F), 0.0F, 1.0F);
-     float alphaBoost = class_3532.method_15363(pulseAlpha * 1.25F, 0.0F, 1.0F);
+     float pulseAlpha = MathHelper.method_15363(alpha * (1.0F + pulse * 0.12F), 0.0F, 1.0F);
+     float alphaBoost = MathHelper.method_15363(pulseAlpha * 1.25F, 0.0F, 1.0F);
      float finalScale = scale * pulseScale;
      
      int baseTheme = getStableThemeColor();
      int secondaryTheme = getStableThemeSecondaryColor();
      int colorA = ColorUtils.setAlphaColor(baseTheme, (int)(255.0F * alphaBoost));
      int colorB = ColorUtils.setAlphaColor(secondaryTheme, (int)(255.0F * alphaBoost));
-     int darkA = ColorUtils.setAlphaColor(ColorUtils.darken(baseTheme, 0.65F), (int)(255.0F * class_3532.method_15363(alphaBoost * 0.9F, 0.0F, 1.0F)));
-     int darkB = ColorUtils.setAlphaColor(ColorUtils.darken(secondaryTheme, 0.65F), (int)(255.0F * class_3532.method_15363(alphaBoost * 0.9F, 0.0F, 1.0F)));
+     int darkA = ColorUtils.setAlphaColor(ColorUtils.darken(baseTheme, 0.65F), (int)(255.0F * MathHelper.method_15363(alphaBoost * 0.9F, 0.0F, 1.0F)));
+     int darkB = ColorUtils.setAlphaColor(ColorUtils.darken(secondaryTheme, 0.65F), (int)(255.0F * MathHelper.method_15363(alphaBoost * 0.9F, 0.0F, 1.0F)));
      
      matrices.method_22903();
      matrices.method_22904(circle.pos.field_1352 - cameraPos.field_1352, circle.pos.field_1351 - cameraPos.field_1351, circle.pos.field_1350 - cameraPos.field_1350);
-     matrices.method_22907(class_7833.field_40714.rotationDegrees(90.0F));
-     matrices.method_22907(class_7833.field_40718.rotationDegrees(rotation));
+     matrices.method_22907(RotationAxis.field_40714.rotationDegrees(90.0F));
+     matrices.method_22907(RotationAxis.field_40718.rotationDegrees(rotation));
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      float half = finalScale * 0.5F;
      float thickScale = finalScale * 1.08F;
      float thickHalf = thickScale * 0.5F;
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      addTexturedQuad(buffer, matrix, -half, -half, half, half, colorA, colorB);
      addTexturedQuad(buffer, matrix, -thickHalf, -thickHalf, thickHalf, thickHalf, darkA, darkB);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      matrices.method_22909();
    }
    
-   private void addTexturedQuad(class_287 buffer, Matrix4f matrix, float x1, float y1, float x2, float y2, int colorA, int colorB) {
+   private void addTexturedQuad(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float x2, float y2, int colorA, int colorB) {
      int aR = colorA >> 16 & 0xFF;
      int aG = colorA >> 8 & 0xFF;
      int aB = colorA & 0xFF;
@@ -212,8 +212,8 @@ package shame.nazuna.client.modules.impl.render;
      float u = 1.0F - t;
      return 1.0F - u * u * u;
    }
-   private static final class CircleData extends Record { private final class_243 pos; private final long startTimeMs;
-     private CircleData(class_243 pos, long startTimeMs) { this.pos = pos; this.startTimeMs = startTimeMs; } public final String toString() { // Byte code:
+   private static final class CircleData extends Record { private final Vec3d pos; private final long startTimeMs;
+     private CircleData(Vec3d pos, long startTimeMs) { this.pos = pos; this.startTimeMs = startTimeMs; } public final String toString() { // Byte code:
        //   0: aload_0
        //   1: <illegal opcode> toString : (Lshame/astra/client/modules/impl/render/JumpCircle$CircleData;)Ljava/lang/String;
        //   6: areturn
@@ -222,7 +222,7 @@ package shame.nazuna.client.modules.impl.render;
        //   #216	-> 0
        // Local variable table:
        //   start	length	slot	name	descriptor
-       //   0	7	0	this	Lshame/astra/client/modules/impl/render/JumpCircle$CircleData; } public class_243 pos() { return this.pos; } public final int hashCode() { // Byte code:
+       //   0	7	0	this	Lshame/astra/client/modules/impl/render/JumpCircle$CircleData; } public Vec3d pos() { return this.pos; } public final int hashCode() { // Byte code:
        //   0: aload_0
        //   1: <illegal opcode> hashCode : (Lshame/astra/client/modules/impl/render/JumpCircle$CircleData;)I
        //   6: ireturn

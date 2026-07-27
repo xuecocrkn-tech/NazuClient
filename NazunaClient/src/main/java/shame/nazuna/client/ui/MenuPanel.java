@@ -1,10 +1,10 @@
 package shame.nazuna.client.ui;
  
- import net.minecraft.class_1041;
- import net.minecraft.class_2561;
- import net.minecraft.class_332;
- import net.minecraft.class_3532;
- import net.minecraft.class_437;
+ import net.minecraft.Window;
+ import net.minecraft.Text;
+ import net.minecraft.DrawContext;
+ import net.minecraft.MathHelper;
+ import net.minecraft.Screen;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.utils.animation.AnimationUtils;
  import shame.nazuna.api.utils.animation.Easings;
@@ -17,7 +17,7 @@ package shame.nazuna.client.ui;
  import shame.nazuna.client.ui.clickgui.ClickGuiThemeSelector;
  
  public class MenuPanel
-   extends class_437 implements QClient {
+   extends Screen implements QClient {
    private static final ClickGuiState SHARED_STATE = new ClickGuiState();
    private final int categoryCount = (Module.ModuleCategory.values()).length;
    private final ClickGuiState state = SHARED_STATE;
@@ -29,16 +29,16 @@ package shame.nazuna.client.ui;
    private boolean closeSoundPlayed;
    
    public MenuPanel() {
-     super(class_2561.method_30163("ClickGui"));
+     super(Text.method_30163("ClickGui"));
      this.state.refreshModules();
    }
    
-   private class_1041 getWindow() {
+   private Window getWindow() {
      return (mc == null) ? null : mc.method_22683();
    }
    
    private void syncLayout() {
-     class_1041 window = getWindow();
+     Window window = getWindow();
      if (window != null) {
        this.state.updatePosition(window, this.categoryCount);
      }
@@ -46,11 +46,11 @@ package shame.nazuna.client.ui;
  
  
    
-   public void method_25420(class_332 context, int mouseX, int mouseY, float delta) {}
+   public void method_25420(DrawContext context, int mouseX, int mouseY, float delta) {}
  
    
-   public void method_25394(class_332 context, int mouseX, int mouseY, float delta) {
-     class_1041 window = getWindow();
+   public void method_25394(DrawContext context, int mouseX, int mouseY, float delta) {
+     Window window = getWindow();
      if (window == null) {
        return;
      }
@@ -162,7 +162,7 @@ package shame.nazuna.client.ui;
    }
    
    private float getAnimationProgress() {
-     return class_3532.method_15363(this.openAnimation.getValue(), 0.0F, 1.0F);
+     return MathHelper.method_15363(this.openAnimation.getValue(), 0.0F, 1.0F);
    }
    
    private float getPanelOffsetY(float progress) {

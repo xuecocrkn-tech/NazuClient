@@ -1,11 +1,11 @@
 package shame.nazuna.api.utils.input;
  
  import java.util.Objects;
- import net.minecraft.class_10185;
- import net.minecraft.class_1297;
- import net.minecraft.class_243;
- import net.minecraft.class_3532;
- import net.minecraft.class_746;
+ import net.minecraft.PlayerInput;
+ import net.minecraft.Entity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MathHelper;
+ import net.minecraft.ClientPlayerEntity;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.events.implement.EventMoveInput;
  import shame.nazuna.api.storages.implement.FreeLookStorage;
@@ -37,7 +37,7 @@ package shame.nazuna.api.utils.input;
      return new double[] { xMovement, zMovement };
    }
    
-   public static double getSpeedSqrt(class_1297 entity) {
+   public static double getSpeedSqrt(Entity entity) {
      double dx = entity.method_23317() - entity.field_6014;
      double dy = entity.method_23318() - entity.field_6036;
      double dz = entity.method_23321() - entity.field_5969;
@@ -46,21 +46,21 @@ package shame.nazuna.api.utils.input;
    
    public static void setVelocity(double velocity) {
      double[] direction = calculateDirection(velocity);
-     ((class_746)Objects.<class_746>requireNonNull(mc.field_1724)).method_18800(direction[0], mc.field_1724.method_18798().method_10214(), direction[1]);
+     ((ClientPlayerEntity)Objects.<ClientPlayerEntity>requireNonNull(mc.field_1724)).method_18800(direction[0], mc.field_1724.method_18798().method_10214(), direction[1]);
    }
    
    public static void setVelocity(double velocity, double y) {
      double[] direction = calculateDirection(velocity);
-     ((class_746)Objects.<class_746>requireNonNull(mc.field_1724)).method_18800(direction[0], y, direction[1]);
+     ((ClientPlayerEntity)Objects.<ClientPlayerEntity>requireNonNull(mc.field_1724)).method_18800(direction[0], y, direction[1]);
    }
    
-   public static double getDegreesRelativeToView(class_243 positionRelativeToPlayer, float yaw) {
+   public static double getDegreesRelativeToView(Vec3d positionRelativeToPlayer, float yaw) {
      float optimalYaw = (float)Math.atan2(-positionRelativeToPlayer.field_1352, positionRelativeToPlayer.field_1350);
-     double currentYaw = Math.toRadians(class_3532.method_15393(yaw));
-     return Math.toDegrees(class_3532.method_15338(optimalYaw - currentYaw));
+     double currentYaw = Math.toRadians(MathHelper.method_15393(yaw));
+     return Math.toDegrees(MathHelper.method_15338(optimalYaw - currentYaw));
    }
    
-   public static class_10185 getDirectionalInputForDegrees(class_10185 input, double dgs, float deadAngle) {
+   public static PlayerInput getDirectionalInputForDegrees(PlayerInput input, double dgs, float deadAngle) {
      boolean forwards = input.comp_3159();
      boolean backwards = input.comp_3160();
      boolean left = input.comp_3161();
@@ -77,14 +77,14 @@ package shame.nazuna.api.utils.input;
        left = true;
      } 
      
-     return new class_10185(forwards, backwards, left, right, input.comp_3163(), input.comp_3164(), input.comp_3165());
+     return new PlayerInput(forwards, backwards, left, right, input.comp_3163(), input.comp_3164(), input.comp_3165());
    }
    
    public static void fixMovementFocus(EventMoveInput event, float yaw) {
      float forward = event.getForward();
      float strafe = event.getStrafe();
      if (forward != 0.0F || strafe != 0.0F) {
-       double targetAngle = class_3532.method_15338(Math.toDegrees(direction(yaw, forward, strafe)));
+       double targetAngle = MathHelper.method_15338(Math.toDegrees(direction(yaw, forward, strafe)));
        float bestForward = 0.0F;
        float bestStrafe = 0.0F;
        float smallestDifference = Float.MAX_VALUE;
@@ -92,8 +92,8 @@ package shame.nazuna.api.utils.input;
        for (testForward = -1.0F; testForward <= 1.0F; testForward++) {
          float testStrafe; for (testStrafe = -1.0F; testStrafe <= 1.0F; testStrafe++) {
            if (testForward != 0.0F || testStrafe != 0.0F) {
-             double testAngle = class_3532.method_15338(Math.toDegrees(direction(yaw, testForward, testStrafe)));
-             float difference = Math.abs(class_3532.method_15393((float)(targetAngle - testAngle)));
+             double testAngle = MathHelper.method_15338(Math.toDegrees(direction(yaw, testForward, testStrafe)));
+             float difference = Math.abs(MathHelper.method_15393((float)(targetAngle - testAngle)));
              if (difference < smallestDifference) {
                smallestDifference = difference;
                bestForward = testForward;
@@ -111,7 +111,7 @@ package shame.nazuna.api.utils.input;
    public static void fixMovementFree(EventMoveInput event) {
      float forward = event.getForward();
      float strafe = event.getStrafe();
-     double angle = class_3532.method_15338(Math.toDegrees(direction(mc.field_1724.method_6128() ? mc.field_1724.method_36454() : FreeLookStorage.getFreeYaw(), forward, strafe)));
+     double angle = MathHelper.method_15338(Math.toDegrees(direction(mc.field_1724.method_6128() ? mc.field_1724.method_36454() : FreeLookStorage.getFreeYaw(), forward, strafe)));
      if (forward != 0.0F || strafe != 0.0F) {
        float closestForward = 0.0F;
        float closestStrafe = 0.0F;
@@ -120,7 +120,7 @@ package shame.nazuna.api.utils.input;
        for (predictedForward = -1.0F; predictedForward <= 1.0F; predictedForward++) {
          float predictedStrafe; for (predictedStrafe = -1.0F; predictedStrafe <= 1.0F; predictedStrafe++) {
            if (predictedStrafe != 0.0F || predictedForward != 0.0F) {
-             double predictedAngle = class_3532.method_15338(Math.toDegrees(direction(mc.field_1724.method_36454(), predictedForward, predictedStrafe)));
+             double predictedAngle = MathHelper.method_15338(Math.toDegrees(direction(mc.field_1724.method_36454(), predictedForward, predictedStrafe)));
              double difference = Math.abs(angle - predictedAngle);
              if (difference < closestDifference) {
                closestDifference = (float)difference;
@@ -161,7 +161,7 @@ package shame.nazuna.api.utils.input;
      return Math.toRadians(rotationYaw);
    }
    
-   public static class_10185 getDirectionalInputForDegrees(class_10185 input, double dgs) {
+   public static PlayerInput getDirectionalInputForDegrees(PlayerInput input, double dgs) {
      return getDirectionalInputForDegrees(input, dgs, 20.0F);
    }
    

@@ -1,17 +1,17 @@
 package shame.nazuna.client.modules.impl.movement;
  
  import com.mojang.blaze3d.systems.RenderSystem;
- import net.minecraft.class_10142;
- import net.minecraft.class_238;
- import net.minecraft.class_243;
- import net.minecraft.class_2596;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_4050;
- import net.minecraft.class_4587;
+ import net.minecraft.ShaderProgramKeys;
+ import net.minecraft.Box;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Packet;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.EntityPose;
+ import net.minecraft.MatrixStack;
  import org.joml.Matrix4f;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.Event3DRender;
@@ -23,7 +23,7 @@ package shame.nazuna.client.modules.impl.movement;
  public class FreeCam extends Module {
    public static FreeCam INSTANCE = new FreeCam();
    
-   public class_243 pos;
+   public Vec3d pos;
    
    public FreeCam() {
      super("FreeCam", "Обзор местности за фейк игрока", Module.ModuleCategory.MOVEMENT);
@@ -47,11 +47,11 @@ package shame.nazuna.client.modules.impl.movement;
    
    @EventLink
    public void onEvent(EventPacket event) {
-     class_2596<?> packet = event.getPacket();
+     Packet<?> packet = event.getPacket();
      
-     if (packet instanceof net.minecraft.class_2828) {
+     if (packet instanceof net.minecraft.PlayerMoveC2SPacket) {
        event.cancel();
-     } else if (packet instanceof net.minecraft.class_2724 || packet instanceof net.minecraft.class_2678) {
+     } else if (packet instanceof net.minecraft.PlayerRespawnS2CPacket || packet instanceof net.minecraft.GameJoinS2CPacket) {
        toggle();
      } 
    }
@@ -63,7 +63,7 @@ package shame.nazuna.client.modules.impl.movement;
      float width = mc.field_1724.method_17681() / 2.0F;
      float height = mc.field_1724.method_17682();
      
-     class_238 box = new class_238(this.pos.field_1352 - width, this.pos.field_1351, this.pos.field_1350 - width, this.pos.field_1352 + width, this.pos.field_1351 + height, this.pos.field_1350 + width);
+     Box box = new Box(this.pos.field_1352 - width, this.pos.field_1351, this.pos.field_1350 - width, this.pos.field_1352 + width, this.pos.field_1351 + height, this.pos.field_1350 + width);
  
  
  
@@ -75,7 +75,7 @@ package shame.nazuna.client.modules.impl.movement;
      drawHitbox(event.getMatrices(), box, event.getCamera().method_19326());
    }
    
-   private void drawHitbox(class_4587 matrices, class_238 box, class_243 camera) {
+   private void drawHitbox(MatrixStack matrices, Box box, Vec3d camera) {
      double x1 = box.field_1323 - camera.field_1352;
      double y1 = box.field_1322 - camera.field_1351;
      double z1 = box.field_1321 - camera.field_1350;
@@ -85,16 +85,16 @@ package shame.nazuna.client.modules.impl.movement;
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      
-     class_289 tessellator = class_289.method_1348();
+     Tessellator tessellator = Tessellator.method_1348();
      
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      RenderSystem.disableCull();
      RenderSystem.disableDepthTest();
-     RenderSystem.setShader(class_10142.field_53876);
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
      RenderSystem.lineWidth(1.5F);
      
-     class_287 buffer = tessellator.method_60827(class_293.class_5596.field_29344, class_290.field_1576);
+     BufferBuilder buffer = tessellator.method_60827(VertexFormat.class_5596.field_29344, VertexFormats.field_1576);
      
      float r = 1.0F;
      float g = 1.0F;
@@ -137,7 +137,7 @@ package shame.nazuna.client.modules.impl.movement;
      buffer.method_22918(matrix, (float)x1, (float)y1, (float)z2).method_22915(r, g, b, a);
      buffer.method_22918(matrix, (float)x1, (float)y2, (float)z2).method_22915(r, g, b, a);
      
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.enableDepthTest();
      RenderSystem.enableCull();
@@ -172,14 +172,14 @@ package shame.nazuna.client.modules.impl.movement;
        motionY = -speed;
      } 
      
-     event.setMovePos(new class_243(motionX, motionY, motionZ));
+     event.setMovePos(new Vec3d(motionX, motionY, motionZ));
    }
    
    @EventLink
    public void onEvent(EventMoveInput event) {
      if (mc.field_1724 == null)
        return; 
-     if (mc.field_1724.method_18376() == class_4050.field_18081 || mc.field_1724.method_18376() == class_4050.field_18079)
+     if (mc.field_1724.method_18376() == EntityPose.field_18081 || mc.field_1724.method_18376() == EntityPose.field_18079)
        event.setStrafe(event.getStrafe() * 5.0F); 
    }
  }

@@ -1,9 +1,9 @@
 package shame.nazuna.mixin;
  
  import java.lang.reflect.InvocationTargetException;
- import net.minecraft.class_1297;
- import net.minecraft.class_1922;
- import net.minecraft.class_4184;
+ import net.minecraft.Entity;
+ import net.minecraft.BlockView;
+ import net.minecraft.Camera;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Redirect;
@@ -19,11 +19,11 @@ package shame.nazuna.mixin;
  
  
  
- @Mixin({class_4184.class})
+ @Mixin({Camera.class})
  public abstract class CameraMixin
  {
-   @Redirect(method = {"method_19321"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/class_4184;method_19325(FF)V"))
-   private void redirectSetRotation(class_4184 instance, float yaw, float pitch, class_1922 area, class_1297 focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+   @Redirect(method = {"method_19321"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/Camera;method_19325(FF)V"))
+   private void redirectSetRotation(Camera instance, float yaw, float pitch, BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) throws InvocationTargetException, IllegalAccessException, InstantiationException {
      EventRotation event = new EventRotation(yaw, pitch, tickDelta);
      EventInvoker.invoke((Event)event);
      
@@ -44,8 +44,8 @@ package shame.nazuna.mixin;
  
  
    
-   @Redirect(method = {"method_19321"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/class_4184;method_19318(F)F"))
-   private float redirectClipToSpace(class_4184 instance, float distance, class_1922 area, class_1297 focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) {
+   @Redirect(method = {"method_19321"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/Camera;method_19318(F)F"))
+   private float redirectClipToSpace(Camera instance, float distance, BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) {
      if (!thirdPerson) {
        return ((ICameraMixin)instance).setClipToSpace(distance);
      }
@@ -64,8 +64,8 @@ package shame.nazuna.mixin;
  
  
    
-   @Redirect(method = {"method_19321"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/class_4184;method_19324(FFF)V"))
-   private void redirectMoveBy(class_4184 instance, float x, float y, float z, class_1922 area, class_1297 focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) {
+   @Redirect(method = {"method_19321"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/Camera;method_19324(FFF)V"))
+   private void redirectMoveBy(Camera instance, float x, float y, float z, BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) {
      float newY = y;
      
      if (thirdPerson) {

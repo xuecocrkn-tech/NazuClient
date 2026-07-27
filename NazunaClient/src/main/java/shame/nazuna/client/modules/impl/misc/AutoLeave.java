@@ -4,10 +4,10 @@ package shame.nazuna.client.modules.impl.misc;
  import java.util.HashSet;
  import java.util.Locale;
  import java.util.Set;
- import net.minecraft.class_1297;
- import net.minecraft.class_1657;
- import net.minecraft.class_2561;
- import net.minecraft.class_268;
+ import net.minecraft.Entity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.Text;
+ import net.minecraft.Team;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.api.utils.chat.ChatUtils;
@@ -67,26 +67,26 @@ package shame.nazuna.client.modules.impl.misc;
        return;
      } 
      float maxDistance = this.leaveDistance.get();
-     for (class_1657 player : mc.field_1687.method_18456()) {
+     for (PlayerEntity player : mc.field_1687.method_18456()) {
        if (player == null || player == mc.field_1724) {
          continue;
        }
        
-       if (mc.field_1724.method_5739((class_1297)player) <= maxDistance && shouldLeaveFor(player)) {
+       if (mc.field_1724.method_5739((Entity)player) <= maxDistance && shouldLeaveFor(player)) {
          triggerLeave();
          break;
        } 
      } 
    }
    
-   private boolean shouldLeaveFor(class_1657 player) {
+   private boolean shouldLeaveFor(PlayerEntity player) {
      if (isModerator(player)) {
        return this.leaveIfSeen.is("Модератор");
      }
      return this.leaveIfSeen.is("Игрок");
    }
    
-   private boolean isModerator(class_1657 player) {
+   private boolean isModerator(PlayerEntity player) {
      if (player == null) {
        return false;
      }
@@ -96,7 +96,7 @@ package shame.nazuna.client.modules.impl.misc;
        return true;
      }
      
-     class_268 team = player.method_5781();
+     Team team = player.method_5781();
      if (team == null) {
        return false;
      }
@@ -135,7 +135,7 @@ package shame.nazuna.client.modules.impl.misc;
        
        return;
      } 
-     mc.method_1562().method_48296().method_10747((class_2561)class_2561.method_43470("AutoLeave"));
+     mc.method_1562().method_48296().method_10747((Text)Text.method_43470("AutoLeave"));
      if (this.leaveDisable.isState()) {
        toggle();
      }

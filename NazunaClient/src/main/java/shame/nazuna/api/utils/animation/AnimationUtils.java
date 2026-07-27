@@ -1,6 +1,6 @@
 package shame.nazuna.api.utils.animation;
  
- import net.minecraft.class_3532;
+ import net.minecraft.MathHelper;
  
  public class AnimationUtils {
    private float currentValue;
@@ -44,14 +44,14 @@ package shame.nazuna.api.utils.animation;
      } 
      double part = calculatePart();
      float easedPart = (float)this.easing.ease(part);
-     this.currentValue = class_3532.method_16439(easedPart, this.fromValue, this.targetValue);
+     this.currentValue = MathHelper.method_16439(easedPart, this.fromValue, this.targetValue);
    }
    
    private double calculatePart() {
      if (!this.isRunning) return 1.0D; 
      long now = System.nanoTime();
      double elapsed = (now - this.startTime) / 1.0E9D;
-     return class_3532.method_15350(elapsed / this.duration, 0.0D, 1.0D);
+     return MathHelper.method_15350(elapsed / this.duration, 0.0D, 1.0D);
    }
    
    public float getValue() {

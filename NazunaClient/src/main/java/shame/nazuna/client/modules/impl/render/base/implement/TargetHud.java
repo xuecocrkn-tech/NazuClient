@@ -3,15 +3,15 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  import java.util.List;
  import java.util.concurrent.ThreadLocalRandom;
- import net.minecraft.class_1297;
- import net.minecraft.class_1309;
- import net.minecraft.class_1657;
- import net.minecraft.class_1799;
- import net.minecraft.class_276;
- import net.minecraft.class_3532;
- import net.minecraft.class_4587;
- import net.minecraft.class_490;
- import net.minecraft.class_6367;
+ import net.minecraft.Entity;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Framebuffer;
+ import net.minecraft.MathHelper;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.InventoryScreen;
+ import net.minecraft.SimpleFramebuffer;
  import shame.nazuna.api.events.implement.EventRender;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.api.utils.animation.AnimationUtils;
@@ -38,20 +38,20 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    private final AnimationUtils goldenAlphaAnimation = new AnimationUtils(0.0F, 9.0F, Easings.QUAD_OUT);
    private final List<HeadParticle> headParticles = (List<HeadParticle>)new ObjectArrayList();
    
-   private class_1309 lastTarget;
+   private LivingEntity lastTarget;
    private float maxAbsorption = 20.0F;
    private boolean headParticlesEnabled = true;
    private boolean healthBarStyleEnabled = false;
    private long lastParticleUpdateNs = System.nanoTime();
-   private class_1309 particleTarget;
+   private LivingEntity particleTarget;
    private int lastTargetHurtTime = 0;
    private int cachedBarThemeColor = ColorUtils.rgba(124, 91, 242, 255);
    private int cachedBarThemeColor2 = ColorUtils.rgba(93, 67, 175, 255);
-   private class_276 burnBuffer;
+   private Framebuffer burnBuffer;
    private int burnBufferWidth = -1;
    private int burnBufferHeight = -1;
-   private final class_1799[] displayItems = new class_1799[6];
-   private final class_1799[] armorScratch = new class_1799[4];
+   private final ItemStack[] displayItems = new ItemStack[6];
+   private final ItemStack[] armorScratch = new ItemStack[4];
  
    
    private float animationProgress = 0.0F;
@@ -571,8 +571,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        return;
      } 
      Aura aura = ModuleClass.aura;
-     boolean chatOpen = mc.field_1755 instanceof net.minecraft.class_408;
-     class_1309 auraTarget = (aura != null) ? aura.getTarget() : null;
+     boolean chatOpen = mc.field_1755 instanceof net.minecraft.ChatScreen;
+     LivingEntity auraTarget = (aura != null) ? aura.getTarget() : null;
      boolean showTargetHud = (chatOpen || auraTarget != null);
      this.alphaAnimation.update(showTargetHud ? 1.0F : 0.0F);
      
@@ -587,20 +587,20 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      
      if (showTargetHud) {
        this.scaleAnimation.update(1.0F);
-       this.lastTarget = chatOpen ? (class_1309)mc.field_1724 : auraTarget;
+       this.lastTarget = chatOpen ? (LivingEntity)mc.field_1724 : auraTarget;
      } else {
        this.hideScaleAnimation.update(0.0F);
      } 
  
      
      if (showTargetHud) {
-       scale = class_3532.method_15363(this.scaleAnimation.getValue(), 0.0F, 1.0F);
+       scale = MathHelper.method_15363(this.scaleAnimation.getValue(), 0.0F, 1.0F);
      } else {
-       scale = class_3532.method_15363(this.hideScaleAnimation.getValue(), 0.0F, 1.0F);
+       scale = MathHelper.method_15363(this.hideScaleAnimation.getValue(), 0.0F, 1.0F);
      } 
      float progress = scale;
      
-     class_1309 target = showTargetHud ? (chatOpen ? (class_1309)mc.field_1724 : auraTarget) : this.lastTarget;
+     LivingEntity target = showTargetHud ? (chatOpen ? (LivingEntity)mc.field_1724 : auraTarget) : this.lastTarget;
      if (target == null || progress <= 0.01F) {
        this.draggable.setWidth(0.0F);
        this.draggable.setHeight(0.0F);
@@ -615,10 +615,10 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      float health = target.method_6032();
      float maxHealth = Math.max(1.0F, target.method_6063());
      this.hpValueAnimation.update(health);
-     float animatedHealthValue = class_3532.method_15363(this.hpValueAnimation.getValue(), 0.0F, maxHealth);
-     float healthProgress = class_3532.method_15363(health / maxHealth, 0.0F, 1.0F);
+     float animatedHealthValue = MathHelper.method_15363(this.hpValueAnimation.getValue(), 0.0F, maxHealth);
+     float healthProgress = MathHelper.method_15363(health / maxHealth, 0.0F, 1.0F);
      this.hpAnimation.update(healthProgress);
-     float hpProgressAnimated = class_3532.method_15363(this.hpAnimation.getValue(), 0.0F, 1.0F);
+     float hpProgressAnimated = MathHelper.method_15363(this.hpAnimation.getValue(), 0.0F, 1.0F);
      
      if (hpProgressAnimated > this.hpTrailAnimation.getValue()) {
        this.hpTrailAnimation.setValue(hpProgressAnimated);
@@ -626,7 +626,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        this.hpTrailAnimation.update(hpProgressAnimated);
      } 
      
-     class_4587 matrices = eventRender.getContext().method_51448();
+     MatrixStack matrices = eventRender.getContext().method_51448();
      matrices.method_22903();
      applyHudTransform(matrices, x, y, width, height, scale, scale);
      float visualAlpha = progress;
@@ -655,7 +655,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      float lookY = entityCenterY - pitch;
      
      if (progress > 0.5F) {
-       class_490.method_2486(eventRender
+       InventoryScreen.method_2486(eventRender
            .getContext(), entityX, entityY, entityX2, entityY2, entitySize, 0.0F, lookX, lookY, target);
      }
  
@@ -677,7 +677,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      float waveNameFadeMaxWidth = Math.max(8.0F, x + width - padding - 4.0F - textX);
      
      issue(14).drawStringWithFade(matrices, name, textX, y + padding + 5.0F, waveNameFadeMaxWidth, ColorUtils.rgba(255, 255, 255, alphaInt));
-     issue(14).draw(matrices, "HP: " + String.format("%.1f", new Object[] { Float.valueOf(animatedHealthValue) }) + " | Dist: " + (int)target.method_5739((class_1297)mc.field_1724), textX, y + padding + 20.0F, ColorUtils.rgba(255, 255, 255, alphaInt));
+     issue(14).draw(matrices, "HP: " + String.format("%.1f", new Object[] { Float.valueOf(animatedHealthValue) }) + " | Dist: " + (int)target.method_5739((Entity)mc.field_1724), textX, y + padding + 20.0F, ColorUtils.rgba(255, 255, 255, alphaInt));
      
      float heartsX = textX;
      float heartsY = y + padding + 15.0F;
@@ -705,7 +705,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        RenderUtils.drawTargetHudHeartBase(matrices, hx, hy - 3.0F, visualAlpha);
        
        if (currentHealth > 0.0F) {
-         float fillAmount = class_3532.method_15363(currentHealth / healthPerHeart, 0.0F, 1.0F);
+         float fillAmount = MathHelper.method_15363(currentHealth / healthPerHeart, 0.0F, 1.0F);
          float filledWidth = heartSize * fillAmount;
          
          if (filledWidth > 0.0F) {
@@ -737,12 +737,12 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      
      float itemScale = 0.5F;
      for (int itemIndex = 0; itemIndex < totalSlots; itemIndex++) {
-       class_1799 stack = this.displayItems[itemIndex];
+       ItemStack stack = this.displayItems[itemIndex];
        if (!stack.method_7960()) {
          float slotX = itemX + itemIndex * itemSpacing;
          drawTargetHudItem(eventRender, matrices, stack, slotX, itemY, itemScale);
        } 
-       this.displayItems[itemIndex] = class_1799.field_8037;
+       this.displayItems[itemIndex] = ItemStack.field_8037;
      } 
      
      matrices.method_22909();
@@ -774,7 +774,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    }
    
    private int interpolateColor(int color1, int color2, float ratio) {
-     ratio = class_3532.method_15363(ratio, 0.0F, 1.0F);
+     ratio = MathHelper.method_15363(ratio, 0.0F, 1.0F);
      int r1 = color1 >> 16 & 0xFF;
      int g1 = color1 >> 8 & 0xFF;
      int b1 = color1 & 0xFF;
@@ -798,27 +798,27 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      if (this.burnBuffer == null || this.burnBufferWidth != w || this.burnBufferHeight != h) {
        if (this.burnBuffer != null)
          this.burnBuffer.method_1238(); 
-       this.burnBuffer = (class_276)new class_6367(w, h, true);
+       this.burnBuffer = (Framebuffer)new SimpleFramebuffer(w, h, true);
        this.burnBufferWidth = w;
        this.burnBufferHeight = h;
      } 
    }
    
-   private int collectDisplayItems(class_1309 target) {
+   private int collectDisplayItems(LivingEntity target) {
      int armorCount = 0;
-     for (class_1799 stack : target.method_5661()) {
+     for (ItemStack stack : target.method_5661()) {
        if (armorCount < this.armorScratch.length)
          this.armorScratch[armorCount++] = stack; 
      } 
      int count = 0;
      for (int i = armorCount - 1; i >= 0; i--) {
        this.displayItems[count++] = this.armorScratch[i];
-       this.armorScratch[i] = class_1799.field_8037;
+       this.armorScratch[i] = ItemStack.field_8037;
      } 
-     class_1799 mainHand = target.method_6047();
+     ItemStack mainHand = target.method_6047();
      if (!mainHand.method_7960())
        this.displayItems[count++] = mainHand; 
-     class_1799 offHand = target.method_6079();
+     ItemStack offHand = target.method_6079();
      if (!offHand.method_7960())
        this.displayItems[count++] = offHand; 
      return count;
@@ -836,7 +836,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      return true;
    }
    
-   private void applyHudTransform(class_4587 matrices, float x, float y, float width, float height, float scaleX, float scaleY) {
+   private void applyHudTransform(MatrixStack matrices, float x, float y, float width, float height, float scaleX, float scaleY) {
      float centerX = x + width * 0.5F;
      float centerY = y + height * 0.5F;
      matrices.method_46416(centerX, centerY, 0.0F);
@@ -854,7 +854,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      float maxAge;
    }
    
-   private void updateAndRenderHeadParticles(class_4587 matrices, class_1309 target, float headX, float headY, float headSize, float alpha, int themeColor) {
+   private void updateAndRenderHeadParticles(MatrixStack matrices, LivingEntity target, float headX, float headY, float headSize, float alpha, int themeColor) {
      if (target == null || alpha <= 0.02F) {
        this.headParticles.clear();
        this.particleTarget = target;
@@ -862,7 +862,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        return;
      } 
      long now = System.nanoTime();
-     float deltaTicks = class_3532.method_15363((float)(now - this.lastParticleUpdateNs) / 1.0E9F * 60.0F, 0.2F, 3.0F);
+     float deltaTicks = MathHelper.method_15363((float)(now - this.lastParticleUpdateNs) / 1.0E9F * 60.0F, 0.2F, 3.0F);
      this.lastParticleUpdateNs = now;
      if (this.particleTarget != target) {
        this.headParticles.clear();
@@ -883,10 +883,10 @@ package shame.nazuna.client.modules.impl.render.base.implement;
          float spreadAngle = (float)(random.nextDouble() * Math.PI * 2.0D);
          float speed = 0.58F + random.nextFloat() * 0.9F;
          HeadParticle p = new HeadParticle();
-         p.x = centerX + class_3532.method_15362(angle) * radius;
-         p.y = centerY + class_3532.method_15374(angle) * radius;
-         p.vx = class_3532.method_15362(spreadAngle) * speed + (p.x - centerX) * 0.025F;
-         p.vy = class_3532.method_15374(spreadAngle) * speed + (p.y - centerY) * 0.025F;
+         p.x = centerX + MathHelper.method_15362(angle) * radius;
+         p.y = centerY + MathHelper.method_15374(angle) * radius;
+         p.vx = MathHelper.method_15362(spreadAngle) * speed + (p.x - centerX) * 0.025F;
+         p.vy = MathHelper.method_15374(spreadAngle) * speed + (p.y - centerY) * 0.025F;
          p.size = 3.8F + random.nextFloat() * 1.4F;
          p.age = 0.0F;
          p.maxAge = 74.0F + random.nextFloat() * 42.0F;
@@ -917,7 +917,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      } 
    }
    
-   private void drawTargetHudItem(EventRender.Default eventRender, class_4587 matrices, class_1799 stack, float slotX, float slotY, float itemScale) {
+   private void drawTargetHudItem(EventRender.Default eventRender, MatrixStack matrices, ItemStack stack, float slotX, float slotY, float itemScale) {
      if (stack.method_7960())
        return; 
      matrices.method_22903();
@@ -959,16 +959,16 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      if (this.breathingAnimation > 360.0F)
        this.breathingAnimation -= 360.0F; 
      Aura aura = ModuleClass.aura;
-     boolean chatOpen = mc.field_1755 instanceof net.minecraft.class_408;
-     class_1309 auraTarget = (aura != null) ? aura.getTarget() : null;
+     boolean chatOpen = mc.field_1755 instanceof net.minecraft.ChatScreen;
+     LivingEntity auraTarget = (aura != null) ? aura.getTarget() : null;
      boolean showTargetHud = (chatOpen || auraTarget != null);
      this.alphaAnimation.setSpeed(showTargetHud ? 9.0F : 5.0F);
      this.alphaAnimation.update(showTargetHud ? 1.0F : 0.0F);
-     float alpha = class_3532.method_15363(this.alphaAnimation.getValue(), 0.0F, 1.0F);
+     float alpha = MathHelper.method_15363(this.alphaAnimation.getValue(), 0.0F, 1.0F);
      float renderProgress = alpha;
      if (showTargetHud)
-       this.lastTarget = chatOpen ? (class_1309)mc.field_1724 : auraTarget; 
-     class_1309 target = showTargetHud ? (chatOpen ? (class_1309)mc.field_1724 : auraTarget) : this.lastTarget;
+       this.lastTarget = chatOpen ? (LivingEntity)mc.field_1724 : auraTarget; 
+     LivingEntity target = showTargetHud ? (chatOpen ? (LivingEntity)mc.field_1724 : auraTarget) : this.lastTarget;
      if (target == null || renderProgress <= 0.01F) {
        this.headParticles.clear();
        this.lastTargetHurtTime = 0;
@@ -984,7 +984,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      boolean hasAbsorption = (currentAbsorption > 0.0F);
      this.goldenAlphaAnimation.setSpeed(hasAbsorption ? 9.0F : 5.0F);
      this.goldenAlphaAnimation.update(hasAbsorption ? 1.0F : 0.0F);
-     float goldenAlpha = class_3532.method_15363(this.goldenAlphaAnimation.getValue(), 0.0F, 1.0F);
+     float goldenAlpha = MathHelper.method_15363(this.goldenAlphaAnimation.getValue(), 0.0F, 1.0F);
      float x = this.draggable.getX();
      float y = this.draggable.getY();
      if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
@@ -1009,29 +1009,29 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      float targetABForAnim = showTargetHud ? currentAbsorption : 0.0F;
      this.hpValueAnimation.update(targetHealthForAnim);
      this.ABValueAnimation.update(targetABForAnim);
-     float animatedHealthValue = class_3532.method_15363(this.hpValueAnimation.getValue(), 0.0F, maxHealth);
-     float animatedABValue = class_3532.method_15363(this.ABValueAnimation.getValue(), 0.0F, maxAB);
-     float healthProgress = class_3532.method_15363(targetHealthForAnim / maxHealth, 0.0F, 1.0F);
+     float animatedHealthValue = MathHelper.method_15363(this.hpValueAnimation.getValue(), 0.0F, maxHealth);
+     float animatedABValue = MathHelper.method_15363(this.ABValueAnimation.getValue(), 0.0F, maxAB);
+     float healthProgress = MathHelper.method_15363(targetHealthForAnim / maxHealth, 0.0F, 1.0F);
      this.hpAnimation.update(healthProgress);
-     float hpProgressAnimated = class_3532.method_15363(this.hpAnimation.getValue(), 0.0F, 1.0F);
+     float hpProgressAnimated = MathHelper.method_15363(this.hpAnimation.getValue(), 0.0F, 1.0F);
      if (hpProgressAnimated > this.hpTrailAnimation.getValue()) {
-       this.hpTrailAnimation.setValue(class_3532.method_16439(0.78F, this.hpTrailAnimation.getValue(), hpProgressAnimated));
+       this.hpTrailAnimation.setValue(MathHelper.method_16439(0.78F, this.hpTrailAnimation.getValue(), hpProgressAnimated));
      } else {
        this.hpTrailAnimation.update(hpProgressAnimated);
      } 
-     float hpTrailProgressAnimated = class_3532.method_15363(this.hpTrailAnimation.getValue(), 0.0F, 1.0F);
+     float hpTrailProgressAnimated = MathHelper.method_15363(this.hpTrailAnimation.getValue(), 0.0F, 1.0F);
      boolean hidingHud = !showTargetHud;
      if (hidingHud)
        hpTrailProgressAnimated = hpProgressAnimated; 
-     float absorptionProgress = class_3532.method_15363(currentAbsorption / maxAB, 0.0F, 1.0F);
+     float absorptionProgress = MathHelper.method_15363(currentAbsorption / maxAB, 0.0F, 1.0F);
      this.goldenHpAnimation.update(absorptionProgress);
-     float goldenProgressAnimated = class_3532.method_15363(this.goldenHpAnimation.getValue(), 0.0F, 1.0F);
+     float goldenProgressAnimated = MathHelper.method_15363(this.goldenHpAnimation.getValue(), 0.0F, 1.0F);
      if (goldenProgressAnimated > this.goldenHpTrailAnimation.getValue()) {
-       this.goldenHpTrailAnimation.setValue(class_3532.method_16439(0.78F, this.goldenHpTrailAnimation.getValue(), goldenProgressAnimated));
+       this.goldenHpTrailAnimation.setValue(MathHelper.method_16439(0.78F, this.goldenHpTrailAnimation.getValue(), goldenProgressAnimated));
      } else {
        this.goldenHpTrailAnimation.update(goldenProgressAnimated);
      } 
-     float goldenTrailProgressAnimated = class_3532.method_15363(this.goldenHpTrailAnimation.getValue(), 0.0F, 1.0F);
+     float goldenTrailProgressAnimated = MathHelper.method_15363(this.goldenHpTrailAnimation.getValue(), 0.0F, 1.0F);
      if (hidingHud || !hasAbsorption)
        goldenTrailProgressAnimated = goldenProgressAnimated; 
      String name = target.method_5477().getString();
@@ -1048,7 +1048,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      float headX = x + padding;
      float headY = y + 3.5F;
      float textMaxWidth = Math.max(10.0F, width - textX - x - rightPad) + 2.0F;
-     class_4587 matrices = eventRender.getContext().method_51448();
+     MatrixStack matrices = eventRender.getContext().method_51448();
      float drawAlpha = alpha;
      float hpBarAlpha = drawAlpha;
      boolean drawSquares = isUnusualRectType();
@@ -1066,8 +1066,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      } else {
        this.headParticles.clear();
      } 
-     if (target instanceof class_1657) {
-       class_1657 playerEntity = (class_1657)target;
+     if (target instanceof PlayerEntity) {
+       PlayerEntity playerEntity = (PlayerEntity)target;
        RenderUtils.drawPlayerHead(matrices, playerEntity.method_5667(), headX - 1.85F, headY - 1.0F, headSize, 3.5F, drawAlpha, 0.0F);
      } else {
        RenderUtils.drawTargetHudDefaultPlaceholder(matrices, headX - 1.85F, headY - 1.0F, drawAlpha);
@@ -1116,7 +1116,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      if (hpBarAlpha > 0.025F) {
        RenderUtils.drawGradientRect(matrices, barX, barY, barW + 3.0F, barH + 4.25F, 1.95F, barBgLeft, barBgRight, true);
        if (!hidingHud) {
-         float trailProgressDraw = class_3532.method_16439(0.58F, hpTrailProgressAnimated, hpProgressAnimated);
+         float trailProgressDraw = MathHelper.method_16439(0.58F, hpTrailProgressAnimated, hpProgressAnimated);
          float trailW = barW * trailProgressDraw;
          if (trailW > 1.15F)
            RenderUtils.drawGradientRect(matrices, barX, barY, trailW + 3.0F, barH + 4.25F, 1.95F, barTrailLeft, barTrailRight, true); 
@@ -1133,7 +1133,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
          int goldenFillLeft = ColorUtils.applyAlpha(ColorUtils.darken(goldenBaseLeft, 0.7F), goldenBarAlpha);
          int goldenFillRight = ColorUtils.applyAlpha(goldenBaseRight, goldenBarAlpha);
          if (!hidingHud && hasAbsorption) {
-           float goldenTrailProgressDraw = class_3532.method_16439(0.58F, goldenTrailProgressAnimated, goldenProgressAnimated);
+           float goldenTrailProgressDraw = MathHelper.method_16439(0.58F, goldenTrailProgressAnimated, goldenProgressAnimated);
            float goldenTrailW = barW * goldenTrailProgressDraw;
            if (goldenTrailW > 1.15F)
              RenderUtils.drawGradientRect(matrices, barX, barY, goldenTrailW + 3.0F, barH + 4.25F, 1.95F, goldenTrailLeft, goldenTrailRight, true); 
@@ -1149,12 +1149,12 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      int totalSlots = collectDisplayItems(target);
      float itemX = x + width - totalSlots * itemSpacing - 3.0F;
      for (int itemIndex = 0; itemIndex < totalSlots; itemIndex++) {
-       class_1799 stack = this.displayItems[itemIndex];
+       ItemStack stack = this.displayItems[itemIndex];
        if (!stack.method_7960()) {
          float slotX = itemX + itemIndex * itemSpacing;
          drawTargetHudItem(eventRender, matrices, stack, slotX, itemY, itemScale);
        } 
-       this.displayItems[itemIndex] = class_1799.field_8037;
+       this.displayItems[itemIndex] = ItemStack.field_8037;
      } 
      matrices.method_22909();
      this.draggable.setWidth(width);

@@ -2,16 +2,16 @@ package shame.nazuna.client.modules.impl.render;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.util.ArrayList;
  import java.util.Optional;
- import net.minecraft.class_1297;
- import net.minecraft.class_243;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_2960;
- import net.minecraft.class_4587;
- import net.minecraft.class_7833;
+ import net.minecraft.Entity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.Identifier;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.RotationAxis;
  import org.joml.Matrix4f;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.Event3DRender;
@@ -45,19 +45,19 @@ package shame.nazuna.client.modules.impl.render;
      super.onDisable();
    }
    
-   private class_2960 getTexture() {
-     return class_2960.method_60655("astra", "textures/cross/cross.png");
+   private Identifier getTexture() {
+     return Identifier.method_60655("astra", "textures/cross/cross.png");
    }
    
    @EventLink
    public void onAttack(EventAttackEntity event) {
      if (mc.field_1724 == null || mc.field_1687 == null)
        return; 
-     class_1297 target = event.getTarget();
+     Entity target = event.getTarget();
      if (target != null) {
        synchronized (this.hitMarkers) {
          this.hitMarkers.add(new HitMarkerData(
-               resolveHitPosition((class_1297)event.getPlayer(), target), 
+               resolveHitPosition((Entity)event.getPlayer(), target), 
                System.currentTimeMillis(), 
                (long)this.fadeInTime.get(), 
                (long)this.displayTime.get(), 
@@ -70,18 +70,18 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private class_243 resolveHitPosition(class_1297 attacker, class_1297 target) {
-     class_243 fallback = new class_243(target.method_23317(), target.method_23318() + target.method_17682() / 2.0D, target.method_23321());
+   private Vec3d resolveHitPosition(Entity attacker, Entity target) {
+     Vec3d fallback = new Vec3d(target.method_23317(), target.method_23318() + target.method_17682() / 2.0D, target.method_23321());
      
      if (attacker == null) return fallback;
      
-     class_243 eyePos = attacker.method_5836(1.0F);
-     class_243 lookVec = attacker.method_5828(1.0F);
-     class_243 targetCenter = target.method_5829().method_1005();
+     Vec3d eyePos = attacker.method_5836(1.0F);
+     Vec3d lookVec = attacker.method_5828(1.0F);
+     Vec3d targetCenter = target.method_5829().method_1005();
      double distance = Math.max(eyePos.method_1022(targetCenter) + 1.0D, 6.0D);
-     class_243 reachPos = eyePos.method_1019(lookVec.method_1021(distance));
+     Vec3d reachPos = eyePos.method_1019(lookVec.method_1021(distance));
      
-     Optional<class_243> hitPos = target.method_5829().method_992(eyePos, reachPos);
+     Optional<Vec3d> hitPos = target.method_5829().method_992(eyePos, reachPos);
      if (hitPos.isPresent()) {
        return hitPos.get();
      }
@@ -99,9 +99,9 @@ package shame.nazuna.client.modules.impl.render;
      
      if (this.hitMarkers.isEmpty())
        return; 
-     class_4587 matrices = e.getMatrices();
-     class_243 camera = mc.field_1773.method_19418().method_19326();
-     class_2960 texture = getTexture();
+     MatrixStack matrices = e.getMatrices();
+     Vec3d camera = mc.field_1773.method_19418().method_19326();
+     Identifier texture = getTexture();
      
      RenderSystem.enableBlend();
      RenderSystem.disableDepthTest();
@@ -115,7 +115,7 @@ package shame.nazuna.client.modules.impl.render;
      } 
      
      RenderSystem.setShaderTexture(0, texture);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
  
      
      synchronized (this.hitMarkers) {
@@ -137,8 +137,8 @@ package shame.nazuna.client.modules.impl.render;
        
        matrices.method_22903();
        matrices.method_46416((float)x, (float)y, (float)z);
-       matrices.method_22907(class_7833.field_40716.rotationDegrees(-mc.field_1773.method_19418().method_19330()));
-       matrices.method_22907(class_7833.field_40714.rotationDegrees(mc.field_1773.method_19418().method_19329()));
+       matrices.method_22907(RotationAxis.field_40716.rotationDegrees(-mc.field_1773.method_19418().method_19330()));
+       matrices.method_22907(RotationAxis.field_40714.rotationDegrees(mc.field_1773.method_19418().method_19329()));
        
        float currentSize = this.size.get();
        if (this.scale.isState()) {
@@ -151,14 +151,14 @@ package shame.nazuna.client.modules.impl.render;
        float half = currentSize / 2.0F;
        int alphaInt = (int)(alpha * 255.0F);
        
-       class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+       BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
        
        buffer.method_22918(matrix, -half, -half, 0.0F).method_22913(0.0F, 1.0F).method_1336(r, g, b, alphaInt);
        buffer.method_22918(matrix, -half, half, 0.0F).method_22913(0.0F, 0.0F).method_1336(r, g, b, alphaInt);
        buffer.method_22918(matrix, half, half, 0.0F).method_22913(1.0F, 0.0F).method_1336(r, g, b, alphaInt);
        buffer.method_22918(matrix, half, -half, 0.0F).method_22913(1.0F, 1.0F).method_1336(r, g, b, alphaInt);
        
-       class_286.method_43433(buffer.method_60800());
+       BufferRenderer.method_43433(buffer.method_60800());
        
        matrices.method_22909();
      } 
@@ -171,13 +171,13 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    static class HitMarkerData {
-     class_243 position;
+     Vec3d position;
      long birthTime;
      long fadeInTime;
      long displayTime;
      long fadeOutTime;
      
-     HitMarkerData(class_243 position, long birthTime, long fadeInTime, long displayTime, long fadeOutTime) {
+     HitMarkerData(Vec3d position, long birthTime, long fadeInTime, long displayTime, long fadeOutTime) {
        this.position = position;
        this.birthTime = birthTime;
        this.fadeInTime = fadeInTime;

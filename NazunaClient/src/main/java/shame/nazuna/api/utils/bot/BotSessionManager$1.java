@@ -3,20 +3,20 @@ package shame.nazuna.api.utils.bot;
  import io.netty.channel.ChannelDuplexHandler;
  import io.netty.channel.ChannelHandlerContext;
  import io.netty.util.ReferenceCountUtil;
- import net.minecraft.class_10264;
- import net.minecraft.class_2596;
- import net.minecraft.class_2670;
- import net.minecraft.class_2708;
- import net.minecraft.class_2720;
- import net.minecraft.class_2749;
- import net.minecraft.class_2793;
- import net.minecraft.class_2827;
- import net.minecraft.class_2828;
- import net.minecraft.class_2856;
- import net.minecraft.class_634;
- import net.minecraft.class_6373;
- import net.minecraft.class_6374;
- import net.minecraft.class_746;
+ import net.minecraft.EntityPositionSyncS2CPacket;
+ import net.minecraft.Packet;
+ import net.minecraft.KeepAliveS2CPacket;
+ import net.minecraft.PlayerPositionLookS2CPacket;
+ import net.minecraft.ResourcePackSendS2CPacket;
+ import net.minecraft.HealthUpdateS2CPacket;
+ import net.minecraft.TeleportConfirmC2SPacket;
+ import net.minecraft.KeepAliveC2SPacket;
+ import net.minecraft.PlayerMoveC2SPacket;
+ import net.minecraft.ResourcePackStatusC2SPacket;
+ import net.minecraft.ClientPlayNetworkHandler;
+ import net.minecraft.CommonPingS2CPacket;
+ import net.minecraft.CommonPongC2SPacket;
+ import net.minecraft.ClientPlayerEntity;
  
  
  
@@ -325,33 +325,33 @@ package shame.nazuna.api.utils.bot;
    extends ChannelDuplexHandler
  {
    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-     if (msg instanceof class_2670) { class_2670 packet = (class_2670)msg;
-       handler.method_48296().method_10743((class_2596)new class_2827(packet.method_11517()));
+     if (msg instanceof KeepAliveS2CPacket) { KeepAliveS2CPacket packet = (KeepAliveS2CPacket)msg;
+       handler.method_48296().method_10743((Packet)new KeepAliveC2SPacket(packet.method_11517()));
        if (botPlayer != null) {
-         handler.method_52787((class_2596)new class_2828.class_5911(botPlayer.method_24828(), botPlayer.field_5976));
+         handler.method_52787((Packet)new PlayerMoveC2SPacket.class_5911(botPlayer.method_24828(), botPlayer.field_5976));
        }
        ReferenceCountUtil.release(msg);
        
        return; }
      
-     if (msg instanceof class_6373) { class_6373 packet = (class_6373)msg;
-       handler.method_48296().method_10743((class_2596)new class_6374(packet.method_36950()));
+     if (msg instanceof CommonPingS2CPacket) { CommonPingS2CPacket packet = (CommonPingS2CPacket)msg;
+       handler.method_48296().method_10743((Packet)new CommonPongC2SPacket(packet.method_36950()));
        ReferenceCountUtil.release(msg);
        
        return; }
      
-     if (msg instanceof class_2720) { class_2720 packet = (class_2720)msg;
-       handler.method_52787((class_2596)new class_2856(packet.comp_2158(), class_2856.class_2857.field_13016));
-       handler.method_52787((class_2596)new class_2856(packet.comp_2158(), class_2856.class_2857.field_13017));
+     if (msg instanceof ResourcePackSendS2CPacket) { ResourcePackSendS2CPacket packet = (ResourcePackSendS2CPacket)msg;
+       handler.method_52787((Packet)new ResourcePackStatusC2SPacket(packet.comp_2158(), ResourcePackStatusC2SPacket.class_2857.field_13016));
+       handler.method_52787((Packet)new ResourcePackStatusC2SPacket(packet.comp_2158(), ResourcePackStatusC2SPacket.class_2857.field_13017));
        ReferenceCountUtil.release(msg);
        
        return; }
      
-     if (msg instanceof class_2708) { class_2708 packet = (class_2708)msg;
+     if (msg instanceof PlayerPositionLookS2CPacket) { PlayerPositionLookS2CPacket packet = (PlayerPositionLookS2CPacket)msg;
        BotSessionManager.applyFrozenPositionLook(botPlayer, packet);
-       handler.method_52787((class_2596)new class_2793(packet.comp_3133()));
+       handler.method_52787((Packet)new TeleportConfirmC2SPacket(packet.comp_3133()));
        if (botPlayer != null) {
-         handler.method_52787((class_2596)new class_2828.class_2830(botPlayer
+         handler.method_52787((Packet)new PlayerMoveC2SPacket.class_2830(botPlayer
                .method_23317(), botPlayer
                .method_23318(), botPlayer
                .method_23321(), botPlayer
@@ -365,13 +365,13 @@ package shame.nazuna.api.utils.bot;
        
        return; }
      
-     if (msg instanceof class_10264) { class_10264 packet = (class_10264)msg;
+     if (msg instanceof EntityPositionSyncS2CPacket) { EntityPositionSyncS2CPacket packet = (EntityPositionSyncS2CPacket)msg;
        BotSessionManager.applyFrozenEntityPositionSync(botPlayer, packet);
        ReferenceCountUtil.release(msg);
        
        return; }
      
-     if (msg instanceof class_2749) { class_2749 packet = (class_2749)msg;
+     if (msg instanceof HealthUpdateS2CPacket) { HealthUpdateS2CPacket packet = (HealthUpdateS2CPacket)msg;
        if (botPlayer != null) {
          botPlayer.method_6033(packet.method_11833());
        }
@@ -379,7 +379,7 @@ package shame.nazuna.api.utils.bot;
        
        return; }
      
-     if (msg instanceof net.minecraft.class_2661) {
+     if (msg instanceof net.minecraft.DisconnectS2CPacket) {
        BotSessionManager.connections.removeIf(bot -> BotSessionManager.matchesName(bot.name(), name));
        ctx.close();
        ReferenceCountUtil.release(msg);

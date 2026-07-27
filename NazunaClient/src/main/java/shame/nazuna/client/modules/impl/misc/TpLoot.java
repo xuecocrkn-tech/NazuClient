@@ -1,14 +1,14 @@
 package shame.nazuna.client.modules.impl.misc;
  
  import java.util.List;
- import net.minecraft.class_1297;
- import net.minecraft.class_1542;
- import net.minecraft.class_1792;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_243;
- import net.minecraft.class_2596;
- import net.minecraft.class_2828;
+ import net.minecraft.Entity;
+ import net.minecraft.ItemEntity;
+ import net.minecraft.Item;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Packet;
+ import net.minecraft.PlayerMoveC2SPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.api.utils.chat.ChatUtils;
@@ -29,10 +29,10 @@ package shame.nazuna.client.modules.impl.misc;
    
    private final TimerUtils lootTimer = new TimerUtils();
    private final TimerUtils actionTimer = new TimerUtils();
-   private class_243 originalPos = null;
+   private Vec3d originalPos = null;
    
    private boolean waitingAction = false;
-   private static final List<class_1792> TARGET_ITEMS = List.of(new class_1792[] { class_1802.field_22022, class_1802.field_22027, class_1802.field_22028, class_1802.field_22029, class_1802.field_22030, class_1802.field_8575, class_1802.field_8463, class_1802.field_8367, class_1802.field_8301, class_1802.field_8288, class_1802.field_8833 });
+   private static final List<Item> TARGET_ITEMS = List.of(new Item[] { Items.field_22022, Items.field_22027, Items.field_22028, Items.field_22029, Items.field_22030, Items.field_8575, Items.field_8463, Items.field_8367, Items.field_8301, Items.field_8288, Items.field_8833 });
  
  
  
@@ -76,15 +76,15 @@ package shame.nazuna.client.modules.impl.misc;
      } 
      if (!this.lootTimer.finished((long)this.lootDelay.getValue().floatValue()))
        return; 
-     class_1542 targetItem = findTargetItem();
+     ItemEntity targetItem = findTargetItem();
      if (targetItem == null)
        return; 
      this.originalPos = mc.field_1724.method_19538();
      
-     class_243 itemPos = targetItem.method_19538();
+     Vec3d itemPos = targetItem.method_19538();
      teleportTo(itemPos);
      
-     class_1799 stack = targetItem.method_6983();
+     ItemStack stack = targetItem.method_6983();
      ChatUtils.sendMessage("TpLoot: подобран " + stack.method_7964().getString());
      
      this.lootTimer.reset();
@@ -92,15 +92,15 @@ package shame.nazuna.client.modules.impl.misc;
      this.actionTimer.reset();
    }
    
-   private class_1542 findTargetItem() {
+   private ItemEntity findTargetItem() {
      double maxRange = this.range.getValue().doubleValue();
-     class_1542 closest = null;
+     ItemEntity closest = null;
      double closestDist = Double.MAX_VALUE;
      
-     for (class_1297 entity : mc.field_1687.method_18112()) {
-       if (entity instanceof class_1542) { class_1542 itemEntity = (class_1542)entity;
+     for (Entity entity : mc.field_1687.method_18112()) {
+       if (entity instanceof ItemEntity) { ItemEntity itemEntity = (ItemEntity)entity;
          
-         class_1799 stack = itemEntity.method_6983();
+         ItemStack stack = itemEntity.method_6983();
          if (!isTargetItem(stack.method_7909()))
            continue; 
          double dist = mc.field_1724.method_5858(entity);
@@ -115,20 +115,20 @@ package shame.nazuna.client.modules.impl.misc;
      return closest;
    }
    
-   private boolean isTargetItem(class_1792 item) {
+   private boolean isTargetItem(Item item) {
      return TARGET_ITEMS.contains(item);
    }
  
    
-   private void teleportTo(class_243 pos) {
+   private void teleportTo(Vec3d pos) {
      int packets = (int)Math.ceil(mc.field_1724.method_19538().method_1022(pos) / 10.0D);
      packets = Math.max(packets, 3);
      
      for (int i = 0; i < packets; i++) {
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2828.class_5911(mc.field_1724.method_24828(), mc.field_1724.field_5976));
+       mc.field_1724.field_3944.method_52787((Packet)new PlayerMoveC2SPacket.class_5911(mc.field_1724.method_24828(), mc.field_1724.field_5976));
      }
      
-     mc.field_1724.field_3944.method_52787((class_2596)new class_2828.class_2829(pos.field_1352, pos.field_1351, pos.field_1350, false, mc.field_1724.field_5976));
+     mc.field_1724.field_3944.method_52787((Packet)new PlayerMoveC2SPacket.class_2829(pos.field_1352, pos.field_1351, pos.field_1350, false, mc.field_1724.field_5976));
      mc.field_1724.method_5814(pos.field_1352, pos.field_1351, pos.field_1350);
    }
    

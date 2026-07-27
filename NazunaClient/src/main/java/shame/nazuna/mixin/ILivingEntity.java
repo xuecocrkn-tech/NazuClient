@@ -1,10 +1,10 @@
 package shame.nazuna.mixin;
 
-import net.minecraft.class_1309;
+import net.minecraft.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin({class_1309.class})
+@Mixin({LivingEntity.class})
 public interface ILivingEntity {
   @Accessor("field_6273")
   int getLastAttackedTicks();

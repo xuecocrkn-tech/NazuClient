@@ -1,10 +1,10 @@
 package shame.nazuna.api.utils.baritone;
  
- import net.minecraft.class_1297;
- import net.minecraft.class_238;
- import net.minecraft.class_243;
- import net.minecraft.class_310;
- import net.minecraft.class_3532;
+ import net.minecraft.Entity;
+ import net.minecraft.Box;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.MathHelper;
  
  
  
@@ -22,14 +22,14 @@ package shame.nazuna.api.utils.baritone;
    private static final double FORWARD_OFFSET = 0.35D;
    private static final String BARITONE_API_CLASS = "baritone.api.BaritoneAPI";
    private static final String INPUT_ENUM_CLASS = "baritone.api.utils.input.Input";
-   private static class_243 anchorPos;
+   private static Vec3d anchorPos;
    private static long lastProgressAtMs;
    private static int recoveryTicksRemaining;
    private static boolean strafeRightNext;
    private static boolean privateEscapePending;
    private static boolean privateEscapeActive;
    private static boolean privateEscapeRight;
-   private static class_243 privateEscapeStartPos;
+   private static Vec3d privateEscapeStartPos;
    private static long privateEscapeStartedAtMs;
    
    public static void onGameMessage(String message) {
@@ -40,7 +40,7 @@ package shame.nazuna.api.utils.baritone;
    }
    
    public static void tick() {
-     class_310 mc = class_310.method_1551();
+     MinecraftClient mc = MinecraftClient.method_1551();
      if (mc.field_1724 == null || mc.field_1687 == null) {
        resetState();
        
@@ -62,7 +62,7 @@ package shame.nazuna.api.utils.baritone;
          return;
        } 
        long now = System.currentTimeMillis();
-       class_243 currentPos = mc.field_1724.method_19538();
+       Vec3d currentPos = mc.field_1724.method_19538();
        
        if (anchorPos == null) {
          anchorPos = currentPos;
@@ -139,7 +139,7 @@ package shame.nazuna.api.utils.baritone;
      return (provider == null) ? null : provider.getClass().getMethod("getPrimaryBaritone", new Class[0]).invoke(provider, new Object[0]);
    }
    
-   private static boolean isMiningNow(class_310 mc, Object input) throws ReflectiveOperationException {
+   private static boolean isMiningNow(MinecraftClient mc, Object input) throws ReflectiveOperationException {
      return ((mc.field_1761 != null && mc.field_1761.method_2923()) || 
        isInputForcedDown(input, "CLICK_LEFT"));
    }
@@ -152,14 +152,14 @@ package shame.nazuna.api.utils.baritone;
        isInputForcedDown(input, "JUMP"));
    }
    
-   private static void startPrivateEscape(class_310 mc, class_243 currentPos) {
+   private static void startPrivateEscape(MinecraftClient mc, Vec3d currentPos) {
      privateEscapeActive = true;
      privateEscapeStartPos = currentPos;
      privateEscapeStartedAtMs = System.currentTimeMillis();
      privateEscapeRight = chooseRecoverySide(mc, privateEscapeRight, false);
    }
    
-   private static void applyRecoveryInput(class_310 mc, Object input) throws ReflectiveOperationException {
+   private static void applyRecoveryInput(MinecraftClient mc, Object input) throws ReflectiveOperationException {
      clearAllKeys(input);
      setInputForceState(input, "MOVE_FORWARD", true);
      setInputForceState(input, strafeRightNext ? "MOVE_RIGHT" : "MOVE_LEFT", true);
@@ -168,7 +168,7 @@ package shame.nazuna.api.utils.baritone;
      }
    }
    
-   private static void applyPrivateEscapeInput(class_310 mc, Object input) throws ReflectiveOperationException {
+   private static void applyPrivateEscapeInput(MinecraftClient mc, Object input) throws ReflectiveOperationException {
      clearAllKeys(input);
      setInputForceState(input, "MOVE_BACK", true);
      setInputForceState(input, privateEscapeRight ? "MOVE_RIGHT" : "MOVE_LEFT", true);
@@ -177,16 +177,16 @@ package shame.nazuna.api.utils.baritone;
      }
    }
    
-   private static boolean chooseRecoverySide(class_310 mc, boolean fallbackRight, boolean moveForward) {
+   private static boolean chooseRecoverySide(MinecraftClient mc, boolean fallbackRight, boolean moveForward) {
      if (mc.field_1724 == null) {
        return fallbackRight;
      }
      
      double yawRad = Math.toRadians(mc.field_1724.method_36454());
-     class_243 forwardDirection = new class_243(-class_3532.method_15374((float)yawRad), 0.0D, class_3532.method_15362((float)yawRad));
-     class_243 left = new class_243(forwardDirection.field_1350, 0.0D, -forwardDirection.field_1352);
-     class_243 right = left.method_1021(-1.0D);
-     class_243 direction = moveForward ? forwardDirection : forwardDirection.method_1021(-1.0D);
+     Vec3d forwardDirection = new Vec3d(-MathHelper.method_15374((float)yawRad), 0.0D, MathHelper.method_15362((float)yawRad));
+     Vec3d left = new Vec3d(forwardDirection.field_1350, 0.0D, -forwardDirection.field_1352);
+     Vec3d right = left.method_1021(-1.0D);
+     Vec3d direction = moveForward ? forwardDirection : forwardDirection.method_1021(-1.0D);
      
      double leftScore = freeSpaceScore(mc, left.method_1021(0.95D).method_1019(direction.method_1021(0.35D)));
      double rightScore = freeSpaceScore(mc, right.method_1021(0.95D).method_1019(direction.method_1021(0.35D)));
@@ -198,13 +198,13 @@ package shame.nazuna.api.utils.baritone;
      return (rightScore > leftScore);
    }
    
-   private static double freeSpaceScore(class_310 mc, class_243 offset) {
-     class_238 shifted = mc.field_1724.method_5829().method_997(offset);
+   private static double freeSpaceScore(MinecraftClient mc, Vec3d offset) {
+     Box shifted = mc.field_1724.method_5829().method_997(offset);
      double score = 0.0D;
-     if (mc.field_1687.method_8587((class_1297)mc.field_1724, shifted)) {
+     if (mc.field_1687.method_8587((Entity)mc.field_1724, shifted)) {
        score++;
      }
-     if (mc.field_1687.method_8587((class_1297)mc.field_1724, shifted.method_989(0.0D, 1.0D, 0.0D))) {
+     if (mc.field_1687.method_8587((Entity)mc.field_1724, shifted.method_989(0.0D, 1.0D, 0.0D))) {
        score += 0.35D;
      }
      return score;

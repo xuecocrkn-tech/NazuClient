@@ -6,9 +6,9 @@ package shame.nazuna.mixin;
  import com.mojang.brigadier.StringReader;
  import com.mojang.brigadier.suggestion.Suggestions;
  import java.util.concurrent.CompletableFuture;
- import net.minecraft.class_2172;
- import net.minecraft.class_342;
- import net.minecraft.class_4717;
+ import net.minecraft.CommandSource;
+ import net.minecraft.TextFieldWidget;
+ import net.minecraft.ChatInputSuggestor;
  import org.spongepowered.asm.mixin.Final;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.Shadow;
@@ -17,16 +17,16 @@ package shame.nazuna.mixin;
  import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  import shame.nazuna.astra;
  
- @Mixin({class_4717.class})
+ @Mixin({ChatInputSuggestor.class})
  public abstract class ChatInputSuggestorMixin
  {
    @Final
    @Shadow
-   class_342 field_21599;
+   TextFieldWidget field_21599;
    @Shadow
    boolean field_21614;
    @Shadow
-   private ParseResults<class_2172> field_21610;
+   private ParseResults<CommandSource> field_21610;
    
    @Inject(method = {"method_23934"}, at = {@At(value = "INVOKE", target = "Lcom/mojang/brigadier/StringReader;canRead()Z", remap = false)}, cancellable = true)
    public void refresh(CallbackInfo ci, @Local StringReader reader) {
@@ -35,7 +35,7 @@ package shame.nazuna.mixin;
      if (reader.canRead(prefix.length()) && reader.getString().startsWith(prefix, reader.getCursor())) {
        
        reader.setCursor(reader.getCursor() + prefix.length());
-       CommandDispatcher<class_2172> dispatcher = astra.INSTANCE.commandStorage.getDispatcher();
+       CommandDispatcher<CommandSource> dispatcher = astra.INSTANCE.commandStorage.getDispatcher();
        if (this.field_21610 == null) this.field_21610 = dispatcher.parse(reader, astra.INSTANCE.commandStorage.getSource());  int cursor;
        if ((cursor = this.field_21599.method_1881()) >= 1 && (this.field_21612 == null || !this.field_21614)) {
          this.field_21611 = dispatcher.getCompletionSuggestions(this.field_21610, cursor);
@@ -51,7 +51,7 @@ package shame.nazuna.mixin;
    @Shadow
    private CompletableFuture<Suggestions> field_21611;
    @Shadow
-   private class_4717.class_464 field_21612;
+   private ChatInputSuggestor.class_464 field_21612;
    
    @Shadow
    public abstract void method_23920(boolean paramBoolean);

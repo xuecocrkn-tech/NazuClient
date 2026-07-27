@@ -1,8 +1,8 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_1297;
- import net.minecraft.class_243;
- import net.minecraft.class_3965;
+ import net.minecraft.Entity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BlockHitResult;
  
  
  
@@ -354,11 +354,11 @@ package shame.nazuna.client.modules.impl.render;
  final class PredictionResult
    extends Record
  {
-   private final class_243[] points;
-   private final class_3965 blockHit;
-   private final class_243 hitPos;
-   private final class_1297 entityHit;
-   private final class_243 entityHitPos;
+   private final Vec3d[] points;
+   private final BlockHitResult blockHit;
+   private final Vec3d hitPos;
+   private final Entity entityHit;
+   private final Vec3d entityHitPos;
    
    public final String toString() {
      // Byte code:
@@ -401,8 +401,8 @@ package shame.nazuna.client.modules.impl.render;
      //   0	8	1	o	Ljava/lang/Object;
    }
    
-   private PredictionResult(class_243[] points, class_3965 blockHit, class_243 hitPos, class_1297 entityHit, class_243 entityHitPos) {
-     this.points = points; this.blockHit = blockHit; this.hitPos = hitPos; this.entityHit = entityHit; this.entityHitPos = entityHitPos; } public class_243[] points() { return this.points; } public class_3965 blockHit() { return this.blockHit; } public class_243 hitPos() { return this.hitPos; } public class_1297 entityHit() { return this.entityHit; } public class_243 entityHitPos() { return this.entityHitPos; }
+   private PredictionResult(Vec3d[] points, BlockHitResult blockHit, Vec3d hitPos, Entity entityHit, Vec3d entityHitPos) {
+     this.points = points; this.blockHit = blockHit; this.hitPos = hitPos; this.entityHit = entityHit; this.entityHitPos = entityHitPos; } public Vec3d[] points() { return this.points; } public BlockHitResult blockHit() { return this.blockHit; } public Vec3d hitPos() { return this.hitPos; } public Entity entityHit() { return this.entityHit; } public Vec3d entityHitPos() { return this.entityHitPos; }
  
  }
 

@@ -1,18 +1,18 @@
 package shame.nazuna.api.events.implement;
  
- import net.minecraft.class_4184;
- import net.minecraft.class_4587;
+ import net.minecraft.Camera;
+ import net.minecraft.MatrixStack;
  import org.joml.Matrix4f;
  import shame.nazuna.api.events.Event;
  
  public class Event3DRender extends Event {
-   private final class_4587 matrices;
+   private final MatrixStack matrices;
    private final Matrix4f positionMatrix;
    private final Matrix4f projectionMatrix;
-   private final class_4184 camera;
+   private final Camera camera;
    private final float tickDelta;
    
-   public class_4587 getMatrices() {
+   public MatrixStack getMatrices() {
      return this.matrices;
    }
    
@@ -24,7 +24,7 @@ package shame.nazuna.api.events.implement;
      return this.projectionMatrix;
    }
    
-   public class_4184 getCamera() {
+   public Camera getCamera() {
      return this.camera;
    }
    
@@ -32,7 +32,7 @@ package shame.nazuna.api.events.implement;
      return this.tickDelta;
    }
    
-   public Event3DRender(class_4587 matrices, Matrix4f positionMatrix, Matrix4f projectionMatrix, class_4184 camera, float tickDelta) {
+   public Event3DRender(MatrixStack matrices, Matrix4f positionMatrix, Matrix4f projectionMatrix, Camera camera, float tickDelta) {
      this.matrices = matrices;
      this.positionMatrix = positionMatrix;
      this.projectionMatrix = projectionMatrix;

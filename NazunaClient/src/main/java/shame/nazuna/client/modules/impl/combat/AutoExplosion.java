@@ -1,28 +1,28 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_1268;
- import net.minecraft.class_1297;
- import net.minecraft.class_1511;
- import net.minecraft.class_1657;
- import net.minecraft.class_1713;
- import net.minecraft.class_1792;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_1935;
- import net.minecraft.class_2246;
- import net.minecraft.class_2248;
- import net.minecraft.class_2338;
- import net.minecraft.class_2350;
- import net.minecraft.class_238;
- import net.minecraft.class_2382;
- import net.minecraft.class_239;
- import net.minecraft.class_241;
- import net.minecraft.class_243;
- import net.minecraft.class_2596;
- import net.minecraft.class_2815;
- import net.minecraft.class_2868;
- import net.minecraft.class_2885;
- import net.minecraft.class_3965;
+ import net.minecraft.Hand;
+ import net.minecraft.Entity;
+ import net.minecraft.EndCrystalEntity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.Item;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.ItemConvertible;
+ import net.minecraft.Blocks;
+ import net.minecraft.Block;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Direction;
+ import net.minecraft.Box;
+ import net.minecraft.Vec3i;
+ import net.minecraft.HitResult;
+ import net.minecraft.Vec2f;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Packet;
+ import net.minecraft.CloseHandledScreenC2SPacket;
+ import net.minecraft.UpdateSelectedSlotC2SPacket;
+ import net.minecraft.PlayerInteractBlockC2SPacket;
+ import net.minecraft.BlockHitResult;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventBinding;
  import shame.nazuna.api.events.implement.EventPacket;
@@ -42,7 +42,7 @@ package shame.nazuna.client.modules.impl.combat;
    public BindSetting getBind() { return this.bind; } private final BindSetting bind = (new BindSetting("Бинд", -1))
      .visible(() -> Boolean.valueOf(this.modeBaxa.is("По бинду")));
    
-   public class_2338 getTargetPos() {
+   public BlockPos getTargetPos() {
      return this.targetPos;
    public boolean isInternalInteract() { return this.internalInteract; }
    
@@ -71,12 +71,12 @@ package shame.nazuna.client.modules.impl.combat;
        return;  if (event.getType() != EventPacket.Type.SEND)
        return;  if (this.internalInteract)
        return; 
-     class_2596 class_2596 = event.getPacket(); if (class_2596 instanceof class_2885) { class_2885 packet = (class_2885)class_2596;
-       class_3965 hit = packet.method_12543();
-       class_2338 clickedPos = hit.method_17777();
-       class_2338 placePos = clickedPos.method_10093(hit.method_17780());
+     Packet Packet = event.getPacket(); if (Packet instanceof PlayerInteractBlockC2SPacket) { PlayerInteractBlockC2SPacket packet = (PlayerInteractBlockC2SPacket)Packet;
+       BlockHitResult hit = packet.method_12543();
+       BlockPos clickedPos = hit.method_17777();
+       BlockPos placePos = clickedPos.method_10093(hit.method_17780());
        
-       if (isHoldingObsidian() && isInRange(placePos) && !mc.field_1724.method_7357().method_7904(new class_1799((class_1935)class_1802.field_8301))) {
+       if (isHoldingObsidian() && isInRange(placePos) && !mc.field_1724.method_7357().method_7904(new ItemStack((ItemConvertible)Items.field_8301))) {
          int crystalSlot = findCrystalSlot();
          if (crystalSlot != -1) {
            this.targetPos = placePos;
@@ -118,21 +118,21 @@ package shame.nazuna.client.modules.impl.combat;
      processCrystalArea();
    }
    
-   private void tryPlaceCrystalFast(class_2338 pos) {
+   private void tryPlaceCrystalFast(BlockPos pos) {
      if (this.targetSlot < 0 || this.targetSlot > 8 || !canPlaceCrystal(pos)) {
        return;
      }
      
-     rotateTo(class_243.method_24953((class_2382)pos));
+     rotateTo(Vec3d.method_24953((Vec3i)pos));
      
      this.oldSlot = (mc.field_1724.method_31548()).field_7545;
-     mc.method_1562().method_52787((class_2596)new class_2868(this.targetSlot));
+     mc.method_1562().method_52787((Packet)new UpdateSelectedSlotC2SPacket(this.targetSlot));
      (mc.field_1724.method_31548()).field_7545 = this.targetSlot;
      
-     class_243 hitVec = class_243.method_24953((class_2382)pos).method_1031(0.0D, 0.5D, 0.0D);
-     class_3965 result = new class_3965(hitVec, class_2350.field_11036, pos, false);
-     sendInteract(class_1268.field_5808, result);
-     mc.field_1724.method_6104(class_1268.field_5808);
+     Vec3d hitVec = Vec3d.method_24953((Vec3i)pos).method_1031(0.0D, 0.5D, 0.0D);
+     BlockHitResult result = new BlockHitResult(hitVec, Direction.field_11036, pos, false);
+     sendInteract(Hand.field_5808, result);
+     mc.field_1724.method_6104(Hand.field_5808);
      
      this.needSync = true;
      this.crystalArea = boxFromBlock(pos.method_10084()).method_1014(0.1D);
@@ -142,8 +142,8 @@ package shame.nazuna.client.modules.impl.combat;
    private void processCrystalArea() {
      if (this.crystalArea == null)
        return; 
-     for (class_1297 entity : mc.field_1687.method_8335(null, this.crystalArea)) {
-       if (entity instanceof class_1511) { class_1511 crystal = (class_1511)entity; if (!crystal.method_5805())
+     for (Entity entity : mc.field_1687.method_8335(null, this.crystalArea)) {
+       if (entity instanceof EndCrystalEntity) { EndCrystalEntity crystal = (EndCrystalEntity)entity; if (!crystal.method_5805())
            continue; 
          if (!crystal.method_5829().method_1006(mc.field_1724.method_33571())) {
            rotateTo(crystal.method_5829().method_1005());
@@ -157,90 +157,90 @@ package shame.nazuna.client.modules.impl.combat;
      } 
    }
    
-   private boolean shouldPlaceByRightClick(class_2338 clickedPos) {
-     if (mc.field_1724.method_7357().method_7904(new class_1799((class_1935)class_1802.field_8301))) return false; 
+   private boolean shouldPlaceByRightClick(BlockPos clickedPos) {
+     if (mc.field_1724.method_7357().method_7904(new ItemStack((ItemConvertible)Items.field_8301))) return false; 
      if (isHoldingBlockForPlace()) return false;
      
-     class_2248 block = mc.field_1687.method_8320(clickedPos).method_26204();
-     if (block != class_2246.field_10540 && block != class_2246.field_9987) return false;
+     Block block = mc.field_1687.method_8320(clickedPos).method_26204();
+     if (block != Blocks.field_10540 && block != Blocks.field_9987) return false;
      
      return mc.field_1687.method_8320(clickedPos.method_10084()).method_26215();
    }
    
-   private boolean placeCrystalFromOffhand(class_3965 hit, class_2338 clickedPos) {
-     int slot = findScreenSlot(class_1802.field_8301);
-     if (slot == -1 && mc.field_1724.method_6079().method_7909() != class_1802.field_8301) return false;
+   private boolean placeCrystalFromOffhand(BlockHitResult hit, BlockPos clickedPos) {
+     int slot = findScreenSlot(Items.field_8301);
+     if (slot == -1 && mc.field_1724.method_6079().method_7909() != Items.field_8301) return false;
      
      boolean swapped = false;
-     if (mc.field_1724.method_6079().method_7909() != class_1802.field_8301) {
+     if (mc.field_1724.method_6079().method_7909() != Items.field_8301) {
        swapSlotToOffhand(slot);
        swapped = true;
      } 
      
-     sendInteract(class_1268.field_5810, hit);
-     mc.field_1724.method_6104(class_1268.field_5810);
+     sendInteract(Hand.field_5810, hit);
+     mc.field_1724.method_6104(Hand.field_5810);
      this.crystalArea = boxFromBlock(clickedPos.method_10084()).method_1014(0.1D);
      
      if (swapped) {
        swapSlotToOffhand(slot);
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+       mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
      } 
      return true;
    }
    private void placeObsidianByCrosshair() {
-     class_3965 hit;
-     int obsidianSlot = findScreenSlot(class_1802.field_8281);
+     BlockHitResult hit;
+     int obsidianSlot = findScreenSlot(Items.field_8281);
      int crystalSlot = findCrystalSlot();
      if (obsidianSlot == -1 || crystalSlot == -1)
-       return;  class_239 class_239 = mc.field_1765; if (class_239 instanceof class_3965) { hit = (class_3965)class_239; } else { return; }
-      if (hit.method_17783() != class_239.class_240.field_1332)
+       return;  HitResult HitResult = mc.field_1765; if (HitResult instanceof BlockHitResult) { hit = (BlockHitResult)HitResult; } else { return; }
+      if (hit.method_17783() != HitResult.class_240.field_1332)
        return;  if (mc.field_1687.method_8320(hit.method_17777()).method_26215())
        return; 
-     class_2338 placePos = hit.method_17777().method_10093(hit.method_17780());
+     BlockPos placePos = hit.method_17777().method_10093(hit.method_17780());
      this.targetPos = placePos;
      this.targetSlot = crystalSlot;
      this.blocked = true;
      
      swapSlotToOffhand(obsidianSlot);
-     sendInteract(class_1268.field_5810, hit);
-     mc.field_1724.method_6104(class_1268.field_5810);
+     sendInteract(Hand.field_5810, hit);
+     mc.field_1724.method_6104(Hand.field_5810);
      swapSlotToOffhand(obsidianSlot);
-     mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+     mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
    }
    
-   private void attackCrystal(class_1511 crystal) {
-     mc.method_1562().method_52787((class_2596)class_2824.method_34206((class_1297)crystal, false));
-     mc.field_1724.method_6104(class_1268.field_5808);
+   private void attackCrystal(EndCrystalEntity crystal) {
+     mc.method_1562().method_52787((Packet)PlayerInteractEntityC2SPacket.method_34206((Entity)crystal, false));
+     mc.field_1724.method_6104(Hand.field_5808);
    }
    
-   private void sendInteract(class_1268 hand, class_3965 hitResult) {
+   private void sendInteract(Hand hand, BlockHitResult hitResult) {
      this.internalInteract = true;
      try {
-       mc.method_1562().method_52787((class_2596)new class_2885(hand, hitResult, 0));
+       mc.method_1562().method_52787((Packet)new PlayerInteractBlockC2SPacket(hand, hitResult, 0));
      } finally {
        this.internalInteract = false;
      } 
    }
    
-   private void rotateTo(class_243 vec) {
-     class_241 rotation = RotationUtils.getRotations(vec);
+   private void rotateTo(Vec3d vec) {
+     Vec2f rotation = RotationUtils.getRotations(vec);
      RotationStorage.update(new Rotation(rotation.field_1343, rotation.field_1342), 360.0F, 360.0F, 360.0F, 360.0F, 1, 2, false);
    }
    
-   private boolean canPlaceCrystal(class_2338 pos) {
-     class_2338 up1 = pos.method_10084();
-     class_2338 up2 = pos.method_10086(2);
+   private boolean canPlaceCrystal(BlockPos pos) {
+     BlockPos up1 = pos.method_10084();
+     BlockPos up2 = pos.method_10086(2);
      
      if (!mc.field_1687.method_8320(up1).method_26215()) return false; 
      if (!mc.field_1687.method_8320(up2).method_26215()) return false;
  
  
      
-     class_238 box = new class_238(up1.method_10263(), up1.method_10264(), up1.method_10260(), up1.method_10263() + 1.0D, up1.method_10264() + 2.0D, up1.method_10260() + 1.0D);
+     Box box = new Box(up1.method_10263(), up1.method_10264(), up1.method_10260(), up1.method_10263() + 1.0D, up1.method_10264() + 2.0D, up1.method_10260() + 1.0D);
  
      
-     for (class_1297 entity : mc.field_1687.method_8335(null, box)) {
-       if (!(entity instanceof class_1511)) {
+     for (Entity entity : mc.field_1687.method_8335(null, box)) {
+       if (!(entity instanceof EndCrystalEntity)) {
          return false;
        }
      } 
@@ -249,16 +249,16 @@ package shame.nazuna.client.modules.impl.combat;
    
    private int findCrystalSlot() {
      for (int i = 0; i < 9; i++) {
-       if (mc.field_1724.method_31548().method_5438(i).method_7909() == class_1802.field_8301) {
+       if (mc.field_1724.method_31548().method_5438(i).method_7909() == Items.field_8301) {
          return i;
        }
      } 
      return -1;
    }
    
-   private int findScreenSlot(class_1792 item) {
+   private int findScreenSlot(Item item) {
      for (int i = 9; i < 45; i++) {
-       class_1799 stack = mc.field_1724.field_7498.method_7611(i).method_7677();
+       ItemStack stack = mc.field_1724.field_7498.method_7611(i).method_7677();
        if (stack.method_7909() == item) {
          return i;
        }
@@ -268,45 +268,45 @@ package shame.nazuna.client.modules.impl.combat;
    
    private void swapSlotToOffhand(int slot) {
      if (slot >= 36 && slot <= 44) {
-       mc.field_1761.method_2906(0, 45, slot - 36, class_1713.field_7791, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(0, 45, slot - 36, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
        
        return;
      } 
-     mc.field_1761.method_2906(0, slot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-     mc.field_1761.method_2906(0, 45, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-     mc.field_1761.method_2906(0, slot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
+     mc.field_1761.method_2906(0, slot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+     mc.field_1761.method_2906(0, 45, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+     mc.field_1761.method_2906(0, slot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
    }
    
    private void restoreSelectedSlot() {
      if (this.oldSlot != -1) {
-       mc.method_1562().method_52787((class_2596)new class_2868(this.oldSlot));
+       mc.method_1562().method_52787((Packet)new UpdateSelectedSlotC2SPacket(this.oldSlot));
        (mc.field_1724.method_31548()).field_7545 = this.oldSlot;
        this.oldSlot = -1;
      } 
    }
    
-   private class_238 boxFromBlock(class_2338 pos) {
-     return new class_238(pos
+   private Box boxFromBlock(BlockPos pos) {
+     return new Box(pos
          .method_10263(), pos.method_10264(), pos.method_10260(), pos
          .method_10263() + 1.0D, pos.method_10264() + 1.0D, pos.method_10260() + 1.0D);
    }
  
    
    private boolean isHoldingObsidian() {
-     return (mc.field_1724.method_6047().method_7909() == class_1802.field_8281 || mc.field_1724
-       .method_6079().method_7909() == class_1802.field_8281);
+     return (mc.field_1724.method_6047().method_7909() == Items.field_8281 || mc.field_1724
+       .method_6079().method_7909() == Items.field_8281);
    }
    
    private boolean isHoldingBlockForPlace() {
-     class_1792 main = mc.field_1724.method_6047().method_7909();
-     class_1792 off = mc.field_1724.method_6079().method_7909();
+     Item main = mc.field_1724.method_6047().method_7909();
+     Item off = mc.field_1724.method_6079().method_7909();
      
-     return ((main instanceof net.minecraft.class_1747 && main != class_1802.field_8575) || (off instanceof net.minecraft.class_1747 && off != class_1802.field_8575));
+     return ((main instanceof net.minecraft.BlockItem && main != Items.field_8575) || (off instanceof net.minecraft.BlockItem && off != Items.field_8575));
    }
  
    
-   private boolean isInRange(class_2338 pos) {
-     return (mc.field_1724.method_33571().method_1022(class_243.method_24953((class_2382)pos)) <= 4.5D);
+   private boolean isInRange(BlockPos pos) {
+     return (mc.field_1724.method_33571().method_1022(Vec3d.method_24953((Vec3i)pos)) <= 4.5D);
    }
    
    private void reset() {

@@ -1,12 +1,12 @@
 package shame.nazuna.api.utils.bot;
  
- import net.minecraft.class_2535;
- import net.minecraft.class_320;
- import net.minecraft.class_634;
- import net.minecraft.class_636;
- import net.minecraft.class_638;
- import net.minecraft.class_642;
- import net.minecraft.class_746;
+ import net.minecraft.ClientConnection;
+ import net.minecraft.Session;
+ import net.minecraft.ClientPlayNetworkHandler;
+ import net.minecraft.ClientPlayerInteractionManager;
+ import net.minecraft.ClientWorld;
+ import net.minecraft.ServerInfo;
+ import net.minecraft.ClientPlayerEntity;
  import shame.nazuna.client.modules.impl.player.AutoForest;
  
  
@@ -662,16 +662,16 @@ package shame.nazuna.api.utils.bot;
  {
    private final String name;
    private final String address;
-   private final class_2535 connection;
-   private final class_634 handler;
-   private final class_638 world;
-   private final class_746 player;
-   private final class_636 interactionManager;
-   private final class_320 session;
-   private final class_642 serverInfo;
+   private final ClientConnection connection;
+   private final ClientPlayNetworkHandler handler;
+   private final ClientWorld world;
+   private final ClientPlayerEntity player;
+   private final ClientPlayerInteractionManager interactionManager;
+   private final Session session;
+   private final ServerInfo serverInfo;
    private final AutoForest.SessionState autoForestState;
    
-   public BotConnection(String name, String address, class_2535 connection, class_634 handler, class_638 world, class_746 player, class_636 interactionManager, class_320 session, class_642 serverInfo, AutoForest.SessionState autoForestState) {
+   public BotConnection(String name, String address, ClientConnection connection, ClientPlayNetworkHandler handler, ClientWorld world, ClientPlayerEntity player, ClientPlayerInteractionManager interactionManager, Session session, ServerInfo serverInfo, AutoForest.SessionState autoForestState) {
      this.name = name;
      this.address = address;
      this.connection = connection;
@@ -686,13 +686,13 @@ package shame.nazuna.api.utils.bot;
    
    public String name() { return this.name; }
    public String address() { return this.address; }
-   public class_2535 connection() { return this.connection; }
-   public class_634 handler() { return this.handler; }
-   public class_638 world() { return this.world; }
-   public class_746 player() { return this.player; }
-   public class_636 interactionManager() { return this.interactionManager; }
-   public class_320 session() { return this.session; }
-   public class_642 serverInfo() { return this.serverInfo; } public AutoForest.SessionState autoForestState() {
+   public ClientConnection connection() { return this.connection; }
+   public ClientPlayNetworkHandler handler() { return this.handler; }
+   public ClientWorld world() { return this.world; }
+   public ClientPlayerEntity player() { return this.player; }
+   public ClientPlayerInteractionManager interactionManager() { return this.interactionManager; }
+   public Session session() { return this.session; }
+   public ServerInfo serverInfo() { return this.serverInfo; } public AutoForest.SessionState autoForestState() {
      return this.autoForestState;
    }
  }

@@ -1,11 +1,11 @@
 package shame.nazuna.client.modules.impl.combat;
- import net.minecraft.class_1657;
- import net.minecraft.class_1713;
- import net.minecraft.class_1792;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_2596;
- import net.minecraft.class_2815;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.Item;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.Packet;
+ import net.minecraft.CloseHandledScreenC2SPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventBinding;
  import shame.nazuna.api.events.implement.EventMoveInput;
@@ -94,9 +94,9 @@ package shame.nazuna.client.modules.impl.combat;
      if (this.needSwap && this.targetSlot == -1) {
        int slot; this.needSwap = false;
        
-       class_1792 offhand = mc.field_1724.method_6079().method_7909();
-       class_1792 first = getItem(this.firstItem.getCurrent());
-       class_1792 second = getItem(this.secondItem.getCurrent());
+       Item offhand = mc.field_1724.method_6079().method_7909();
+       Item first = getItem(this.firstItem.getCurrent());
+       Item second = getItem(this.secondItem.getCurrent());
        
        int firstSlot = findItemSlot(first);
        int secondSlot = findItemSlot(second);
@@ -132,7 +132,7 @@ package shame.nazuna.client.modules.impl.combat;
      if (this.targetSlot == -1)
        return; 
      doSwap(this.targetSlot);
-     mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+     mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
      
      this.targetSlot = -1;
    }
@@ -140,18 +140,18 @@ package shame.nazuna.client.modules.impl.combat;
    private void doSwap(int slot) {
      if (slot >= 36 && slot <= 44) {
        int hotbarSlot = slot - 36;
-       mc.field_1761.method_2906(0, 45, hotbarSlot, class_1713.field_7791, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(0, 45, hotbarSlot, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
      } else {
-       mc.field_1761.method_2906(0, slot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-       mc.field_1761.method_2906(0, 45, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-       mc.field_1761.method_2906(0, slot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(0, slot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+       mc.field_1761.method_2906(0, 45, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+       mc.field_1761.method_2906(0, slot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
      } 
    }
  
    
-   private int findItemSlot(class_1792 item) {
+   private int findItemSlot(Item item) {
      for (int i = 9; i < 45; i++) {
-       class_1799 stack = mc.field_1724.field_7498.method_7611(i).method_7677();
+       ItemStack stack = mc.field_1724.field_7498.method_7611(i).method_7677();
        if (stack.method_7909() == item) {
          return i;
        }
@@ -159,14 +159,14 @@ package shame.nazuna.client.modules.impl.combat;
      return -1;
    }
    
-   private class_1792 getItem(String name) {
+   private Item getItem(String name) {
      switch (name) { case "Руна": case "Тотем": case "Шар": case "Гепл": case "Щит":  }  return 
  
  
  
  
        
-       class_1802.field_8162;
+       Items.field_8162;
    }
  
    

@@ -2,7 +2,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_310;
+ import net.minecraft.MinecraftClient;
  import shame.nazuna.api.events.implement.EventRender;
  import shame.nazuna.api.utils.color.ColorUtils;
  import shame.nazuna.api.utils.draggable.Draggable;
@@ -12,7 +12,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  import shame.nazuna.client.modules.impl.render.base.InterfaceProcessing;
  
  public class KeyStrokes extends InterfaceProcessing {
-   private final class_310 mc = class_310.method_1551();
+   private final MinecraftClient mc = MinecraftClient.method_1551();
    
    private final List<Long> leftClicks = new ArrayList<>();
    

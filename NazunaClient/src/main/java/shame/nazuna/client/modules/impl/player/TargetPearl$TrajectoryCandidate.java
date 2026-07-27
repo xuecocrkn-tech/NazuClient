@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.player;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -465,9 +465,9 @@ package shame.nazuna.client.modules.impl.player;
    private final float pitch;
    private final double distanceToTarget;
    private final int ticks;
-   private final class_243 landingPos;
+   private final Vec3d landingPos;
    
-   private TrajectoryCandidate(float pitch, double distanceToTarget, int ticks, class_243 landingPos) {
+   private TrajectoryCandidate(float pitch, double distanceToTarget, int ticks, Vec3d landingPos) {
      this.pitch = pitch;
      this.distanceToTarget = distanceToTarget;
      this.ticks = ticks;

@@ -4,9 +4,9 @@ package shame.nazuna.api.utils.math;
  import java.math.RoundingMode;
  import java.security.SecureRandom;
  import java.util.concurrent.ThreadLocalRandom;
- import net.minecraft.class_1297;
- import net.minecraft.class_243;
- import net.minecraft.class_3532;
+ import net.minecraft.Entity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.QClient;
  
  public class MathUtils
@@ -32,7 +32,7 @@ package shame.nazuna.api.utils.math;
      return (float)(fastRandomize.nextFloat() * (max - min) + min);
    }
    
-   public static double getBps(class_1297 player) {
+   public static double getBps(Entity player) {
      double dx = player.method_23317() - player.field_6014;
      double dy = player.method_23318() - player.field_6036;
      double dz = player.method_23321() - player.field_5969;
@@ -53,7 +53,7 @@ package shame.nazuna.api.utils.math;
      return Math.round(bps * 10.0F) / 10.0F;
    }
    
-   public static double getTargetCompensatedSpeed(class_1297 target) {
+   public static double getTargetCompensatedSpeed(Entity target) {
      double baseSpeed = 1.5D;
      
      if (target == null) {
@@ -90,14 +90,14 @@ package shame.nazuna.api.utils.math;
    public static float interpolate(float prev, float to, float value) {
      return prev + (to - prev) * value;
    }
-   public static class_243 interpolate(class_243 end, class_243 start, float multiple) {
-     return new class_243(interpolate(end.method_10216(), start.method_10216(), multiple), interpolate(end.method_10214(), start.method_10214(), multiple), interpolate(end.method_10215(), start.method_10215(), multiple));
+   public static Vec3d interpolate(Vec3d end, Vec3d start, float multiple) {
+     return new Vec3d(interpolate(end.method_10216(), start.method_10216(), multiple), interpolate(end.method_10214(), start.method_10214(), multiple), interpolate(end.method_10215(), start.method_10215(), multiple));
    }
-   public static class_243 interpolate(class_1297 entity, float partialTicks) {
-     double posX = class_3532.method_16436(partialTicks, entity.field_6014, entity.method_23317());
-     double posY = class_3532.method_16436(partialTicks, entity.field_6036, entity.method_23318());
-     double posZ = class_3532.method_16436(partialTicks, entity.field_5969, entity.method_23321());
-     return new class_243(posX, posY, posZ);
+   public static Vec3d interpolate(Entity entity, float partialTicks) {
+     double posX = MathHelper.method_16436(partialTicks, entity.field_6014, entity.method_23317());
+     double posY = MathHelper.method_16436(partialTicks, entity.field_6036, entity.method_23318());
+     double posZ = MathHelper.method_16436(partialTicks, entity.field_5969, entity.method_23321());
+     return new Vec3d(posX, posY, posZ);
    }
    
    public static double interpolate(double current, double old, double scale) {

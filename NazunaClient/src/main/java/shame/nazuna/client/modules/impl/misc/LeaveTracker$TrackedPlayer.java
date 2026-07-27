@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.misc;
  
- import net.minecraft.class_2338;
+ import net.minecraft.BlockPos;
  
  
  
@@ -78,7 +78,7 @@ package shame.nazuna.client.modules.impl.misc;
    extends Record
  {
    private final String name;
-   private final class_2338 pos;
+   private final BlockPos pos;
    
    public final String toString() {
      // Byte code:
@@ -121,8 +121,8 @@ package shame.nazuna.client.modules.impl.misc;
      //   0	8	1	o	Ljava/lang/Object;
    }
    
-   private TrackedPlayer(String name, class_2338 pos) {
-     this.name = name; this.pos = pos; } public String name() { return this.name; } public class_2338 pos() { return this.pos; }
+   private TrackedPlayer(String name, BlockPos pos) {
+     this.name = name; this.pos = pos; } public String name() { return this.name; } public BlockPos pos() { return this.pos; }
  
  }
 

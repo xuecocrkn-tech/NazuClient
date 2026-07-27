@@ -3,20 +3,20 @@ package shame.nazuna.client.modules.impl.misc;
  import java.util.ArrayList;
  import java.util.Iterator;
  import java.util.List;
- import net.minecraft.class_1799;
- import net.minecraft.class_1935;
- import net.minecraft.class_2246;
- import net.minecraft.class_2248;
- import net.minecraft.class_2338;
- import net.minecraft.class_2374;
- import net.minecraft.class_2382;
- import net.minecraft.class_243;
- import net.minecraft.class_2596;
- import net.minecraft.class_2680;
- import net.minecraft.class_2767;
- import net.minecraft.class_332;
- import net.minecraft.class_4587;
- import net.minecraft.class_7923;
+ import net.minecraft.ItemStack;
+ import net.minecraft.ItemConvertible;
+ import net.minecraft.Blocks;
+ import net.minecraft.Block;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Position;
+ import net.minecraft.Vec3i;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Packet;
+ import net.minecraft.BlockState;
+ import net.minecraft.PlaySoundS2CPacket;
+ import net.minecraft.DrawContext;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.Registries;
  import org.joml.Matrix4f;
  import org.joml.Matrix4fc;
  import org.joml.Quaternionf;
@@ -42,11 +42,11 @@ package shame.nazuna.client.modules.impl.misc;
    private static final float TIMER_SECONDS = 19.5F;
    private static final float MAX_DISTANCE = 96.0F;
    private static final double TIMER_Y_OFFSET = 0.6D;
-   private static final class_1799 LAYER_ICON = new class_1799((class_1935)class_1802.field_8551);
+   private static final ItemStack LAYER_ICON = new ItemStack((ItemConvertible)Items.field_8551);
    
    private final Matrix4f lastProjectionMatrix = new Matrix4f();
    private final Quaternionf lastCameraRotation = new Quaternionf();
-   private class_243 lastCameraPos = class_243.field_1353;
+   private Vec3d lastCameraPos = Vec3d.field_1353;
    
    private boolean hasProjection;
    private final List<LayerTimer> timers = new ArrayList<>();
@@ -65,15 +65,15 @@ package shame.nazuna.client.modules.impl.misc;
    }
    @EventLink
    public void onPacket(EventPacket event) {
-     class_2767 packet;
+     PlaySoundS2CPacket packet;
      if (event.getType() != EventPacket.Type.RECEIVE || mc.field_1687 == null || mc.field_1724 == null)
-       return;  class_2596 class_2596 = event.getPacket(); if (class_2596 instanceof class_2767) { packet = (class_2767)class_2596; }
+       return;  Packet Packet = event.getPacket(); if (Packet instanceof PlaySoundS2CPacket) { packet = (PlaySoundS2CPacket)Packet; }
      else { return; }
       String sound = getSoundPath(packet);
      if (sound == null)
        return; 
-     class_243 soundPos = new class_243(packet.method_11890(), packet.method_11889(), packet.method_11893());
-     class_2338 blockPos = class_2338.method_49638((class_2374)soundPos);
+     Vec3d soundPos = new Vec3d(packet.method_11890(), packet.method_11889(), packet.method_11893());
+     BlockPos blockPos = BlockPos.method_49638((Position)soundPos);
      
      if ("block.piston.extend".equals(sound)) {
        addTimer(blockPos, soundPos);
@@ -109,7 +109,7 @@ package shame.nazuna.client.modules.impl.misc;
      
      if (this.timers.isEmpty())
        return; 
-     class_4587 matrices = event.getContext().method_51448();
+     MatrixStack matrices = event.getContext().method_51448();
      Font font = Fonts.getFont("sf_regular", 13);
      if (font == null)
        return; 
@@ -118,7 +118,7 @@ package shame.nazuna.client.modules.impl.misc;
        LayerTimer timer = this.timers.get(i);
        if (mc.field_1724.method_5707(timer.pos) <= maxDistSq) {
          
-         class_243 screen = worldToScreen(timer.pos);
+         Vec3d screen = worldToScreen(timer.pos);
          if (screen != null) {
            
            float seconds = Math.max(0.0F, (float)(timer.endTime - now) / 1000.0F);
@@ -135,27 +135,27 @@ package shame.nazuna.client.modules.impl.misc;
        PendingScan scan = iterator.next();
        if (scan.runAt > now)
          continue; 
-       class_2338 found = findLayerLikeBlock(scan.center);
+       BlockPos found = findLayerLikeBlock(scan.center);
  
        
-       class_243 pos = (found == null) ? class_243.method_24953((class_2382)scan.center) : new class_243(found.method_10263() + 0.5D, found.method_10264() + 0.65D, found.method_10260() + 0.5D);
+       Vec3d pos = (found == null) ? Vec3d.method_24953((Vec3i)scan.center) : new Vec3d(found.method_10263() + 0.5D, found.method_10264() + 0.65D, found.method_10260() + 0.5D);
        addTimer((found == null) ? scan.center : found, pos);
        iterator.remove();
      } 
    }
    
-   private class_2338 findLayerLikeBlock(class_2338 center) {
-     class_2338 best = null;
+   private BlockPos findLayerLikeBlock(BlockPos center) {
+     BlockPos best = null;
      double bestDistance = Double.MAX_VALUE;
      
      for (int x = -4; x <= 4; x++) {
        for (int y = -4; y <= 4; y++) {
          for (int z = -4; z <= 4; z++) {
-           class_2338 pos = center.method_10069(x, y, z);
-           class_2680 state = mc.field_1687.method_8320(pos);
+           BlockPos pos = center.method_10069(x, y, z);
+           BlockState state = mc.field_1687.method_8320(pos);
            if (isLayerLikeBlock(state)) {
              
-             double distance = pos.method_10262((class_2382)center);
+             double distance = pos.method_10262((Vec3i)center);
              if (distance < bestDistance) {
                bestDistance = distance;
                best = pos;
@@ -167,11 +167,11 @@ package shame.nazuna.client.modules.impl.misc;
      return best;
    }
    
-   private boolean isLayerLikeBlock(class_2680 state) {
+   private boolean isLayerLikeBlock(BlockState state) {
      if (state == null || state.method_26215()) return false;
      
-     class_2248 block = state.method_26204();
-     return (block == class_2246.field_10560 || block == class_2246.field_10615 || block == class_2246.field_10008 || block == class_2246.field_10342 || block == class_2246.field_10535 || block == class_2246.field_10105 || block == class_2246.field_10414);
+     Block block = state.method_26204();
+     return (block == Blocks.field_10560 || block == Blocks.field_10615 || block == Blocks.field_10008 || block == Blocks.field_10342 || block == Blocks.field_10535 || block == Blocks.field_10105 || block == Blocks.field_10414);
    }
  
  
@@ -180,12 +180,12 @@ package shame.nazuna.client.modules.impl.misc;
  
  
    
-   private void addTimer(class_2338 blockPos, class_243 renderPos) {
+   private void addTimer(BlockPos blockPos, Vec3d renderPos) {
      long endTime = System.currentTimeMillis() + 19500L;
      
      for (int i = 0; i < this.timers.size(); i++) {
        LayerTimer timer = this.timers.get(i);
-       if (timer.blockPos.method_10262((class_2382)blockPos) <= 2.25D) {
+       if (timer.blockPos.method_10262((Vec3i)blockPos) <= 2.25D) {
          this.timers.set(i, new LayerTimer(blockPos, renderPos.method_1031(0.0D, 0.6D, 0.0D), endTime));
          
          return;
@@ -200,15 +200,15 @@ package shame.nazuna.client.modules.impl.misc;
        .equals(sound));
    }
    
-   private String getSoundPath(class_2767 packet) {
+   private String getSoundPath(PlaySoundS2CPacket packet) {
      try {
-       return class_7923.field_41172.method_10221(packet.method_11894().comp_349()).method_12832();
+       return Registries.field_41172.method_10221(packet.method_11894().comp_349()).method_12832();
      } catch (Exception ignored) {
        return null;
      } 
    }
    
-   private void drawTimer(class_332 context, class_4587 matrices, Font font, float x, float y, float seconds) {
+   private void drawTimer(DrawContext context, MatrixStack matrices, Font font, float x, float y, float seconds) {
      String text = formatOneDecimal(seconds) + "с";
      float textWidth = font.getStringWidth(text);
      float iconSize = 10.0F;
@@ -233,7 +233,7 @@ package shame.nazuna.client.modules.impl.misc;
      return "" + scaled / 10 + "." + scaled / 10;
    }
    
-   private void drawItemIcon(class_332 context, class_4587 matrices, float x, float y, float scale) {
+   private void drawItemIcon(DrawContext context, MatrixStack matrices, float x, float y, float scale) {
      if (context == null)
        return; 
      RenderSystem.enableBlend();
@@ -249,7 +249,7 @@ package shame.nazuna.client.modules.impl.misc;
      RenderSystem.enableDepthTest();
    }
    
-   private class_243 worldToScreen(class_243 worldPos) {
+   private Vec3d worldToScreen(Vec3d worldPos) {
      if (mc == null || mc.method_22683() == null) return null;
      
      Vector3f relative = new Vector3f((float)(worldPos.field_1352 - this.lastCameraPos.field_1352), (float)(worldPos.field_1351 - this.lastCameraPos.field_1351), (float)(worldPos.field_1350 - this.lastCameraPos.field_1350));
@@ -283,10 +283,10 @@ package shame.nazuna.client.modules.impl.misc;
        return null;
      }
      
-     return new class_243(screenX, screenY, ndcZ);
+     return new Vec3d(screenX, screenY, ndcZ);
    }
-   private static final class LayerTimer extends Record { private final class_2338 blockPos; private final class_243 pos; private final long endTime;
-     private LayerTimer(class_2338 blockPos, class_243 pos, long endTime) { this.blockPos = blockPos; this.pos = pos; this.endTime = endTime; } public final String toString() { // Byte code:
+   private static final class LayerTimer extends Record { private final BlockPos blockPos; private final Vec3d pos; private final long endTime;
+     private LayerTimer(BlockPos blockPos, Vec3d pos, long endTime) { this.blockPos = blockPos; this.pos = pos; this.endTime = endTime; } public final String toString() { // Byte code:
        //   0: aload_0
        //   1: <illegal opcode> toString : (Lshame/astra/client/modules/impl/misc/LayerCooldown$LayerTimer;)Ljava/lang/String;
        //   6: areturn
@@ -295,7 +295,7 @@ package shame.nazuna.client.modules.impl.misc;
        //   #289	-> 0
        // Local variable table:
        //   start	length	slot	name	descriptor
-       //   0	7	0	this	Lshame/astra/client/modules/impl/misc/LayerCooldown$LayerTimer; } public class_2338 blockPos() { return this.blockPos; } public final int hashCode() { // Byte code:
+       //   0	7	0	this	Lshame/astra/client/modules/impl/misc/LayerCooldown$LayerTimer; } public BlockPos blockPos() { return this.blockPos; } public final int hashCode() { // Byte code:
        //   0: aload_0
        //   1: <illegal opcode> hashCode : (Lshame/astra/client/modules/impl/misc/LayerCooldown$LayerTimer;)I
        //   6: ireturn
@@ -315,10 +315,10 @@ package shame.nazuna.client.modules.impl.misc;
        // Local variable table:
        //   start	length	slot	name	descriptor
        //   0	8	0	this	Lshame/astra/client/modules/impl/misc/LayerCooldown$LayerTimer;
-       //   0	8	1	o	Ljava/lang/Object; } public class_243 pos() { return this.pos; } public long endTime() { return this.endTime; }
+       //   0	8	1	o	Ljava/lang/Object; } public Vec3d pos() { return this.pos; } public long endTime() { return this.endTime; }
       }
-   private static final class PendingScan extends Record { private final class_2338 center; private final long runAt;
-     private PendingScan(class_2338 center, long runAt) { this.center = center; this.runAt = runAt; } public final String toString() { // Byte code:
+   private static final class PendingScan extends Record { private final BlockPos center; private final long runAt;
+     private PendingScan(BlockPos center, long runAt) { this.center = center; this.runAt = runAt; } public final String toString() { // Byte code:
        //   0: aload_0
        //   1: <illegal opcode> toString : (Lshame/astra/client/modules/impl/misc/LayerCooldown$PendingScan;)Ljava/lang/String;
        //   6: areturn
@@ -347,7 +347,7 @@ package shame.nazuna.client.modules.impl.misc;
        // Local variable table:
        //   start	length	slot	name	descriptor
        //   0	8	0	this	Lshame/astra/client/modules/impl/misc/LayerCooldown$PendingScan;
-       //   0	8	1	o	Ljava/lang/Object; } public class_2338 center() { return this.center; } public long runAt() { return this.runAt; }
+       //   0	8	1	o	Ljava/lang/Object; } public BlockPos center() { return this.center; } public long runAt() { return this.runAt; }
       }
  
  }

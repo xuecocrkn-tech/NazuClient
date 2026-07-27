@@ -2,7 +2,7 @@ package shame.nazuna.api.utils.math;
  import java.math.BigDecimal;
  import java.math.RoundingMode;
  import java.util.concurrent.ThreadLocalRandom;
- import net.minecraft.class_3532;
+ import net.minecraft.MathHelper;
  
  public final class Mathf {
    private Mathf() {
@@ -67,7 +67,7 @@ package shame.nazuna.api.utils.math;
      float factorEnd = (float)(Math.sin((t * angle)) / Math.sin(angle));
      
      float interpolatedValue = start * factorStart + end * factorEnd;
-     return (float)class_3532.method_15350(class_3532.method_15338(Math.toDegrees(interpolatedValue)), start, end);
+     return (float)MathHelper.method_15350(MathHelper.method_15338(Math.toDegrees(interpolatedValue)), start, end);
    }
    
    public static double round(double value, int scale, double inc) {
@@ -97,7 +97,7 @@ package shame.nazuna.api.utils.math;
      double deltaX = x2 - x1;
      double deltaY = y2 - y1;
      double deltaZ = z2 - z1;
-     return class_3532.method_15355((float)(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ));
+     return MathHelper.method_15355((float)(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ));
    }
    
    public static double clamp(double min, double max, double n) {

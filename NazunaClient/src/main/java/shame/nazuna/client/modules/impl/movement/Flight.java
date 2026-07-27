@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.movement;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -50,14 +50,14 @@ package shame.nazuna.client.modules.impl.movement;
        motionY = -spd;
      } 
      
-     mc.field_1724.method_18799(new class_243(motionX, motionY, motionZ));
+     mc.field_1724.method_18799(new Vec3d(motionX, motionY, motionZ));
    }
  
    
    public void onDisable() {
      super.onDisable();
      if (mc.field_1724 != null)
-       mc.field_1724.method_18799(class_243.field_1353); 
+       mc.field_1724.method_18799(Vec3d.field_1353); 
    }
  }
 

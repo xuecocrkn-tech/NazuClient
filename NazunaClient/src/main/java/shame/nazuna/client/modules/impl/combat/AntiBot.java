@@ -2,11 +2,11 @@ package shame.nazuna.client.modules.impl.combat;
  
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_1297;
- import net.minecraft.class_1309;
- import net.minecraft.class_1657;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
+ import net.minecraft.Entity;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -14,7 +14,7 @@ package shame.nazuna.client.modules.impl.combat;
  public class AntiBot extends Module {
    public static AntiBot INSTANCE = new AntiBot();
    
-   public static final List<class_1297> isBot = new ArrayList<>();
+   public static final List<Entity> isBot = new ArrayList<>();
    
    public AntiBot() {
      super("AntiBot", "Определяет ботов на сервере", Module.ModuleCategory.COMBAT);
@@ -28,30 +28,30 @@ package shame.nazuna.client.modules.impl.combat;
    public void newMatrix() {
      if (mc.field_1687 == null)
        return; 
-     for (class_1657 player : mc.field_1687.method_18456()) {
+     for (PlayerEntity player : mc.field_1687.method_18456()) {
        if (mc.field_1724 != player && (
-         (class_1799)(player.method_31548()).field_7548.get(0)).method_7909() != class_1802.field_8162 && (
-         (class_1799)(player.method_31548()).field_7548.get(1)).method_7909() != class_1802.field_8162 && (
-         (class_1799)(player.method_31548()).field_7548.get(2)).method_7909() != class_1802.field_8162 && (
-         (class_1799)(player.method_31548()).field_7548.get(3)).method_7909() != class_1802.field_8162 && (
-         (class_1799)(player.method_31548()).field_7548.get(0)).method_7923() && (
-         (class_1799)(player.method_31548()).field_7548.get(1)).method_7923() && (
-         (class_1799)(player.method_31548()).field_7548.get(2)).method_7923() && (
-         (class_1799)(player.method_31548()).field_7548.get(3)).method_7923() && player
-         .method_6079().method_7909() == class_1802.field_8162 && ((
-         (class_1799)(player.method_31548()).field_7548.get(0)).method_7909() == class_1802.field_8370 || (
-         (class_1799)(player.method_31548()).field_7548.get(1)).method_7909() == class_1802.field_8570 || (
-         (class_1799)(player.method_31548()).field_7548.get(2)).method_7909() == class_1802.field_8577 || (
-         (class_1799)(player.method_31548()).field_7548.get(3)).method_7909() == class_1802.field_8267 || (
-         (class_1799)(player.method_31548()).field_7548.get(0)).method_7909() == class_1802.field_8660 || (
-         (class_1799)(player.method_31548()).field_7548.get(1)).method_7909() == class_1802.field_8396 || (
-         (class_1799)(player.method_31548()).field_7548.get(2)).method_7909() == class_1802.field_8523 || (
-         (class_1799)(player.method_31548()).field_7548.get(3)).method_7909() == class_1802.field_8743) && player
-         .method_6047().method_7909() != class_1802.field_8162 && 
-         !((class_1799)(player.method_31548()).field_7548.get(0)).method_7986() && 
-         !((class_1799)(player.method_31548()).field_7548.get(1)).method_7986() && 
-         !((class_1799)(player.method_31548()).field_7548.get(2)).method_7986() && 
-         !((class_1799)(player.method_31548()).field_7548.get(3)).method_7986() && player
+         (ItemStack)(player.method_31548()).field_7548.get(0)).method_7909() != Items.field_8162 && (
+         (ItemStack)(player.method_31548()).field_7548.get(1)).method_7909() != Items.field_8162 && (
+         (ItemStack)(player.method_31548()).field_7548.get(2)).method_7909() != Items.field_8162 && (
+         (ItemStack)(player.method_31548()).field_7548.get(3)).method_7909() != Items.field_8162 && (
+         (ItemStack)(player.method_31548()).field_7548.get(0)).method_7923() && (
+         (ItemStack)(player.method_31548()).field_7548.get(1)).method_7923() && (
+         (ItemStack)(player.method_31548()).field_7548.get(2)).method_7923() && (
+         (ItemStack)(player.method_31548()).field_7548.get(3)).method_7923() && player
+         .method_6079().method_7909() == Items.field_8162 && ((
+         (ItemStack)(player.method_31548()).field_7548.get(0)).method_7909() == Items.field_8370 || (
+         (ItemStack)(player.method_31548()).field_7548.get(1)).method_7909() == Items.field_8570 || (
+         (ItemStack)(player.method_31548()).field_7548.get(2)).method_7909() == Items.field_8577 || (
+         (ItemStack)(player.method_31548()).field_7548.get(3)).method_7909() == Items.field_8267 || (
+         (ItemStack)(player.method_31548()).field_7548.get(0)).method_7909() == Items.field_8660 || (
+         (ItemStack)(player.method_31548()).field_7548.get(1)).method_7909() == Items.field_8396 || (
+         (ItemStack)(player.method_31548()).field_7548.get(2)).method_7909() == Items.field_8523 || (
+         (ItemStack)(player.method_31548()).field_7548.get(3)).method_7909() == Items.field_8743) && player
+         .method_6047().method_7909() != Items.field_8162 && 
+         !((ItemStack)(player.method_31548()).field_7548.get(0)).method_7986() && 
+         !((ItemStack)(player.method_31548()).field_7548.get(1)).method_7986() && 
+         !((ItemStack)(player.method_31548()).field_7548.get(2)).method_7986() && 
+         !((ItemStack)(player.method_31548()).field_7548.get(3)).method_7986() && player
          .method_7344().method_7586() == 20) {
          if (!isBot.contains(player)) {
            isBot.add(player);
@@ -62,8 +62,8 @@ package shame.nazuna.client.modules.impl.combat;
      } 
    }
    
-   public static boolean checkBot(class_1309 entity) {
-     return (entity instanceof class_1657 && isBot.contains(entity));
+   public static boolean checkBot(LivingEntity entity) {
+     return (entity instanceof PlayerEntity && isBot.contains(entity));
    }
  
    

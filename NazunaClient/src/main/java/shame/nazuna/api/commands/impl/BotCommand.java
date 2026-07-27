@@ -7,7 +7,7 @@ package shame.nazuna.api.commands.impl;
  import com.mojang.brigadier.suggestion.SuggestionsBuilder;
  import java.util.List;
  import java.util.Objects;
- import net.minecraft.class_310;
+ import net.minecraft.MinecraftClient;
  import shame.nazuna.api.utils.bot.BotSessionManager;
  import shame.nazuna.api.utils.chat.ChatUtils;
  
@@ -17,12 +17,12 @@ package shame.nazuna.api.commands.impl;
    }
  
    
-   public void execute(LiteralArgumentBuilder<class_2172> builder) {
+   public void execute(LiteralArgumentBuilder<CommandSource> builder) {
      ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)builder.then(literal("connect")
          .then(arg("name", (ArgumentType)StringArgumentType.string())
            .then(arg("ip", (ArgumentType)StringArgumentType.string())
              .executes(context -> {
-                 class_310 mc = class_310.method_1551();
+                 MinecraftClient mc = MinecraftClient.method_1551();
                  if (mc.field_1724 == null) {
                    return 0;
                  }
@@ -38,7 +38,7 @@ package shame.nazuna.api.commands.impl;
                BotSessionManager.getSessionNames(false).forEach(suggestions::suggest);
                return suggestions.buildFuture();
              }).executes(context -> {
-               class_310 mc = class_310.method_1551();
+               MinecraftClient mc = MinecraftClient.method_1551();
                if (mc.field_1724 == null) {
                  return 0;
                }
@@ -56,7 +56,7 @@ package shame.nazuna.api.commands.impl;
                BotSessionManager.getSessionNames(false).forEach(suggestions::suggest);
                return suggestions.buildFuture();
              }).executes(context -> {
-               class_310 mc = class_310.method_1551();
+               MinecraftClient mc = MinecraftClient.method_1551();
                
                if (mc.field_1724 == null) {
                  return 0;
@@ -80,7 +80,7 @@ package shame.nazuna.api.commands.impl;
                return suggestions.buildFuture();
              }).then(arg("message", (ArgumentType)StringArgumentType.greedyString())
              .executes(context -> {
-                 class_310 mc = class_310.method_1551();
+                 MinecraftClient mc = MinecraftClient.method_1551();
                  if (mc.field_1724 == null) {
                    return 0;
                  }
@@ -95,7 +95,7 @@ package shame.nazuna.api.commands.impl;
                }))))).then(literal("sayall")
          .then(arg("message", (ArgumentType)StringArgumentType.greedyString())
            .executes(context -> {
-               class_310 mc = class_310.method_1551();
+               MinecraftClient mc = MinecraftClient.method_1551();
                if (mc.field_1724 == null) {
                  return 0;
                }
@@ -105,7 +105,7 @@ package shame.nazuna.api.commands.impl;
                return 1;
              })))).then(((LiteralArgumentBuilder)literal("return")
          .executes(context -> {
-             class_310 mc = class_310.method_1551();
+             MinecraftClient mc = MinecraftClient.method_1551();
              if (mc.field_1724 == null) {
                return 0;
              }
@@ -121,7 +121,7 @@ package shame.nazuna.api.commands.impl;
                BotSessionManager.getSessionNames(true).forEach(suggestions::suggest);
                return suggestions.buildFuture();
              }).executes(context -> {
-               class_310 mc = class_310.method_1551();
+               MinecraftClient mc = MinecraftClient.method_1551();
                
                if (mc.field_1724 == null) {
                  return 0;
@@ -139,7 +139,7 @@ package shame.nazuna.api.commands.impl;
                return 1;
              })))).then(literal("ignore")
          .executes(context -> {
-             class_310 mc = class_310.method_1551();
+             MinecraftClient mc = MinecraftClient.method_1551();
              if (mc.field_1724 == null) {
                return 0;
              }
@@ -148,7 +148,7 @@ package shame.nazuna.api.commands.impl;
              return 1;
            }))).then(literal("list")
          .executes(context -> {
-             class_310 mc = class_310.method_1551();
+             MinecraftClient mc = MinecraftClient.method_1551();
              if (mc.field_1724 == null)
                return 0; 
              List<BotSessionManager.BotConnection> connections = BotSessionManager.getConnections();

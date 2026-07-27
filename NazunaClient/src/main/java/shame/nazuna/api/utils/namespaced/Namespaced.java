@@ -1,11 +1,11 @@
 package shame.nazuna.api.utils.namespaced;
  
- import net.minecraft.class_2960;
+ import net.minecraft.Identifier;
  
  public class Namespaced
  {
-   public static class_2960 of(String path) {
-     return class_2960.method_60655("astra", path);
+   public static Identifier of(String path) {
+     return Identifier.method_60655("astra", path);
    }
  }
 

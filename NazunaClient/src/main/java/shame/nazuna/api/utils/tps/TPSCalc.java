@@ -1,7 +1,7 @@
 package shame.nazuna.api.utils.tps;
  
- import net.minecraft.class_310;
- import net.minecraft.class_3532;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventPacket;
  
@@ -17,7 +17,7 @@ package shame.nazuna.api.utils.tps;
    
    @EventLink
    public void onPacket(EventPacket e) {
-     if (e.getType() == EventPacket.Type.RECEIVE && e.getPacket() instanceof net.minecraft.class_2761) {
+     if (e.getType() == EventPacket.Type.RECEIVE && e.getPacket() instanceof net.minecraft.WorldTimeUpdateS2CPacket) {
        updateTPS();
      }
    }
@@ -27,7 +27,7 @@ package shame.nazuna.api.utils.tps;
        return this.TPS;
      }
      
-     class_310 mc = class_310.method_1551();
+     MinecraftClient mc = MinecraftClient.method_1551();
      if (mc == null || mc.method_1562() == null || System.currentTimeMillis() - this.lastPacketTime > 3500L) {
        return 20.0F;
      }
@@ -53,7 +53,7 @@ package shame.nazuna.api.utils.tps;
      
      float maxTPS = 20.0F;
      float rawTPS = maxTPS * 1.0E9F / (float)delay;
-     float boundedTPS = class_3532.method_15363(rawTPS, 0.0F, maxTPS);
+     float boundedTPS = MathHelper.method_15363(rawTPS, 0.0F, maxTPS);
      
      this.tpsSamples[this.sampleIndex % 20] = boundedTPS;
      this.sampleIndex++;

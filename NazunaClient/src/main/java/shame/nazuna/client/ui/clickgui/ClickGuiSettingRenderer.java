@@ -1,8 +1,8 @@
 package shame.nazuna.client.ui.clickgui;
  
  import java.util.List;
- import net.minecraft.class_332;
- import net.minecraft.class_4587;
+ import net.minecraft.DrawContext;
+ import net.minecraft.MatrixStack;
  import shame.nazuna.api.utils.animation.AnimationUtils;
  import shame.nazuna.api.utils.color.ColorUtils;
  import shame.nazuna.api.utils.input.KeyBoardUtils;
@@ -23,7 +23,7 @@ package shame.nazuna.client.ui.clickgui;
  {
    private static final float HOVER_SCROLL_OVERFLOW_THRESHOLD = 6.0F;
    
-   public void render(class_332 context, Module module, float panelX, float moduleY, float openProgress, int colorTheme, double mouseX, double mouseY, ClickGuiState state) {
+   public void render(DrawContext context, Module module, float panelX, float moduleY, float openProgress, int colorTheme, double mouseX, double mouseY, ClickGuiState state) {
      List<Setting> settings = module.getSettings();
      if (settings == null || settings.isEmpty() || openProgress <= 0.01F) {
        return;
@@ -69,7 +69,7 @@ package shame.nazuna.client.ui.clickgui;
      ScissorUtils.pop();
    }
    
-   private void renderBooleanSetting(class_332 context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, BooleanSetting booleanSetting, ClickGuiState state) {
+   private void renderBooleanSetting(DrawContext context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, BooleanSetting booleanSetting, ClickGuiState state) {
      AnimationUtils backgroundAnimation = state.getBooleanBackgroundAnimation(booleanSetting);
      AnimationUtils circleAnimation = state.getBooleanCircleAnimation(booleanSetting);
      backgroundAnimation.update(booleanSetting.isState() ? 1.0F : 0.0F);
@@ -116,7 +116,7 @@ package shame.nazuna.client.ui.clickgui;
      RenderUtils.drawRoundCircle(context.method_51448(), circleX + 0.5F, settingY + 2.5F, 7.0F, ColorUtils.rgba(255, 255, 255, alpha));
    }
    
-   private void renderFloatSetting(class_332 context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, FloatSetting floatSetting, ClickGuiState state) {
+   private void renderFloatSetting(DrawContext context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, FloatSetting floatSetting, ClickGuiState state) {
      if (floatSetting.isActive()) {
        floatSetting.setValue(state.updateActiveSliderValue(floatSetting, mouseX));
      }
@@ -153,7 +153,7 @@ package shame.nazuna.client.ui.clickgui;
      RenderUtils.drawRoundCircle(context.method_51448(), panelX + 10.0F + animatedPos * 79.0F, settingY + 11.25F, 6.0F, ColorUtils.setAlphaColor(-1, alpha));
    }
    
-   private void renderTextSetting(class_332 context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, TextSetting textSetting, ClickGuiState state) {
+   private void renderTextSetting(DrawContext context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, TextSetting textSetting, ClickGuiState state) {
      String value = textSetting.get();
      boolean editing = (state.getEditingTextSetting() == textSetting);
      String preview = (value == null || value.isEmpty()) ? "..." : value;
@@ -185,7 +185,7 @@ package shame.nazuna.client.ui.clickgui;
      ScissorUtils.pop();
    }
    
-   private void renderModeSetting(class_332 context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, ModeSetting modeSetting, ClickGuiState state) {
+   private void renderModeSetting(DrawContext context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, ModeSetting modeSetting, ClickGuiState state) {
      drawStringWithHoverScroll(
          issue(12), context
          .method_51448(), modeSetting
@@ -218,7 +218,7 @@ package shame.nazuna.client.ui.clickgui;
      } 
    }
    
-   private void renderListSetting(class_332 context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, ListSetting listSetting, ClickGuiState state) {
+   private void renderListSetting(DrawContext context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, ListSetting listSetting, ClickGuiState state) {
      drawStringWithHoverScroll(
          issue(12), context
          .method_51448(), listSetting
@@ -267,7 +267,7 @@ package shame.nazuna.client.ui.clickgui;
      } 
    }
    
-   private void renderBindSetting(class_332 context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, BindSetting bindSetting, ClickGuiState state) {
+   private void renderBindSetting(DrawContext context, float panelX, float settingY, int alpha, int colorTheme, double mouseX, double mouseY, BindSetting bindSetting, ClickGuiState state) {
      boolean binding = (state.getBindingSetting() == bindSetting);
      AnimationUtils bindAnimation = state.getBindAnimation(getBindKey(bindSetting), binding);
      bindAnimation.update(binding ? 1.0F : 0.0F);
@@ -325,7 +325,7 @@ package shame.nazuna.client.ui.clickgui;
      return String.format("%.2f", new Object[] { Float.valueOf(value) });
    }
    
-   private void drawStringWithHoverScroll(Font font, class_4587 matrix, String text, float x, float y, float maxWidth, int color, double mouseX, double mouseY, ClickGuiState state, String animationKey) {
+   private void drawStringWithHoverScroll(Font font, MatrixStack matrix, String text, float x, float y, float maxWidth, int color, double mouseX, double mouseY, ClickGuiState state, String animationKey) {
      if (text == null || text.isEmpty() || maxWidth <= 0.0F) {
        return;
      }

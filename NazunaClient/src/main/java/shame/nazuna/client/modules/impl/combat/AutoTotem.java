@@ -1,13 +1,13 @@
 package shame.nazuna.client.modules.impl.combat;
  import java.util.Objects;
- import net.minecraft.class_1297;
- import net.minecraft.class_1304;
- import net.minecraft.class_1657;
- import net.minecraft.class_1713;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_2596;
- import net.minecraft.class_2815;
+ import net.minecraft.Entity;
+ import net.minecraft.EquipmentSlot;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.Packet;
+ import net.minecraft.CloseHandledScreenC2SPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventMoveInput;
  import shame.nazuna.api.events.implement.EventUpdate;
@@ -45,14 +45,14 @@ package shame.nazuna.client.modules.impl.combat;
    private boolean sprintPaused;
    private int swapCooldown;
    private int savedTotemSlot;
-   private class_1799 originalOffhandItem;
+   private ItemStack originalOffhandItem;
    private boolean totemTakenByUs;
    private boolean returnMode;
    private boolean needFastSwap;
    private int safeTicks;
    
    public AutoTotem() {
-     super("AutoTotem", "Автоматически берёт тотем в опасности", Module.ModuleCategory.COMBAT); Objects.requireNonNull(this.returnTotem); this.returnDelay = (new FloatSetting("Задержка возврата", 20.0F, 5.0F, 100.0F, 5.0F)).visible(this.returnTotem::isState); this.bypassgrim = new BooleanSetting("Обходить Grim", true); this.swapVersion = new ModeSetting("Версия свапа", "1.21.4", new String[] { "1.21.4", "1.16.5" }); this.savedTotemSlot = -1; this.originalOffhandItem = class_1799.field_8037; this.totemTakenByUs = false; this.returnMode = false; this.needFastSwap = false; this.safeTicks = 0;
+     super("AutoTotem", "Автоматически берёт тотем в опасности", Module.ModuleCategory.COMBAT); Objects.requireNonNull(this.returnTotem); this.returnDelay = (new FloatSetting("Задержка возврата", 20.0F, 5.0F, 100.0F, 5.0F)).visible(this.returnTotem::isState); this.bypassgrim = new BooleanSetting("Обходить Grim", true); this.swapVersion = new ModeSetting("Версия свапа", "1.21.4", new String[] { "1.21.4", "1.16.5" }); this.savedTotemSlot = -1; this.originalOffhandItem = ItemStack.field_8037; this.totemTakenByUs = false; this.returnMode = false; this.needFastSwap = false; this.safeTicks = 0;
      addSettings(new Setting[] { (Setting)this.hp, (Setting)this.hpOnElytra, (Setting)this.saveEnchanted, (Setting)this.bypassgrim, (Setting)this.returnTotem, (Setting)this.swapVersion, (Setting)this.returnDelay, (Setting)this.triggers, (Setting)this.crystalRadius, (Setting)this.fallHeight });
    }
  
@@ -169,8 +169,8 @@ package shame.nazuna.client.modules.impl.combat;
      double radiusSq = (radius * radius);
      
      if (this.triggers.is("Кристалл рядом")) {
-       for (class_1297 entity : mc.field_1687.method_18112()) {
-         if (entity instanceof net.minecraft.class_1511 && 
+       for (Entity entity : mc.field_1687.method_18112()) {
+         if (entity instanceof net.minecraft.EndCrystalEntity && 
            mc.field_1724.method_5858(entity) <= radiusSq) {
            return true;
          }
@@ -179,11 +179,11 @@ package shame.nazuna.client.modules.impl.combat;
  
      
      if (this.triggers.is("Кристалл в руке")) {
-       for (class_1657 player : mc.field_1687.method_18456()) {
+       for (PlayerEntity player : mc.field_1687.method_18456()) {
          if (player != mc.field_1724 && 
-           mc.field_1724.method_5858((class_1297)player) <= radiusSq && (
-           player.method_6047().method_31574(class_1802.field_8301) || player
-           .method_6079().method_31574(class_1802.field_8301))) {
+           mc.field_1724.method_5858((Entity)player) <= radiusSq && (
+           player.method_6047().method_31574(Items.field_8301) || player
+           .method_6079().method_31574(Items.field_8301))) {
            return true;
          }
        } 
@@ -195,7 +195,7 @@ package shame.nazuna.client.modules.impl.combat;
    
    private boolean shouldTakeTotem(boolean isCrystalDanger) {
      float currentHp = mc.field_1724.method_6032() + mc.field_1724.method_6067();
-     boolean isGliding = (mc.field_1724.method_6118(class_1304.field_6174).method_31574(class_1802.field_8833) && mc.field_1724.method_6128());
+     boolean isGliding = (mc.field_1724.method_6118(EquipmentSlot.field_6174).method_31574(Items.field_8833) && mc.field_1724.method_6128());
      
      float hpThreshold = isGliding ? this.hpOnElytra.getValue().floatValue() : this.hp.getValue().floatValue();
      
@@ -211,10 +211,10 @@ package shame.nazuna.client.modules.impl.combat;
      double radiusSq = (radius * radius);
      
      if (this.triggers.is("Обсидиан в руке")) {
-       for (class_1657 player : mc.field_1687.method_18456()) {
+       for (PlayerEntity player : mc.field_1687.method_18456()) {
          if (player != mc.field_1724 && 
-           mc.field_1724.method_5858((class_1297)player) <= radiusSq && (
-           player.method_6047().method_31574(class_1802.field_8281) || player.method_6079().method_31574(class_1802.field_8281))) {
+           mc.field_1724.method_5858((Entity)player) <= radiusSq && (
+           player.method_6047().method_31574(Items.field_8281) || player.method_6079().method_31574(Items.field_8281))) {
            return true;
          }
        } 
@@ -231,7 +231,7 @@ package shame.nazuna.client.modules.impl.combat;
    }
    
    private boolean hasTotemInOffhand() {
-     return mc.field_1724.method_6079().method_31574(class_1802.field_8288);
+     return mc.field_1724.method_6079().method_31574(Items.field_8288);
    }
    
    private int findTotemSlot() {
@@ -239,8 +239,8 @@ package shame.nazuna.client.modules.impl.combat;
      int enchantedTotem = -1;
      
      for (int i = 9; i < 45; i++) {
-       class_1799 stack = mc.field_1724.field_7498.method_7611(i).method_7677();
-       if (stack.method_31574(class_1802.field_8288)) {
+       ItemStack stack = mc.field_1724.field_7498.method_7611(i).method_7677();
+       if (stack.method_31574(Items.field_8288)) {
          boolean isEnchanted = stack.method_7942();
          
          if (isEnchanted) {
@@ -270,7 +270,7 @@ package shame.nazuna.client.modules.impl.combat;
      this.savedTotemSlot = totemSlot;
      doSwap(totemSlot);
      this.totemTakenByUs = true;
-     mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+     mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
    }
    
    private void performReturn() {
@@ -298,16 +298,16 @@ package shame.nazuna.client.modules.impl.combat;
      
      this.totemTakenByUs = false;
      this.savedTotemSlot = -1;
-     this.originalOffhandItem = class_1799.field_8037;
-     mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+     this.originalOffhandItem = ItemStack.field_8037;
+     mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
    }
    
-   private int findSlotForItem(class_1799 item) {
+   private int findSlotForItem(ItemStack item) {
      if (item.method_7960()) return -1;
      
      for (int i = 9; i < 45; i++) {
-       class_1799 stack = mc.field_1724.field_7498.method_7611(i).method_7677();
-       if (class_1799.method_7984(stack, item) && class_1799.method_7973(stack, item)) {
+       ItemStack stack = mc.field_1724.field_7498.method_7611(i).method_7677();
+       if (ItemStack.method_7984(stack, item) && ItemStack.method_7973(stack, item)) {
          return i;
        }
      } 
@@ -326,16 +326,16 @@ package shame.nazuna.client.modules.impl.combat;
    private void doSwap1214(int slot) {
      if (slot >= 36 && slot <= 44) {
        int hotbarSlot = slot - 36;
-       mc.field_1761.method_2906(0, 45, hotbarSlot, class_1713.field_7791, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(0, 45, hotbarSlot, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
      } else {
-       mc.field_1761.method_2906(0, slot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-       mc.field_1761.method_2906(0, 45, 0, class_1713.field_7791, (class_1657)mc.field_1724);
-       mc.field_1761.method_2906(0, slot, 0, class_1713.field_7791, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(0, slot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+       mc.field_1761.method_2906(0, 45, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+       mc.field_1761.method_2906(0, slot, 0, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
      } 
    }
    
    private void doSwap1165(int slot) {
-     mc.field_1761.method_2906(0, slot, 40, class_1713.field_7791, (class_1657)mc.field_1724);
+     mc.field_1761.method_2906(0, slot, 40, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
    }
    
    private void disableSprint() {
@@ -367,7 +367,7 @@ package shame.nazuna.client.modules.impl.combat;
      this.bypassTicks = 0;
      this.swapCooldown = 0;
      this.savedTotemSlot = -1;
-     this.originalOffhandItem = class_1799.field_8037;
+     this.originalOffhandItem = ItemStack.field_8037;
      this.totemTakenByUs = false;
      this.returnMode = false;
      this.needFastSwap = false;

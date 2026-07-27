@@ -1,16 +1,16 @@
 package shame.nazuna.api.utils.player;
  
  import java.util.Objects;
- import net.minecraft.class_243;
- import net.minecraft.class_310;
- import net.minecraft.class_3532;
- import net.minecraft.class_746;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.MathHelper;
+ import net.minecraft.ClientPlayerEntity;
  import shame.nazuna.api.utils.input.MovingUtil;
  
  
  public class MoveUtils
  {
-   private static final class_310 mc = class_310.method_1551();
+   private static final MinecraftClient mc = MinecraftClient.method_1551();
    
    public static void setMotion(double motion) {
      if (mc.field_1724 == null)
@@ -37,9 +37,9 @@ package shame.nazuna.api.utils.player;
        } 
  
        
-       double motionX = forward * motion * class_3532.method_15362((float)Math.toRadians((yaw + 90.0F))) + strafe * motion * class_3532.method_15374((float)Math.toRadians((yaw + 90.0F)));
+       double motionX = forward * motion * MathHelper.method_15362((float)Math.toRadians((yaw + 90.0F))) + strafe * motion * MathHelper.method_15374((float)Math.toRadians((yaw + 90.0F)));
        
-       double motionZ = forward * motion * class_3532.method_15374((float)Math.toRadians((yaw + 90.0F))) - strafe * motion * class_3532.method_15362((float)Math.toRadians((yaw + 90.0F)));
+       double motionZ = forward * motion * MathHelper.method_15374((float)Math.toRadians((yaw + 90.0F))) - strafe * motion * MathHelper.method_15362((float)Math.toRadians((yaw + 90.0F)));
        
        mc.field_1724.method_18800(motionX, (mc.field_1724.method_18798()).field_1351, motionZ);
      } 
@@ -47,18 +47,18 @@ package shame.nazuna.api.utils.player;
    
    public static double getSpeed() {
      if (mc.field_1724 == null) return 0.0D; 
-     class_243 velocity = mc.field_1724.method_18798();
+     Vec3d velocity = mc.field_1724.method_18798();
      return Math.sqrt(velocity.field_1352 * velocity.field_1352 + velocity.field_1350 * velocity.field_1350);
    }
    
    public static void setVelocity(double velocity) {
      double[] direction = MovingUtil.calculateDirection(velocity);
-     ((class_746)Objects.<class_746>requireNonNull(mc.field_1724)).method_18800(direction[0], mc.field_1724.method_18798().method_10214(), direction[1]);
+     ((ClientPlayerEntity)Objects.<ClientPlayerEntity>requireNonNull(mc.field_1724)).method_18800(direction[0], mc.field_1724.method_18798().method_10214(), direction[1]);
    }
    
    public static void setVelocity(double velocity, double y) {
      double[] direction = MovingUtil.calculateDirection(velocity);
-     ((class_746)Objects.<class_746>requireNonNull(mc.field_1724)).method_18800(direction[0], y, direction[1]);
+     ((ClientPlayerEntity)Objects.<ClientPlayerEntity>requireNonNull(mc.field_1724)).method_18800(direction[0], y, direction[1]);
    }
    
    public static void strafe() {

@@ -1,7 +1,7 @@
 package shame.nazuna.api.events.implement;
  
- import net.minecraft.class_1041;
- import net.minecraft.class_4587;
+ import net.minecraft.Window;
+ import net.minecraft.MatrixStack;
  import org.joml.Matrix4f;
  import shame.nazuna.api.events.Event;
  
@@ -14,14 +14,14 @@ package shame.nazuna.api.events.implement;
  public class World
    extends Event
  {
-   private final class_1041 scaledResolution;
+   private final Window scaledResolution;
    private final float partialTicks;
    private final Matrix4f matrix;
-   private final class_4587 matrixStack;
+   private final MatrixStack matrixStack;
    
-   public World(class_1041 scaledResolution, float partialTicks, Matrix4f matrix, class_4587 matrixStack) {
+   public World(Window scaledResolution, float partialTicks, Matrix4f matrix, MatrixStack matrixStack) {
      this.scaledResolution = scaledResolution; this.partialTicks = partialTicks; this.matrix = matrix; this.matrixStack = matrixStack;
-   public class_4587 getMatrixStack() { return this.matrixStack; }
+   public MatrixStack getMatrixStack() { return this.matrixStack; }
  
  }
 

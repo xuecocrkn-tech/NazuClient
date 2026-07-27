@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_1294;
- import net.minecraft.class_1657;
+ import net.minecraft.StatusEffects;
+ import net.minecraft.PlayerEntity;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -22,19 +22,19 @@ package shame.nazuna.client.modules.impl.render;
        return;
      }
      
-     for (class_1657 player : mc.field_1687.method_18456()) {
+     for (PlayerEntity player : mc.field_1687.method_18456()) {
        if (shouldRenderInvisible(player)) {
          player.method_5648(false);
        }
      } 
    }
    
-   public boolean shouldRenderInvisible(class_1657 player) {
+   public boolean shouldRenderInvisible(PlayerEntity player) {
      return (isEnable() && mc.field_1724 != null && player != null && player != mc.field_1724 && (player
  
  
        
-       .method_5767() || player.method_6059(class_1294.field_5905)));
+       .method_5767() || player.method_6059(StatusEffects.field_5905)));
    }
  }
 

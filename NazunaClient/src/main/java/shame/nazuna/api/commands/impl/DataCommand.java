@@ -9,7 +9,7 @@ package shame.nazuna.api.commands.impl;
  import java.util.List;
  import java.util.Objects;
  import java.util.concurrent.CompletableFuture;
- import net.minecraft.class_2172;
+ import net.minecraft.CommandSource;
  import shame.nazuna.api.commands.Command;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.api.utils.chat.ChatUtils;
@@ -22,7 +22,7 @@ package shame.nazuna.api.commands.impl;
  
  
    
-   public void execute(LiteralArgumentBuilder<class_2172> builder) {
+   public void execute(LiteralArgumentBuilder<CommandSource> builder) {
      ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)builder
        .executes(context -> {
            sendStatus();

@@ -8,12 +8,12 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  import java.util.List;
  import java.util.Map;
  import java.util.Set;
- import net.minecraft.class_1058;
- import net.minecraft.class_1074;
- import net.minecraft.class_1291;
- import net.minecraft.class_1293;
- import net.minecraft.class_3532;
- import net.minecraft.class_6880;
+ import net.minecraft.Sprite;
+ import net.minecraft.I18n;
+ import net.minecraft.StatusEffect;
+ import net.minecraft.StatusEffectInstance;
+ import net.minecraft.MathHelper;
+ import net.minecraft.RegistryEntry;
  import shame.nazuna.api.events.implement.EventRender;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.api.utils.animation.AnimationUtils;
@@ -31,16 +31,16 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    extends InterfaceProcessing
  {
    private static final class PotionSnapshot {
-     class_6880<class_1291> entry;
+     RegistryEntry<StatusEffect> entry;
      String baseName;
      int amplifier;
      int duration;
      boolean infinite;
    }
-   private final Map<class_1291, AnimationUtils> animations = new LinkedHashMap<>();
-   private final Map<class_1291, PotionSnapshot> snapshots = new HashMap<>();
-   private final Map<class_1291, Integer> maxDurations = new HashMap<>();
-   private final Set<class_1291> renderOrderSeen = new HashSet<>();
+   private final Map<StatusEffect, AnimationUtils> animations = new LinkedHashMap<>();
+   private final Map<StatusEffect, PotionSnapshot> snapshots = new HashMap<>();
+   private final Map<StatusEffect, Integer> maxDurations = new HashMap<>();
+   private final Set<StatusEffect> renderOrderSeen = new HashSet<>();
    private final AnimationUtils widthAnimation = new AnimationUtils(70.0F, 10.5F, Easings.QUAD_OUT);
  
    
@@ -56,7 +56,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    private Font issue(int size) { return Fonts.getFont("suisse", size); } private Font icon(int size) {
      return Fonts.getFont("icon", size);
    }
-   private AnimationUtils getAnimation(class_1291 effect) {
+   private AnimationUtils getAnimation(StatusEffect effect) {
      return this.animations.computeIfAbsent(effect, e -> new AnimationUtils(0.0F, 10.5F, Easings.QUAD_OUT));
    }
    
@@ -64,7 +64,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      return String.valueOf(Math.max(1, level));
    }
    
-   private static String formatDuration(class_1293 effect) {
+   private static String formatDuration(StatusEffectInstance effect) {
      return formatDuration(effect.method_5584(), effect.method_48559());
    }
    
@@ -78,26 +78,26 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      return "" + minutes + ":" + minutes;
    }
    
-   private void updateSnapshot(class_1293 effect) {
-     class_1291 type = (class_1291)effect.method_5579().comp_349();
+   private void updateSnapshot(StatusEffectInstance effect) {
+     StatusEffect type = (StatusEffect)effect.method_5579().comp_349();
      PotionSnapshot snapshot = this.snapshots.computeIfAbsent(type, e -> new PotionSnapshot());
      snapshot.entry = effect.method_5579();
-     snapshot.baseName = class_1074.method_4662(effect.method_5586(), new Object[0]);
+     snapshot.baseName = I18n.method_4662(effect.method_5586(), new Object[0]);
      snapshot.amplifier = effect.method_5578() + 1;
      snapshot.duration = effect.method_5584();
      snapshot.infinite = effect.method_48559();
    }
    
-   private List<class_1291> buildRenderOrder(Collection<class_1293> effects, Set<class_1291> active) {
-     List<class_1291> order = new ArrayList<>();
+   private List<StatusEffect> buildRenderOrder(Collection<StatusEffectInstance> effects, Set<StatusEffect> active) {
+     List<StatusEffect> order = new ArrayList<>();
      this.renderOrderSeen.clear();
-     for (class_1293 effect : effects) {
-       class_1291 type = (class_1291)effect.method_5579().comp_349();
+     for (StatusEffectInstance effect : effects) {
+       StatusEffect type = (StatusEffect)effect.method_5579().comp_349();
        if (this.renderOrderSeen.add(type)) {
          order.add(type);
        }
      } 
-     for (class_1291 type : this.animations.keySet()) {
+     for (StatusEffect type : this.animations.keySet()) {
        if (!active.contains(type)) {
          order.add(type);
        }
@@ -105,8 +105,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      return order;
    }
    
-   private void drawEffectIcon(EventRender.Default eventRender, class_6880<class_1291> effect, float x, float y, int size, int alpha) {
-     class_1058 sprite = mc.method_18505().method_18663(effect);
+   private void drawEffectIcon(EventRender.Default eventRender, RegistryEntry<StatusEffect> effect, float x, float y, int size, int alpha) {
+     Sprite sprite = mc.method_18505().method_18663(effect);
      int color = ColorUtils.rgba(255, 255, 255, alpha);
      RenderUtils.drawSprite(eventRender.getContext().method_51448(), sprite, x, y, size, color);
    }
@@ -161,11 +161,11 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  
  
      
-     Collection<class_1293> effects = (mc != null && mc.field_1724 != null) ? mc.field_1724.method_6026() : List.<class_1293>of();
+     Collection<StatusEffectInstance> effects = (mc != null && mc.field_1724 != null) ? mc.field_1724.method_6026() : List.<StatusEffectInstance>of();
      
-     Set<class_1291> active = new HashSet<>();
-     for (class_1293 effect : effects) {
-       class_1291 type = (class_1291)effect.method_5579().comp_349();
+     Set<StatusEffect> active = new HashSet<>();
+     for (StatusEffectInstance effect : effects) {
+       StatusEffect type = (StatusEffect)effect.method_5579().comp_349();
        active.add(type);
        getAnimation(type).update(1.0F);
        updateSnapshot(effect);
@@ -178,15 +178,15 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        }
      } 
      
-     for (Map.Entry<class_1291, AnimationUtils> entry : this.animations.entrySet()) {
+     for (Map.Entry<StatusEffect, AnimationUtils> entry : this.animations.entrySet()) {
        if (!active.contains(entry.getKey())) {
          ((AnimationUtils)entry.getValue()).update(0.0F);
        }
      } 
      
-     List<class_1291> renderOrder = buildRenderOrder(effects, active);
+     List<StatusEffect> renderOrder = buildRenderOrder(effects, active);
      
-     for (class_1291 type : renderOrder) {
+     for (StatusEffect type : renderOrder) {
        AnimationUtils anim = getAnimation(type);
        float animValue = anim.getValue();
        PotionSnapshot snapshot = this.snapshots.get(type);
@@ -195,7 +195,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
          continue;
        }
        visibleCount++;
-       String baseName = (snapshot.baseName != null) ? snapshot.baseName : class_1074.method_4662(type.method_5567(), new Object[0]);
+       String baseName = (snapshot.baseName != null) ? snapshot.baseName : I18n.method_4662(type.method_5567(), new Object[0]);
        String levelSuffix = getLevelSuffix(snapshot.amplifier);
        String time = formatDuration(snapshot.duration, snapshot.infinite);
        float nameWidth = issue(12).getWidth(baseName);
@@ -226,7 +226,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      icon(13).drawGradientStringHorizontal(eventRender.getContext().method_51448(), "d", x + width - 12.5F, y + 7.5F, colorTheme, colorTheme2);
      
      float offsetY = 18.0F;
-     for (class_1291 type : renderOrder) {
+     for (StatusEffect type : renderOrder) {
        AnimationUtils anim = getAnimation(type);
        float animValue = anim.getValue();
        PotionSnapshot snapshot = this.snapshots.get(type);
@@ -250,7 +250,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
          drawEffectIcon(eventRender, snapshot.entry, iconX, iconY, (int)iconSize, alpha);
        }
        
-       String baseName = (snapshot.baseName != null) ? snapshot.baseName : class_1074.method_4662(type.method_5567(), new Object[0]);
+       String baseName = (snapshot.baseName != null) ? snapshot.baseName : I18n.method_4662(type.method_5567(), new Object[0]);
        String levelSuffix = getLevelSuffix(snapshot.amplifier);
        float textX = iconX + iconSize + 3.0F;
        float textY = y + 2.0F + offsetY;
@@ -279,7 +279,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
          int maxDuration = ((Integer)this.maxDurations.getOrDefault(type, Integer.valueOf(currentDuration))).intValue();
          
          if (maxDuration > 0) {
-           progress = class_3532.method_15363(currentDuration / maxDuration, 0.0F, 1.0F);
+           progress = MathHelper.method_15363(currentDuration / maxDuration, 0.0F, 1.0F);
          } else {
            progress = 0.0F;
          } 
@@ -322,15 +322,15 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  
  
      
-     Collection<class_1293> effects = (mc != null && mc.field_1724 != null) ? mc.field_1724.method_6026() : List.<class_1293>of();
+     Collection<StatusEffectInstance> effects = (mc != null && mc.field_1724 != null) ? mc.field_1724.method_6026() : List.<StatusEffectInstance>of();
      
-     Set<class_1291> active = new HashSet<>();
-     for (class_1293 effect : effects) {
-       class_1291 type = (class_1291)effect.method_5579().comp_349();
+     Set<StatusEffect> active = new HashSet<>();
+     for (StatusEffectInstance effect : effects) {
+       StatusEffect type = (StatusEffect)effect.method_5579().comp_349();
        active.add(type);
        getAnimation(type).update(1.0F);
      } 
-     for (Map.Entry<class_1291, AnimationUtils> entry : this.animations.entrySet()) {
+     for (Map.Entry<StatusEffect, AnimationUtils> entry : this.animations.entrySet()) {
        if (!active.contains(entry.getKey())) {
          ((AnimationUtils)entry.getValue()).update(0.0F);
        }
@@ -340,13 +340,13 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      float height = 18.0F;
      int visibleEffects = 0;
      
-     for (class_1293 effect : effects) {
-       AnimationUtils anim = getAnimation((class_1291)effect.method_5579().comp_349());
+     for (StatusEffectInstance effect : effects) {
+       AnimationUtils anim = getAnimation((StatusEffect)effect.method_5579().comp_349());
        float animValue = anim.getValue();
        if (animValue <= 0.01F)
          continue;  visibleEffects++;
        
-       String baseName = class_1074.method_4662(effect.method_5586(), new Object[0]);
+       String baseName = I18n.method_4662(effect.method_5586(), new Object[0]);
        String levelSuffix = getLevelSuffix(effect.method_5578() + 1);
        String line = baseName + baseName;
        width = Math.max(width, issue(16).getWidth(line) + 38.0F);
@@ -375,8 +375,8 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      drawTextWithShadow(eventRender, issue(16), title, titleX, y + 5.0F, -1);
      
      float yOffset = 20.0F;
-     for (class_1293 effect : effects) {
-       AnimationUtils anim = getAnimation((class_1291)effect.method_5579().comp_349());
+     for (StatusEffectInstance effect : effects) {
+       AnimationUtils anim = getAnimation((StatusEffect)effect.method_5579().comp_349());
        float animValue = anim.getValue();
        if (animValue <= 0.01F)
          continue; 
@@ -391,7 +391,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        float iconY = y + yOffset;
        drawEffectIcon(eventRender, effect.method_5579(), iconX, iconY, 11, alpha);
        
-       String baseName = class_1074.method_4662(effect.method_5586(), new Object[0]).toLowerCase();
+       String baseName = I18n.method_4662(effect.method_5586(), new Object[0]).toLowerCase();
        String levelSuffix = getLevelSuffix(effect.method_5578() + 1);
        float textX = iconX + 14.0F;
        

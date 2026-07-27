@@ -1,24 +1,24 @@
 package shame.nazuna.client.modules.impl.player;
  
  import java.util.Comparator;
- import net.minecraft.class_1297;
- import net.minecraft.class_1309;
- import net.minecraft.class_1657;
- import net.minecraft.class_1684;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_1935;
- import net.minecraft.class_2246;
- import net.minecraft.class_2338;
- import net.minecraft.class_2374;
- import net.minecraft.class_238;
- import net.minecraft.class_239;
- import net.minecraft.class_241;
- import net.minecraft.class_243;
- import net.minecraft.class_2596;
- import net.minecraft.class_2828;
- import net.minecraft.class_3532;
- import net.minecraft.class_3959;
+ import net.minecraft.Entity;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.EnderPearlEntity;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.ItemConvertible;
+ import net.minecraft.Blocks;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Position;
+ import net.minecraft.Box;
+ import net.minecraft.HitResult;
+ import net.minecraft.Vec2f;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Packet;
+ import net.minecraft.PlayerMoveC2SPacket;
+ import net.minecraft.MathHelper;
+ import net.minecraft.RaycastContext;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventBinding;
  import shame.nazuna.api.events.implement.EventMoveInput;
@@ -47,11 +47,11 @@ package shame.nazuna.client.modules.impl.player;
    
    private final TimerUtils timer = new TimerUtils();
    
-   private class_1684 targetPearl;
+   private EnderPearlEntity targetPearl;
    private int lastHandledPearlId = -1;
    private long nextThrowAt;
    private boolean isThrowing;
-   private class_241 serverRotation;
+   private Vec2f serverRotation;
    
    public TargetPearl() {
      super("TargetPearl", "Автоматически бросает жемчуг в цель", Module.ModuleCategory.PLAYER);
@@ -83,11 +83,11 @@ package shame.nazuna.client.modules.impl.player;
    @EventLink
    public void onUpdate(EventUpdate event) {
      // Byte code:
-     //   0: getstatic shame/astra/client/modules/impl/player/TargetPearl.mc : Lnet/minecraft/class_310;
-     //   3: getfield field_1724 : Lnet/minecraft/class_746;
+     //   0: getstatic shame/astra/client/modules/impl/player/TargetPearl.mc : Lnet/minecraft/MinecraftClient;
+     //   3: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   6: ifnull -> 18
-     //   9: getstatic shame/astra/client/modules/impl/player/TargetPearl.mc : Lnet/minecraft/class_310;
-     //   12: getfield field_1687 : Lnet/minecraft/class_638;
+     //   9: getstatic shame/astra/client/modules/impl/player/TargetPearl.mc : Lnet/minecraft/MinecraftClient;
+     //   12: getfield field_1687 : Lnet/minecraft/ClientWorld;
      //   15: ifnonnull -> 23
      //   18: aload_0
      //   19: invokevirtual resetThrowState : ()V
@@ -96,17 +96,17 @@ package shame.nazuna.client.modules.impl.player;
      //   24: getfield lastHandledPearlId : I
      //   27: iconst_m1
      //   28: if_icmpeq -> 69
-     //   31: getstatic shame/astra/client/modules/impl/player/TargetPearl.mc : Lnet/minecraft/class_310;
-     //   34: getfield field_1687 : Lnet/minecraft/class_638;
+     //   31: getstatic shame/astra/client/modules/impl/player/TargetPearl.mc : Lnet/minecraft/MinecraftClient;
+     //   34: getfield field_1687 : Lnet/minecraft/ClientWorld;
      //   37: aload_0
      //   38: getfield lastHandledPearlId : I
-     //   41: invokevirtual method_8469 : (I)Lnet/minecraft/class_1297;
+     //   41: invokevirtual method_8469 : (I)Lnet/minecraft/Entity;
      //   44: astore_2
      //   45: aload_2
-     //   46: instanceof net/minecraft/class_1684
+     //   46: instanceof net/minecraft/EnderPearlEntity
      //   49: ifeq -> 64
      //   52: aload_2
-     //   53: checkcast net/minecraft/class_1684
+     //   53: checkcast net/minecraft/EnderPearlEntity
      //   56: astore_3
      //   57: aload_3
      //   58: invokevirtual method_5805 : ()Z
@@ -139,8 +139,8 @@ package shame.nazuna.client.modules.impl.player;
      //   #93	-> 92
      // Local variable table:
      //   start	length	slot	name	descriptor
-     //   57	7	3	pearl	Lnet/minecraft/class_1684;
-     //   45	24	2	handled	Lnet/minecraft/class_1297;
+     //   57	7	3	pearl	Lnet/minecraft/EnderPearlEntity;
+     //   45	24	2	handled	Lnet/minecraft/Entity;
      //   0	93	0	this	Lshame/astra/client/modules/impl/player/TargetPearl;
      //   0	93	1	event	Lshame/astra/api/events/implement/EventUpdate;
    }
@@ -164,7 +164,7 @@ package shame.nazuna.client.modules.impl.player;
        return;
      }
      
-     double targetAngle = class_3532.method_15338(Math.toDegrees(direction(this.serverRotation.field_1343, forward, strafe)));
+     double targetAngle = MathHelper.method_15338(Math.toDegrees(direction(this.serverRotation.field_1343, forward, strafe)));
      float bestForward = 0.0F;
      float bestStrafe = 0.0F;
      float smallestDifference = Float.MAX_VALUE;
@@ -175,8 +175,8 @@ package shame.nazuna.client.modules.impl.player;
  
  
            
-           double testAngle = class_3532.method_15338(Math.toDegrees(direction(this.serverRotation.field_1343, testForward, testStrafe)));
-           float difference = Math.abs(class_3532.method_15393((float)(targetAngle - testAngle)));
+           double testAngle = MathHelper.method_15338(Math.toDegrees(direction(this.serverRotation.field_1343, testForward, testStrafe)));
+           float difference = Math.abs(MathHelper.method_15393((float)(targetAngle - testAngle)));
            if (difference < smallestDifference) {
              smallestDifference = difference;
              bestForward = testForward;
@@ -202,12 +202,12 @@ package shame.nazuna.client.modules.impl.player;
      if (System.currentTimeMillis() < this.nextThrowAt) {
        return false;
      }
-     return (!mc.field_1724.method_7357().method_7904(new class_1799((class_1935)class_1802.field_8634)) && this.timer
+     return (!mc.field_1724.method_7357().method_7904(new ItemStack((ItemConvertible)Items.field_8634)) && this.timer
        .finished(1000L));
    }
    
    private void aimAndThrowPearl() {
-     class_243 landingPosition = getTargetPearlLandingPosition();
+     Vec3d landingPosition = getTargetPearlLandingPosition();
      if (landingPosition == null) {
        resetThrowState();
        
@@ -219,7 +219,7 @@ package shame.nazuna.client.modules.impl.player;
        
        return;
      } 
-     class_243 trajectoryLanding = checkTrajectory(rotations[0], rotations[1]);
+     Vec3d trajectoryLanding = checkTrajectory(rotations[0], rotations[1]);
      double allowedError = Math.max(3.0D, mc.field_1724.method_19538().method_1022(landingPosition) * 0.12D);
      if (trajectoryLanding == null || landingPosition.method_1022(trajectoryLanding) > allowedError) {
        resetThrowState();
@@ -234,15 +234,15 @@ package shame.nazuna.client.modules.impl.player;
      float previousYaw = mc.field_1724.method_36454();
      float previousPitch = mc.field_1724.method_36455();
      this.isThrowing = true;
-     this.serverRotation = new class_241(rotations[0], rotations[1]);
+     this.serverRotation = new Vec2f(rotations[0], rotations[1]);
      
      try {
        mc.field_1724.method_36456(rotations[0]);
        mc.field_1724.method_36457(rotations[1]);
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2828.class_2831(rotations[0], rotations[1], mc.field_1724
+       mc.field_1724.field_3944.method_52787((Packet)new PlayerMoveC2SPacket.class_2831(rotations[0], rotations[1], mc.field_1724
              .method_24828(), mc.field_1724.field_5976));
        
-       InventoryUtils.swapAndUseHvH(class_1802.field_8634);
+       InventoryUtils.swapAndUseHvH(Items.field_8634);
        this.timer.reset();
        this.nextThrowAt = System.currentTimeMillis() + 2500L;
        if (this.targetPearl != null) {
@@ -255,13 +255,13 @@ package shame.nazuna.client.modules.impl.player;
      } 
    }
    
-   private class_243 getTargetPearlLandingPosition() {
+   private Vec3d getTargetPearlLandingPosition() {
      this.targetPearl = getTargetPearl();
      if (this.targetPearl == null || !this.targetPearl.method_5805()) {
        return null;
      }
      
-     class_243 landingPos = predictPearlLanding(this.targetPearl);
+     Vec3d landingPos = predictPearlLanding(this.targetPearl);
      if (landingPos == null || !isWithinRange(landingPos)) {
        return null;
      }
@@ -269,29 +269,29 @@ package shame.nazuna.client.modules.impl.player;
      return landingPos;
    }
    
-   private class_1684 getTargetPearl() {
-     class_238 searchBox = mc.field_1724.method_5829().method_1014(256.0D);
-     class_1309 auraTarget = (ModuleClass.INSTANCE != null) ? ModuleClass.aura.getTarget() : null;
+   private EnderPearlEntity getTargetPearl() {
+     Box searchBox = mc.field_1724.method_5829().method_1014(256.0D);
+     LivingEntity auraTarget = (ModuleClass.INSTANCE != null) ? ModuleClass.aura.getTarget() : null;
      
-     return mc.field_1687.method_8333((class_1297)mc.field_1724, searchBox, entity -> {
+     return mc.field_1687.method_8333((Entity)mc.field_1724, searchBox, entity -> {
  
  
  
            
            // Byte code:
            //   0: aload_2
-           //   1: instanceof net/minecraft/class_1684
+           //   1: instanceof net/minecraft/EnderPearlEntity
            //   4: ifeq -> 80
            //   7: aload_2
-           //   8: checkcast net/minecraft/class_1684
+           //   8: checkcast net/minecraft/EnderPearlEntity
            //   11: astore_3
            //   12: aload_3
            //   13: invokevirtual method_5805 : ()Z
            //   16: ifeq -> 80
            //   19: aload_3
-           //   20: invokevirtual method_24921 : ()Lnet/minecraft/class_1297;
-           //   23: getstatic shame/astra/client/modules/impl/player/TargetPearl.mc : Lnet/minecraft/class_310;
-           //   26: getfield field_1724 : Lnet/minecraft/class_746;
+           //   20: invokevirtual method_24921 : ()Lnet/minecraft/Entity;
+           //   23: getstatic shame/astra/client/modules/impl/player/TargetPearl.mc : Lnet/minecraft/MinecraftClient;
+           //   26: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
            //   29: if_acmpeq -> 80
            //   32: aload_3
            //   33: invokevirtual method_5628 : ()I
@@ -300,8 +300,8 @@ package shame.nazuna.client.modules.impl.player;
            //   40: if_icmpeq -> 80
            //   43: aload_0
            //   44: aload_3
-           //   45: invokevirtual method_24921 : ()Lnet/minecraft/class_1297;
-           //   48: invokevirtual isIgnoredFriend : (Lnet/minecraft/class_1297;)Z
+           //   45: invokevirtual method_24921 : ()Lnet/minecraft/Entity;
+           //   48: invokevirtual isIgnoredFriend : (Lnet/minecraft/Entity;)Z
            //   51: ifne -> 80
            //   54: aload_0
            //   55: getfield onlyTarget : Lshame/astra/client/modules/settings/implement/BooleanSetting;
@@ -310,7 +310,7 @@ package shame.nazuna.client.modules.impl.player;
            //   64: aload_1
            //   65: ifnull -> 80
            //   68: aload_3
-           //   69: invokevirtual method_24921 : ()Lnet/minecraft/class_1297;
+           //   69: invokevirtual method_24921 : ()Lnet/minecraft/Entity;
            //   72: aload_1
            //   73: if_acmpne -> 80
            //   76: iconst_1
@@ -328,19 +328,19 @@ package shame.nazuna.client.modules.impl.player;
            //   #221	-> 58
            // Local variable table:
            //   start	length	slot	name	descriptor
-           //   12	68	3	pearl	Lnet/minecraft/class_1684;
+           //   12	68	3	pearl	Lnet/minecraft/EnderPearlEntity;
            //   0	82	0	this	Lshame/astra/client/modules/impl/player/TargetPearl;
-           //   0	82	1	auraTarget	Lnet/minecraft/class_1309;
-           //   0	82	2	entity	Lnet/minecraft/class_1297;
+           //   0	82	1	auraTarget	Lnet/minecraft/LivingEntity;
+           //   0	82	2	entity	Lnet/minecraft/Entity;
          }).stream()
-       .map(entity -> (class_1684)entity)
+       .map(entity -> (EnderPearlEntity)entity)
        .filter(pearl -> (getHorizontalDistanceTo(pearl) <= 256.0D))
        .min(Comparator.comparingDouble(this::getHorizontalDistanceTo))
        .orElse(null);
    }
-   private boolean isIgnoredFriend(class_1297 owner) {
-     class_1657 player;
-     if (this.ignoreFriends.isState() && owner instanceof class_1657) { player = (class_1657)owner; }
+   private boolean isIgnoredFriend(Entity owner) {
+     PlayerEntity player;
+     if (this.ignoreFriends.isState() && owner instanceof PlayerEntity) { player = (PlayerEntity)owner; }
      else { return false; }
      
      return (astra.INSTANCE != null && astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage
@@ -348,48 +348,48 @@ package shame.nazuna.client.modules.impl.player;
        .isFriend(player.method_5477().getString()));
    }
    
-   private double getHorizontalDistanceTo(class_1684 pearl) {
-     class_243 playerPos = mc.field_1724.method_19538();
-     class_243 pearlPos = pearl.method_19538();
+   private double getHorizontalDistanceTo(EnderPearlEntity pearl) {
+     Vec3d playerPos = mc.field_1724.method_19538();
+     Vec3d pearlPos = pearl.method_19538();
      double dx = pearlPos.field_1352 - playerPos.field_1352;
      double dz = pearlPos.field_1350 - playerPos.field_1350;
      return Math.sqrt(dx * dx + dz * dz);
    }
    
-   private class_243 predictPearlLanding(class_1684 pearl) {
-     class_243 position = pearl.method_19538();
-     class_243 velocity = pearl.method_18798();
-     class_243 lastPosition = position;
+   private Vec3d predictPearlLanding(EnderPearlEntity pearl) {
+     Vec3d position = pearl.method_19538();
+     Vec3d velocity = pearl.method_18798();
+     Vec3d lastPosition = position;
      
      for (int i = 0; i < 200; i++) {
        lastPosition = position;
        position = position.method_1019(velocity);
        
        if (hitsBlock(lastPosition, position) || position.field_1351 <= mc.field_1687.method_31607()) {
-         return new class_243(class_3532.method_15357(lastPosition.field_1352) + 0.5D, class_3532.method_15357(lastPosition.field_1351), class_3532.method_15357(lastPosition.field_1350) + 0.5D);
+         return new Vec3d(MathHelper.method_15357(lastPosition.field_1352) + 0.5D, MathHelper.method_15357(lastPosition.field_1351), MathHelper.method_15357(lastPosition.field_1350) + 0.5D);
        }
        
        velocity = updatePearlMotion(velocity, position);
      } 
      
-     return new class_243(class_3532.method_15357(lastPosition.field_1352) + 0.5D, class_3532.method_15357(lastPosition.field_1351), class_3532.method_15357(lastPosition.field_1350) + 0.5D);
+     return new Vec3d(MathHelper.method_15357(lastPosition.field_1352) + 0.5D, MathHelper.method_15357(lastPosition.field_1351), MathHelper.method_15357(lastPosition.field_1350) + 0.5D);
    }
    
-   private class_243 updatePearlMotion(class_243 motion, class_243 position) {
-     class_2338 blockPos = class_2338.method_49638((class_2374)position);
-     if (mc.field_1687.method_8320(blockPos).method_27852(class_2246.field_10382)) {
+   private Vec3d updatePearlMotion(Vec3d motion, Vec3d position) {
+     BlockPos blockPos = BlockPos.method_49638((Position)position);
+     if (mc.field_1687.method_8320(blockPos).method_27852(Blocks.field_10382)) {
        return motion.method_1021(0.8D).method_1031(0.0D, -0.03D, 0.0D);
      }
      return motion.method_1021(0.99D).method_1031(0.0D, -0.03D, 0.0D);
    }
    
-   private boolean isWithinRange(class_243 landingPos) {
+   private boolean isWithinRange(Vec3d landingPos) {
      double distanceToLanding = mc.field_1724.method_19538().method_1022(landingPos);
      return (distanceToLanding >= 11.0D && distanceToLanding <= 256.0D);
    }
    
-   private float[] calculateYawPitch(class_243 targetPosition) {
-     class_243 playerPosition = mc.field_1724.method_19538();
+   private float[] calculateYawPitch(Vec3d targetPosition) {
+     Vec3d playerPosition = mc.field_1724.method_19538();
      double dx = targetPosition.field_1352 - playerPosition.field_1352;
      double dy = targetPosition.field_1351 - mc.field_1724.method_23320();
      double dz = targetPosition.field_1350 - playerPosition.field_1350;
@@ -398,34 +398,34 @@ package shame.nazuna.client.modules.impl.player;
      double allowedError = Math.max(1.5D, mc.field_1724.method_19538().method_1022(targetPosition) * 0.08D);
      TrajectoryCandidate directCandidate = findBestCandidate(targetPosition, yaw, -25.0F, 35.0F, allowedError, true);
      if (directCandidate != null) {
-       return new float[] { yaw, class_3532.method_15363(directCandidate.pitch, -90.0F, 90.0F) };
+       return new float[] { yaw, MathHelper.method_15363(directCandidate.pitch, -90.0F, 90.0F) };
      }
      
      TrajectoryCandidate fallbackCandidate = findBestCandidate(targetPosition, yaw, -85.0F, 85.0F, allowedError, false);
      if (fallbackCandidate == null) {
        double fallbackPitch = -Math.toDegrees(Math.atan2(dy, horizontalDistance)) + 5.0D;
-       return new float[] { yaw, class_3532.method_15363((float)fallbackPitch, -90.0F, 90.0F) };
+       return new float[] { yaw, MathHelper.method_15363((float)fallbackPitch, -90.0F, 90.0F) };
      } 
      
-     return new float[] { yaw, class_3532.method_15363(fallbackCandidate.pitch, -90.0F, 90.0F) };
+     return new float[] { yaw, MathHelper.method_15363(fallbackCandidate.pitch, -90.0F, 90.0F) };
    }
    
-   private TrajectoryCandidate findBestCandidate(class_243 targetPosition, float yaw, float minPitch, float maxPitch, double allowedError, boolean preferDirect) {
-     class_243 playerPosition = mc.field_1724.method_19538();
+   private TrajectoryCandidate findBestCandidate(Vec3d targetPosition, float yaw, float minPitch, float maxPitch, double allowedError, boolean preferDirect) {
+     Vec3d playerPosition = mc.field_1724.method_19538();
      double velocity = 1.5D;
      TrajectoryCandidate bestCandidate = null;
      float pitch;
      for (pitch = minPitch; pitch <= maxPitch; pitch += 0.25F) {
        float pitchRad = (float)Math.toRadians(pitch);
-       double vx = (-class_3532.method_15374((float)Math.toRadians(yaw)) * class_3532.method_15362(pitchRad)) * velocity;
-       double vy = -class_3532.method_15374(pitchRad) * velocity;
-       double vz = (class_3532.method_15362((float)Math.toRadians(yaw)) * class_3532.method_15362(pitchRad)) * velocity;
-       class_243 pos = new class_243(playerPosition.field_1352, mc.field_1724.method_23320(), playerPosition.field_1350);
-       class_243 motion = new class_243(vx, vy, vz);
+       double vx = (-MathHelper.method_15374((float)Math.toRadians(yaw)) * MathHelper.method_15362(pitchRad)) * velocity;
+       double vy = -MathHelper.method_15374(pitchRad) * velocity;
+       double vz = (MathHelper.method_15362((float)Math.toRadians(yaw)) * MathHelper.method_15362(pitchRad)) * velocity;
+       Vec3d pos = new Vec3d(playerPosition.field_1352, mc.field_1724.method_23320(), playerPosition.field_1350);
+       Vec3d motion = new Vec3d(vx, vy, vz);
        
        int ticks = 0;
        for (int i = 0; i < 200; ) {
-         class_243 previous = pos;
+         Vec3d previous = pos;
          pos = pos.method_1019(motion);
          motion = updatePearlMotion(motion, pos);
          ticks++;
@@ -490,24 +490,24 @@ package shame.nazuna.client.modules.impl.player;
      return false;
    }
    
-   private class_243 checkTrajectory(float yaw, float pitch) {
+   private Vec3d checkTrajectory(float yaw, float pitch) {
      float yawRad = (float)Math.toRadians(yaw);
      float pitchRad = (float)Math.toRadians(pitch);
      double velocity = 1.5D;
      
-     double x = mc.field_1724.method_23317() - (class_3532.method_15362(yawRad) * 0.16F);
+     double x = mc.field_1724.method_23317() - (MathHelper.method_15362(yawRad) * 0.16F);
      double y = mc.field_1724.method_23318() + mc.field_1724.method_18381(mc.field_1724.method_18376()) - 0.1D;
-     double z = mc.field_1724.method_23321() - (class_3532.method_15374(yawRad) * 0.16F);
+     double z = mc.field_1724.method_23321() - (MathHelper.method_15374(yawRad) * 0.16F);
      
-     double motionX = (-class_3532.method_15374(yawRad) * class_3532.method_15362(pitchRad)) * velocity;
-     double motionY = -class_3532.method_15374(pitchRad) * velocity;
-     double motionZ = (class_3532.method_15362(yawRad) * class_3532.method_15362(pitchRad)) * velocity;
+     double motionX = (-MathHelper.method_15374(yawRad) * MathHelper.method_15362(pitchRad)) * velocity;
+     double motionY = -MathHelper.method_15374(pitchRad) * velocity;
+     double motionZ = (MathHelper.method_15362(yawRad) * MathHelper.method_15362(pitchRad)) * velocity;
      
-     class_243 position = new class_243(x, y, z);
-     class_243 motion = new class_243(motionX, motionY, motionZ);
+     Vec3d position = new Vec3d(x, y, z);
+     Vec3d motion = new Vec3d(motionX, motionY, motionZ);
      
      for (int i = 0; i <= 200; i++) {
-       class_243 previous = position;
+       Vec3d previous = position;
        position = position.method_1019(motion);
        motion = updatePearlMotion(motion, position);
        
@@ -516,27 +516,27 @@ package shame.nazuna.client.modules.impl.player;
        }
        
        if (hitsBlock(previous, position) || position.field_1351 <= mc.field_1687.method_31607()) {
-         return new class_243(class_3532.method_15357(position.field_1352) + 0.5D, class_3532.method_15357(position.field_1351), class_3532.method_15357(position.field_1350) + 0.5D);
+         return new Vec3d(MathHelper.method_15357(position.field_1352) + 0.5D, MathHelper.method_15357(position.field_1351), MathHelper.method_15357(position.field_1350) + 0.5D);
        }
      } 
      
      return null;
    }
    
-   private boolean hitsBlock(class_243 from, class_243 to) {
+   private boolean hitsBlock(Vec3d from, Vec3d to) {
      return 
  
  
  
  
        
-       (mc.field_1687.method_17742(new class_3959(from, to, class_3959.class_3960.field_17558, class_3959.class_242.field_1348, (class_1297)mc.field_1724)).method_17783() == class_239.class_240.field_1332);
+       (mc.field_1687.method_17742(new RaycastContext(from, to, RaycastContext.class_3960.field_17558, RaycastContext.class_242.field_1348, (Entity)mc.field_1724)).method_17783() == HitResult.class_240.field_1332);
    }
    
-   private boolean hitsEntity(class_243 from, class_243 to) {
-     class_238 searchBox = (new class_238(from, to)).method_1014(0.3D);
-     for (class_1297 entity : mc.field_1687.method_8333((class_1297)mc.field_1724, searchBox, entity -> 
-         (!entity.method_5805() || entity.method_7325() || entity.field_5960) ? false : ((entity == this.targetPearl) ? false : (!(entity instanceof class_1684))))) {
+   private boolean hitsEntity(Vec3d from, Vec3d to) {
+     Box searchBox = (new Box(from, to)).method_1014(0.3D);
+     for (Entity entity : mc.field_1687.method_8333((Entity)mc.field_1724, searchBox, entity -> 
+         (!entity.method_5805() || entity.method_7325() || entity.field_5960) ? false : ((entity == this.targetPearl) ? false : (!(entity instanceof EnderPearlEntity))))) {
  
  
  
@@ -552,10 +552,10 @@ package shame.nazuna.client.modules.impl.player;
    }
    
    private boolean hasPearl() {
-     return (mc.field_1724.method_6047().method_31574(class_1802.field_8634) || mc.field_1724
-       .method_6079().method_31574(class_1802.field_8634) || 
-       InventoryUtils.find(class_1802.field_8634, 0, 8) != -1 || 
-       InventoryUtils.find(class_1802.field_8634, 9, 45) != -1);
+     return (mc.field_1724.method_6047().method_31574(Items.field_8634) || mc.field_1724
+       .method_6079().method_31574(Items.field_8634) || 
+       InventoryUtils.find(Items.field_8634, 0, 8) != -1 || 
+       InventoryUtils.find(Items.field_8634, 9, 45) != -1);
    }
    
    private void resetThrowState() {
@@ -578,9 +578,9 @@ package shame.nazuna.client.modules.impl.player;
      private final float pitch;
      private final double distanceToTarget;
      private final int ticks;
-     private final class_243 landingPos;
+     private final Vec3d landingPos;
      
-     private TrajectoryCandidate(float pitch, double distanceToTarget, int ticks, class_243 landingPos) {
+     private TrajectoryCandidate(float pitch, double distanceToTarget, int ticks, Vec3d landingPos) {
        this.pitch = pitch;
        this.distanceToTarget = distanceToTarget;
        this.ticks = ticks;

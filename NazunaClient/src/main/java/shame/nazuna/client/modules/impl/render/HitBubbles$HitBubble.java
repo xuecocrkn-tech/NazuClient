@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -125,7 +125,7 @@ package shame.nazuna.client.modules.impl.render;
  final class HitBubble
    extends Record
  {
-   private final class_243 pos;
+   private final Vec3d pos;
    private final long spawnTime;
    private final float spinSeed;
    private final float sideYaw;
@@ -171,8 +171,8 @@ package shame.nazuna.client.modules.impl.render;
      //   0	8	1	o	Ljava/lang/Object;
    }
    
-   private HitBubble(class_243 pos, long spawnTime, float spinSeed, float sideYaw) {
-     this.pos = pos; this.spawnTime = spawnTime; this.spinSeed = spinSeed; this.sideYaw = sideYaw; } public class_243 pos() { return this.pos; } public long spawnTime() { return this.spawnTime; } public float spinSeed() { return this.spinSeed; } public float sideYaw() { return this.sideYaw; }
+   private HitBubble(Vec3d pos, long spawnTime, float spinSeed, float sideYaw) {
+     this.pos = pos; this.spawnTime = spawnTime; this.spinSeed = spinSeed; this.sideYaw = sideYaw; } public Vec3d pos() { return this.pos; } public long spawnTime() { return this.spawnTime; } public float spinSeed() { return this.spinSeed; } public float sideYaw() { return this.sideYaw; }
  
  }
 

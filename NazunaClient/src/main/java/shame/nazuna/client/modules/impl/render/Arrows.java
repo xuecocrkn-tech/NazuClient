@@ -5,14 +5,14 @@ package shame.nazuna.client.modules.impl.render;
  import java.util.Map;
  import java.util.Set;
  import java.util.UUID;
- import net.minecraft.class_1297;
- import net.minecraft.class_243;
- import net.minecraft.class_2960;
- import net.minecraft.class_3532;
- import net.minecraft.class_4587;
- import net.minecraft.class_5498;
- import net.minecraft.class_742;
- import net.minecraft.class_7833;
+ import net.minecraft.Entity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Identifier;
+ import net.minecraft.MathHelper;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.Perspective;
+ import net.minecraft.AbstractClientPlayerEntity;
+ import net.minecraft.RotationAxis;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventRender;
  import shame.nazuna.api.storages.implement.FreeLookStorage;
@@ -28,9 +28,9 @@ package shame.nazuna.client.modules.impl.render;
  public class Arrows
    extends Module {
    public static Arrows INSTANCE = new Arrows();
-   private static final class_2960 FIRST_ARROW_TEXTURE = class_2960.method_60655("astra", "textures/arrows/arrow.png");
-   private static final class_2960 SECOND_ARROW_TEXTURE = class_2960.method_60655("astra", "textures/arrows/arr.png");
-   private static final class_2960 MAMA_ARROW_TEXTURE = class_2960.method_60655("astra", "textures/arrows/arrowsnurik.png");
+   private static final Identifier FIRST_ARROW_TEXTURE = Identifier.method_60655("astra", "textures/arrows/arrow.png");
+   private static final Identifier SECOND_ARROW_TEXTURE = Identifier.method_60655("astra", "textures/arrows/arr.png");
+   private static final Identifier MAMA_ARROW_TEXTURE = Identifier.method_60655("astra", "textures/arrows/arrowsnurik.png");
    
    private final ModeSetting type = new ModeSetting("Вид", "Первый", new String[] { "Первый", "Второй", "Третий" });
    private final FloatSetting radius = new FloatSetting("Радиус", 58.0F, 30.0F, 120.0F, 1.0F);
@@ -51,7 +51,7 @@ package shame.nazuna.client.modules.impl.render;
        this.states.clear();
        return;
      } 
-     if (mc.field_1690.method_31044() != class_5498.field_26664) {
+     if (mc.field_1690.method_31044() != Perspective.field_26664) {
        fadeAllStates();
        
        return;
@@ -62,10 +62,10 @@ package shame.nazuna.client.modules.impl.render;
      float arrowSize = this.size.get();
      float y = centerY - this.radius.get();
      float playerYaw = getReferenceYaw(partialTicks);
-     class_243 selfPos = getReferencePos(partialTicks);
+     Vec3d selfPos = getReferencePos(partialTicks);
      
      this.seenPlayers.clear();
-     for (class_742 player : mc.field_1687.method_18456()) {
+     for (AbstractClientPlayerEntity player : mc.field_1687.method_18456()) {
        if (player == mc.field_1724 || !player.method_5805() || player.method_7325() || isGhostPlayer(player)) {
          continue;
        }
@@ -75,10 +75,10 @@ package shame.nazuna.client.modules.impl.render;
        this.seenPlayers.add(uuid);
        
        int color = getPlayerColor(player);
-       float targetYaw = getRelativeYaw((class_1297)player, partialTicks, playerYaw, selfPos);
+       float targetYaw = getRelativeYaw((Entity)player, partialTicks, playerYaw, selfPos);
        state.rotation = interpolateAngle(state.rotation, targetYaw, 0.18F);
        state.alpha = approach(state.alpha, 1.0F, 0.12F);
-       float alpha = class_3532.method_15363(state.alpha, 0.0F, 1.0F);
+       float alpha = MathHelper.method_15363(state.alpha, 0.0F, 1.0F);
        if (alpha <= 0.01F) {
          continue;
        }
@@ -99,8 +99,8 @@ package shame.nazuna.client.modules.impl.render;
    }
  
    
-   private void renderArrow(class_4587 matrices, float centerX, float centerY, float y, float size, float rotation, int color, int shadowColor) {
-     class_2960 ARROW;
+   private void renderArrow(MatrixStack matrices, float centerX, float centerY, float y, float size, float rotation, int color, int shadowColor) {
+     Identifier ARROW;
      if (this.type.getIndex() == 0) {
        ARROW = FIRST_ARROW_TEXTURE;
      } else if (this.type.getIndex() == 1) {
@@ -109,10 +109,10 @@ package shame.nazuna.client.modules.impl.render;
        ARROW = MAMA_ARROW_TEXTURE;
      } 
      
-     class_2960 ARROW_TEXTURE = ARROW;
+     Identifier ARROW_TEXTURE = ARROW;
      matrices.method_22903();
      matrices.method_46416(centerX, centerY, 0.0F);
-     matrices.method_22907(class_7833.field_40718.rotationDegrees(rotation));
+     matrices.method_22907(RotationAxis.field_40718.rotationDegrees(rotation));
      matrices.method_46416(-centerX, -centerY, 0.0F);
      
      float x = centerX - size * 0.5F;
@@ -130,45 +130,45 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private float approach(float current, float target, float factor) {
-     factor = class_3532.method_15363(factor, 0.0F, 1.0F);
-     return class_3532.method_16439(factor, current, target);
+     factor = MathHelper.method_15363(factor, 0.0F, 1.0F);
+     return MathHelper.method_16439(factor, current, target);
    }
    
-   private int getPlayerColor(class_742 player) {
+   private int getPlayerColor(AbstractClientPlayerEntity player) {
      String name = player.method_5477().getString();
      boolean isFriend = (astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage.isFriend(name));
      return isFriend ? ColorUtils.rgb(80, 170, 255) : ColorUtils.getThemeColor();
    }
    
-   private float getRelativeYaw(class_1297 entity, float partialTicks, float playerYaw, class_243 selfPos) {
-     class_243 entityPos = MathUtils.interpolate(entity, partialTicks);
+   private float getRelativeYaw(Entity entity, float partialTicks, float playerYaw, Vec3d selfPos) {
+     Vec3d entityPos = MathUtils.interpolate(entity, partialTicks);
      
      double dx = entityPos.field_1352 - selfPos.field_1352;
      double dz = entityPos.field_1350 - selfPos.field_1350;
      float yaw = (float)-Math.toDegrees(Math.atan2(dx, dz));
-     return class_3532.method_15393(yaw - playerYaw);
+     return MathHelper.method_15393(yaw - playerYaw);
    }
    
    private float getReferenceYaw(float partialTicks) {
      if (FreeLookStorage.isActive()) {
        return FreeLookStorage.getFreeYaw();
      }
-     return class_3532.method_16439(partialTicks, mc.field_1724.field_5982, mc.field_1724.method_36454());
+     return MathHelper.method_16439(partialTicks, mc.field_1724.field_5982, mc.field_1724.method_36454());
    }
    
-   private class_243 getReferencePos(float partialTicks) {
+   private Vec3d getReferencePos(float partialTicks) {
      if (FreeLookStorage.isActive() && mc.field_1773 != null && mc.field_1773.method_19418() != null) {
        return mc.field_1773.method_19418().method_19326();
      }
-     return MathUtils.interpolate((class_1297)mc.field_1724, partialTicks);
+     return MathUtils.interpolate((Entity)mc.field_1724, partialTicks);
    }
    
    private float interpolateAngle(float current, float target, float factor) {
-     float delta = class_3532.method_15393(target - current);
+     float delta = MathHelper.method_15393(target - current);
      return current + delta * factor;
    }
    
-   private boolean isGhostPlayer(class_742 player) {
+   private boolean isGhostPlayer(AbstractClientPlayerEntity player) {
      if (player.method_5797() != null) {
        String name = player.method_5797().getString();
        if (name != null && name.startsWith("Ghost_")) {

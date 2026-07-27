@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -1185,7 +1185,7 @@ package shame.nazuna.client.modules.impl.render;
  
  class TotemGhost
  {
-   final class_243 position;
+   final Vec3d position;
    final float bodyYaw;
    final float netHeadYaw;
    final float headPitch;
@@ -1195,7 +1195,7 @@ package shame.nazuna.client.modules.impl.render;
    final float height;
    final long startTime;
    
-   TotemGhost(class_243 position, float bodyYaw, float netHeadYaw, float headPitch, float limbSwing, float limbSwingAmount, boolean sneaking, float height, long startTime) {
+   TotemGhost(Vec3d position, float bodyYaw, float netHeadYaw, float headPitch, float limbSwing, float limbSwingAmount, boolean sneaking, float height, long startTime) {
      this.position = position;
      this.bodyYaw = bodyYaw;
      this.netHeadYaw = netHeadYaw;

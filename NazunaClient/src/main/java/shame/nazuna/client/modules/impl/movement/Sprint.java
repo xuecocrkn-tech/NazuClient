@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.movement;
  
- import net.minecraft.class_310;
- import net.minecraft.class_746;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.ClientPlayerEntity;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
@@ -14,7 +14,7 @@ package shame.nazuna.client.modules.impl.movement;
    extends Module
  {
    public static Sprint INSTANCE = new Sprint();
-   private static final class_310 CLIENT = class_310.method_1551();
+   private static final MinecraftClient CLIENT = MinecraftClient.method_1551();
    private final BooleanSetting keepInWater = new BooleanSetting("Сохранять в воде", false); private static boolean sprinting;
    
    public Sprint() {
@@ -27,7 +27,7 @@ package shame.nazuna.client.modules.impl.movement;
    private static int pauseDepth = 0;
    
    private static boolean restoreAfterPause = false;
-   private class_746 lastPlayer;
+   private ClientPlayerEntity lastPlayer;
    
    public void onEnable() {
      resetPauseState();
@@ -67,42 +67,42 @@ package shame.nazuna.client.modules.impl.movement;
    @EventLink
    public void onEvent(EventUpdate ignored) {
      // Byte code:
-     //   0: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   3: getfield field_1724 : Lnet/minecraft/class_746;
+     //   0: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   3: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   6: ifnonnull -> 40
      //   9: aload_0
      //   10: aconst_null
-     //   11: putfield lastPlayer : Lnet/minecraft/class_746;
+     //   11: putfield lastPlayer : Lnet/minecraft/ClientPlayerEntity;
      //   14: invokestatic resetPauseState : ()V
-     //   17: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   20: getfield field_1690 : Lnet/minecraft/class_315;
+     //   17: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   20: getfield field_1690 : Lnet/minecraft/GameOptions;
      //   23: ifnull -> 39
-     //   26: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   29: getfield field_1690 : Lnet/minecraft/class_315;
-     //   32: getfield field_1867 : Lnet/minecraft/class_304;
+     //   26: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   29: getfield field_1690 : Lnet/minecraft/GameOptions;
+     //   32: getfield field_1867 : Lnet/minecraft/KeyBinding;
      //   35: iconst_0
      //   36: invokevirtual method_23481 : (Z)V
      //   39: return
      //   40: aload_0
-     //   41: getfield lastPlayer : Lnet/minecraft/class_746;
-     //   44: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   47: getfield field_1724 : Lnet/minecraft/class_746;
+     //   41: getfield lastPlayer : Lnet/minecraft/ClientPlayerEntity;
+     //   44: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   47: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   50: if_acmpeq -> 70
      //   53: aload_0
-     //   54: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   57: getfield field_1724 : Lnet/minecraft/class_746;
-     //   60: putfield lastPlayer : Lnet/minecraft/class_746;
+     //   54: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   57: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
+     //   60: putfield lastPlayer : Lnet/minecraft/ClientPlayerEntity;
      //   63: invokestatic resetPauseState : ()V
      //   66: iconst_1
      //   67: putstatic shame/astra/client/modules/impl/movement/Sprint.sprinting : Z
      //   70: invokestatic isTargetProtocolBelowOneNineteen : ()Z
      //   73: istore_2
-     //   74: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   77: getfield field_1724 : Lnet/minecraft/class_746;
+     //   74: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   77: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   80: invokevirtual method_5799 : ()Z
      //   83: ifne -> 98
-     //   86: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   89: getfield field_1724 : Lnet/minecraft/class_746;
+     //   86: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   89: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   92: invokevirtual method_5869 : ()Z
      //   95: ifeq -> 102
      //   98: iconst_1
@@ -119,25 +119,25 @@ package shame.nazuna.client.modules.impl.movement;
      //   123: ifeq -> 193
      //   126: invokestatic isMoving : ()Z
      //   129: ifeq -> 193
-     //   132: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   135: getfield field_1724 : Lnet/minecraft/class_746;
-     //   138: getfield field_3913 : Lnet/minecraft/class_744;
+     //   132: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   135: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
+     //   138: getfield field_3913 : Lnet/minecraft/Input;
      //   141: getfield field_3905 : F
      //   144: fconst_0
      //   145: fcmpl
      //   146: ifle -> 193
      //   149: iload_2
      //   150: ifeq -> 177
-     //   153: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   156: getfield field_1724 : Lnet/minecraft/class_746;
+     //   153: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   156: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   159: getfield field_5976 : Z
      //   162: ifne -> 193
-     //   165: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   168: getfield field_1724 : Lnet/minecraft/class_746;
+     //   165: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   168: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   171: getfield field_34927 : Z
      //   174: ifne -> 193
-     //   177: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   180: getfield field_1724 : Lnet/minecraft/class_746;
+     //   177: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   180: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   183: invokevirtual method_6128 : ()Z
      //   186: ifne -> 193
      //   189: iconst_1
@@ -150,19 +150,19 @@ package shame.nazuna.client.modules.impl.movement;
      //   203: ifeq -> 225
      //   206: iload_3
      //   207: ifeq -> 225
-     //   210: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   213: getfield field_1724 : Lnet/minecraft/class_746;
+     //   210: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   213: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   216: invokevirtual method_5624 : ()Z
      //   219: ifeq -> 225
      //   222: iconst_1
      //   223: istore #4
-     //   225: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   228: getfield field_1690 : Lnet/minecraft/class_315;
-     //   231: getfield field_1867 : Lnet/minecraft/class_304;
+     //   225: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   228: getfield field_1690 : Lnet/minecraft/GameOptions;
+     //   231: getfield field_1867 : Lnet/minecraft/KeyBinding;
      //   234: iload #4
      //   236: invokevirtual method_23481 : (Z)V
-     //   239: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/class_310;
-     //   242: getfield field_1724 : Lnet/minecraft/class_746;
+     //   239: getstatic shame/astra/client/modules/impl/movement/Sprint.mc : Lnet/minecraft/MinecraftClient;
+     //   242: getfield field_1724 : Lnet/minecraft/ClientPlayerEntity;
      //   245: iload #4
      //   247: invokevirtual method_5728 : (Z)V
      //   250: return

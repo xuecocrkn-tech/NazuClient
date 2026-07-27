@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.player;
  
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -21,8 +21,8 @@ package shame.nazuna.client.modules.impl.player;
        return;
      }
      
-     class_1799 stack = mc.field_1724.method_6047();
-     if (stack.method_31574(class_1802.field_8287))
+     ItemStack stack = mc.field_1724.method_6047();
+     if (stack.method_31574(Items.field_8287))
        ((IMinecraftClientAccessor)mc).setItemUseCooldown(0); 
    }
  }

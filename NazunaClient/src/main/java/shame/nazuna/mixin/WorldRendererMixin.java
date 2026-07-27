@@ -1,17 +1,17 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_10209;
- import net.minecraft.class_243;
- import net.minecraft.class_4063;
- import net.minecraft.class_4184;
- import net.minecraft.class_4587;
- import net.minecraft.class_4597;
- import net.minecraft.class_757;
- import net.minecraft.class_761;
- import net.minecraft.class_9779;
- import net.minecraft.class_9909;
- import net.minecraft.class_9922;
- import net.minecraft.class_9958;
+ import net.minecraft.Profilers;
+ import net.minecraft.Vec3d;
+ import net.minecraft.CloudRenderMode;
+ import net.minecraft.Camera;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.VertexConsumerProvider;
+ import net.minecraft.GameRenderer;
+ import net.minecraft.WorldRenderer;
+ import net.minecraft.RenderTickCounter;
+ import net.minecraft.FrameGraphBuilder;
+ import net.minecraft.ObjectAllocator;
+ import net.minecraft.Fog;
  import org.joml.Matrix4f;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
@@ -25,11 +25,11 @@ package shame.nazuna.mixin;
  import shame.nazuna.client.modules.impl.render.ShaderEsp;
  import shame.nazuna.client.modules.impl.render.Sonar;
  
- @Mixin({class_761.class})
+ @Mixin({WorldRenderer.class})
  public class WorldRendererMixin
    implements QClient {
    @Inject(method = {"method_62201"}, at = {@At("HEAD")}, cancellable = true)
-   private void astra$renderParticles(class_9909 frameGraphBuilder, class_4184 camera, float tickDelta, class_9958 fog, CallbackInfo ci) {
+   private void astra$renderParticles(FrameGraphBuilder frameGraphBuilder, Camera camera, float tickDelta, Fog fog, CallbackInfo ci) {
      if (ModuleClass.INSTANCE == null)
        return; 
      Removals removals = ModuleClass.removals;
@@ -39,7 +39,7 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_62203"}, at = {@At("HEAD")}, cancellable = true)
-   private void astra$renderWeather(class_9909 frameGraphBuilder, class_243 pos, float tickDelta, class_9958 fog, CallbackInfo ci) {
+   private void astra$renderWeather(FrameGraphBuilder frameGraphBuilder, Vec3d pos, float tickDelta, Fog fog, CallbackInfo ci) {
      if (ModuleClass.INSTANCE == null)
        return; 
      Removals removals = ModuleClass.removals;
@@ -49,7 +49,7 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_62209"}, at = {@At("HEAD")}, cancellable = true)
-   private void astra$addWeatherParticlesAndSound(class_4184 camera, CallbackInfo ci) {
+   private void astra$addWeatherParticlesAndSound(Camera camera, CallbackInfo ci) {
      if (ModuleClass.INSTANCE == null)
        return; 
      Removals removals = ModuleClass.removals;
@@ -59,7 +59,7 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_62204"}, at = {@At("HEAD")}, cancellable = true)
-   private void astra$renderClouds(class_9909 frameGraphBuilder, Matrix4f positionMatrix, Matrix4f projectionMatrix, class_4063 renderMode, class_243 cameraPos, float ticks, int color, float cloudHeight, CallbackInfo ci) {
+   private void astra$renderClouds(FrameGraphBuilder frameGraphBuilder, Matrix4f positionMatrix, Matrix4f projectionMatrix, CloudRenderMode renderMode, Vec3d cameraPos, float ticks, int color, float cloudHeight, CallbackInfo ci) {
      if (ModuleClass.INSTANCE == null)
        return; 
      Removals removals = ModuleClass.removals;
@@ -69,7 +69,7 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_62208"}, at = {@At("HEAD")}, cancellable = true)
-   private void astra$renderBlockEntities(class_4587 matrices, class_4597.class_4598 mainConsumers, class_4597.class_4598 translucentConsumers, class_4184 camera, float tickDelta, CallbackInfo ci) {
+   private void astra$renderBlockEntities(MatrixStack matrices, VertexConsumerProvider.class_4598 mainConsumers, VertexConsumerProvider.class_4598 translucentConsumers, Camera camera, float tickDelta, CallbackInfo ci) {
      if (ModuleClass.INSTANCE == null)
        return; 
      Removals removals = ModuleClass.removals;
@@ -79,7 +79,7 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_22710"}, at = {@At("RETURN")})
-   private void render(class_9922 allocator, class_9779 tickCounter, boolean renderBlockOutline, class_4184 camera, class_757 gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
+   private void render(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
      Sonar sonar = (ModuleClass.INSTANCE != null) ? ModuleClass.sonar : null;
      boolean has3DListeners = EventInvoker.hasListeners(Event3DRender.class);
      boolean renderSonar = (sonar != null && sonar.isEnable());
@@ -87,8 +87,8 @@ package shame.nazuna.mixin;
        return;
      }
      
-     class_10209.method_64146().method_15405("astra_renderWorld");
-     class_4587 matrices = new class_4587();
+     Profilers.method_64146().method_15405("astra_renderWorld");
+     MatrixStack matrices = new MatrixStack();
      matrices.method_34425(positionMatrix);
      if (has3DListeners) {
        (new Event3DRender(matrices, positionMatrix, projectionMatrix, camera, tickCounter.method_60637(false))).call();

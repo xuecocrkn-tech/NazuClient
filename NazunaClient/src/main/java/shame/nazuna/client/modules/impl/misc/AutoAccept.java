@@ -1,8 +1,8 @@
 package shame.nazuna.client.modules.impl.misc;
  
  import java.util.Locale;
- import net.minecraft.class_2596;
- import net.minecraft.class_7439;
+ import net.minecraft.Packet;
+ import net.minecraft.GameMessageS2CPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventPacket;
  import shame.nazuna.astra;
@@ -26,8 +26,8 @@ package shame.nazuna.client.modules.impl.misc;
      if (mc.field_1724 == null || mc.field_1687 == null)
        return;  if (event.getType() != EventPacket.Type.RECEIVE)
        return; 
-     class_2596<?> packet = event.getPacket();
-     if (packet instanceof class_7439) { class_7439 messagePacket = (class_7439)packet;
+     Packet<?> packet = event.getPacket();
+     if (packet instanceof GameMessageS2CPacket) { GameMessageS2CPacket messagePacket = (GameMessageS2CPacket)packet;
        String raw = messagePacket.comp_763().getString().toLowerCase(Locale.ROOT);
        
        if (raw.contains("телепортироваться") || raw.contains("has requested teleport") || raw.contains("просит к вам телепортироваться")) {

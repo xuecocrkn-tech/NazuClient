@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -218,11 +218,11 @@ package shame.nazuna.client.modules.impl.combat;
  
  class EscapePoint
  {
-   class_243 pos;
+   Vec3d pos;
    double distance;
    double score;
    
-   EscapePoint(class_243 pos, double distance, double score) {
+   EscapePoint(Vec3d pos, double distance, double score) {
      this.pos = pos;
      this.distance = distance;
      this.score = score;

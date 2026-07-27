@@ -1,14 +1,14 @@
 package shame.nazuna.client.modules.impl.misc;
- import net.minecraft.class_1268;
- import net.minecraft.class_1657;
- import net.minecraft.class_1703;
- import net.minecraft.class_1713;
- import net.minecraft.class_1735;
- import net.minecraft.class_2596;
- import net.minecraft.class_2868;
- import net.minecraft.class_437;
- import net.minecraft.class_476;
- import net.minecraft.class_7439;
+ import net.minecraft.Hand;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.ScreenHandler;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.Slot;
+ import net.minecraft.Packet;
+ import net.minecraft.UpdateSelectedSlotC2SPacket;
+ import net.minecraft.Screen;
+ import net.minecraft.GenericContainerScreen;
+ import net.minecraft.GameMessageS2CPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventPacket;
  import shame.nazuna.api.events.implement.EventUpdate;
@@ -65,7 +65,7 @@ package shame.nazuna.client.modules.impl.misc;
    public void onUpdate(EventUpdate event) {
      if (!this.joining || mc.field_1724 == null || mc.field_1687 == null || mc.field_1761 == null)
        return; 
-     if (!(mc.field_1755 instanceof class_476)) {
+     if (!(mc.field_1755 instanceof GenericContainerScreen)) {
        openServerSelector(false);
        
        return;
@@ -74,17 +74,17 @@ package shame.nazuna.client.modules.impl.misc;
    }
    @EventLink
    public void onPacket(EventPacket event) {
-     class_7439 packet;
+     GameMessageS2CPacket packet;
      if (!this.joining || mc.field_1724 == null || mc.field_1687 == null || event.getType() != EventPacket.Type.RECEIVE)
        return; 
-     if (event.getPacket() instanceof net.minecraft.class_2678) {
+     if (event.getPacket() instanceof net.minecraft.GameJoinS2CPacket) {
        ChatUtils.sendMessage("Вход на гриф #" + this.targetGrief + ": успешно");
        this.joining = false;
        this.pageSwitches = 0;
        
        return;
      } 
-     class_2596 class_2596 = event.getPacket(); if (class_2596 instanceof class_7439) { packet = (class_7439)class_2596; }
+     Packet Packet = event.getPacket(); if (Packet instanceof GameMessageS2CPacket) { packet = (GameMessageS2CPacket)Packet; }
      else { return; }
       String message = packet.comp_763().getString();
      if (message.contains("Подождите несколько секунд перед повторным подключением")) {
@@ -126,10 +126,10 @@ package shame.nazuna.client.modules.impl.misc;
      
      this.pageSwitches = 0;
      (mc.field_1724.method_31548()).field_7545 = slot;
-     mc.method_1562().method_52787((class_2596)new class_2868(slot));
-     mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
+     mc.method_1562().method_52787((Packet)new UpdateSelectedSlotC2SPacket(slot));
+     mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
      (mc.field_1724.method_31548()).field_7545 = previousSlot;
-     mc.method_1562().method_52787((class_2596)new class_2868(previousSlot));
+     mc.method_1562().method_52787((Packet)new UpdateSelectedSlotC2SPacket(previousSlot));
      this.compassTimer.reset();
    }
    
@@ -137,7 +137,7 @@ package shame.nazuna.client.modules.impl.misc;
      if (mc.field_1724 == null) return -1;
      
      for (int i = 0; i < 9; i++) {
-       if (mc.field_1724.method_31548().method_5438(i).method_7909() == class_1802.field_8251) {
+       if (mc.field_1724.method_31548().method_5438(i).method_7909() == Items.field_8251) {
          return i;
        }
      } 
@@ -145,12 +145,12 @@ package shame.nazuna.client.modules.impl.misc;
      return -1;
    }
    private void handleServerMenu() {
-     class_476 screen;
-     class_437 class_437 = mc.field_1755; if (class_437 instanceof class_476) { screen = (class_476)class_437; } else { return; }
+     GenericContainerScreen screen;
+     Screen Screen = mc.field_1755; if (Screen instanceof GenericContainerScreen) { screen = (GenericContainerScreen)Screen; } else { return; }
       if (!this.clickTimer.finished(30L))
        return; 
      String title = screen.method_25440().getString();
-     class_1703 handler = screen.method_17577();
+     ScreenHandler handler = screen.method_17577();
      
      if (title.contains("Выбор сервера")) {
        clickSlot(handler, 21);
@@ -164,7 +164,7 @@ package shame.nazuna.client.modules.impl.misc;
      }
      
      if (this.targetGrief > 36 && this.pageSwitches < 5) {
-       class_1735 nextPageSlot = getSlot(handler, 44);
+       Slot nextPageSlot = getSlot(handler, 44);
        if (nextPageSlot != null && nextPageSlot.method_7681()) {
          clickSlot(handler, 44);
          this.pageSwitches++;
@@ -173,12 +173,12 @@ package shame.nazuna.client.modules.impl.misc;
      } 
    }
    
-   private boolean clickTargetGriefIfVisible(class_1703 handler) {
+   private boolean clickTargetGriefIfVisible(ScreenHandler handler) {
      String targetName = "ГРИФ #" + this.targetGrief + " (1.16.5+)";
      String targetPrefix = "ГРИФ #" + this.targetGrief;
      
      for (int slot = 0; slot < handler.field_7761.size(); slot++) {
-       class_1735 containerSlot = handler.method_7611(slot);
+       Slot containerSlot = handler.method_7611(slot);
        if (containerSlot != null && containerSlot.method_7681()) {
          
          String itemName = containerSlot.method_7677().method_7964().getString();
@@ -193,14 +193,14 @@ package shame.nazuna.client.modules.impl.misc;
      return false;
    }
    
-   private void clickSlot(class_1703 handler, int slot) {
+   private void clickSlot(ScreenHandler handler, int slot) {
      if (mc.field_1724 == null || mc.field_1761 == null)
        return;  if (slot < 0 || slot >= handler.field_7761.size())
        return; 
-     mc.field_1761.method_2906(handler.field_7763, slot, 0, class_1713.field_7790, (class_1657)mc.field_1724);
+     mc.field_1761.method_2906(handler.field_7763, slot, 0, SlotActionType.field_7790, (PlayerEntity)mc.field_1724);
    }
    
-   private class_1735 getSlot(class_1703 handler, int slot) {
+   private Slot getSlot(ScreenHandler handler, int slot) {
      if (slot < 0 || slot >= handler.field_7761.size()) return null; 
      return handler.method_7611(slot);
    }

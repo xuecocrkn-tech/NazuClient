@@ -5,9 +5,9 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  import java.util.Arrays;
  import java.util.List;
  import java.util.Random;
- import net.minecraft.class_4587;
- import net.minecraft.class_640;
- import net.minecraft.class_642;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.PlayerListEntry;
+ import net.minecraft.ServerInfo;
  import shame.nazuna.api.events.implement.EventRender;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.api.utils.color.ColorUtils;
@@ -125,7 +125,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  
    
    public void YouGameStyle(EventRender.Default eventRender) {
-     class_4587 matrices = eventRender.getContext().method_51448();
+     MatrixStack matrices = eventRender.getContext().method_51448();
      float x = this.draggable.getX();
      float y = this.draggable.getY();
      Font text = Fonts.getFont("suisse", 12);
@@ -140,7 +140,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      int fps = (mc != null) ? mc.method_47599() : 0;
      int ping = 0;
      if (mc != null && mc.field_1724 != null && mc.method_1562() != null) {
-       class_640 entry = mc.method_1562().method_2871(mc.field_1724.method_5667());
+       PlayerListEntry entry = mc.method_1562().method_2871(mc.field_1724.method_5667());
        if (entry != null) ping = entry.method_2959();
      
      } 
@@ -182,14 +182,14 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      this.draggable.setHeight(h * 2.0F + gap);
    }
    
-   private void drawYouGameCell(class_4587 matrices, float x, float y, float width, float height, int fill, int accent) {
+   private void drawYouGameCell(MatrixStack matrices, float x, float y, float width, float height, int fill, int accent) {
      RenderUtils.drawShadow(matrices, x, y, width, height, 5.0F, 7.0F, ColorUtils.applyAlpha(accent, 0.18F));
      RenderUtils.drawRoundedRect(matrices, x, y, width, height, 3.0F, fill);
      RenderUtils.drawRoundedRect(matrices, x, y, width, 0.8F, 3.0F, ColorUtils.applyAlpha(accent, 0.78F));
    }
    public void DefaultStyle(EventRender.Default eventRender) {
      int iconTop, iconBottom, iconMid;
-     class_4587 matrices = eventRender.getContext().method_51448();
+     MatrixStack matrices = eventRender.getContext().method_51448();
      float x = this.draggable.getX();
      float y = this.draggable.getY();
  
@@ -311,7 +311,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      
      int ping = 0;
      if (mc != null && mc.field_1724 != null && mc.method_1562() != null) {
-       class_640 entry = mc.method_1562().method_2871(mc.field_1724.method_5667());
+       PlayerListEntry entry = mc.method_1562().method_2871(mc.field_1724.method_5667());
        if (entry != null) ping = entry.method_2959(); 
      } 
      String pingValue = String.valueOf(ping);
@@ -396,7 +396,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      
      String serverName = "Singleplayer";
      if (mc != null) {
-       class_642 info = mc.method_1558();
+       ServerInfo info = mc.method_1558();
        if (info != null && info.field_3761 != null && !info.field_3761.isEmpty()) {
          serverName = info.field_3761;
        }
@@ -484,7 +484,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    
    public void WaveStyle(EventRender.Default eventRender) {
      float x = this.draggable.getX(), y = this.draggable.getY();
-     class_4587 matrices = eventRender.getContext().method_51448();
+     MatrixStack matrices = eventRender.getContext().method_51448();
      Font waveFont = Fonts.getFont("wave", 30);
      String watermarkText = "astra";
  
@@ -552,7 +552,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      } 
    }
    
-   private void drawServerNameWithThemeParts(class_4587 matrices, String serverName, float x, float y, int themeColor, int themeColor2, int whiteColor) {
+   private void drawServerNameWithThemeParts(MatrixStack matrices, String serverName, float x, float y, int themeColor, int themeColor2, int whiteColor) {
      Font font = Fonts.getFont("suisse", 13);
      String[] parts = serverName.split("\\.");
      if (parts.length < 2) {

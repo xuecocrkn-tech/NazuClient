@@ -7,21 +7,21 @@ package shame.nazuna.client.modules.impl.render;
  import java.util.Map;
  import java.util.Set;
  import java.util.concurrent.ConcurrentHashMap;
- import net.minecraft.class_10142;
- import net.minecraft.class_1923;
- import net.minecraft.class_2338;
- import net.minecraft.class_2374;
- import net.minecraft.class_2382;
- import net.minecraft.class_243;
- import net.minecraft.class_2680;
- import net.minecraft.class_2818;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_4587;
- import net.minecraft.class_7923;
+ import net.minecraft.ShaderProgramKeys;
+ import net.minecraft.ChunkPos;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Position;
+ import net.minecraft.Vec3i;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BlockState;
+ import net.minecraft.WorldChunk;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.Registries;
  import org.joml.Matrix4f;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.Event3DRender;
@@ -43,10 +43,10 @@ package shame.nazuna.client.modules.impl.render;
    private final FloatSetting distance = new FloatSetting("Дистанция", 60.0F, 10.0F, 120.0F, 1.0F);
    
    private final Set<String> trackedBlocks = ConcurrentHashMap.newKeySet();
-   private final Map<class_2338, String> foundBlocks = new ConcurrentHashMap<>();
-   private final Set<class_1923> scannedChunks = ConcurrentHashMap.newKeySet();
+   private final Map<BlockPos, String> foundBlocks = new ConcurrentHashMap<>();
+   private final Set<ChunkPos> scannedChunks = ConcurrentHashMap.newKeySet();
    
-   private class_1923 lastPlayerChunk;
+   private ChunkPos lastPlayerChunk;
    private int lastScanRadius = -1;
    private long lastScanTime;
    
@@ -74,7 +74,7 @@ package shame.nazuna.client.modules.impl.render;
      }
      
      int scanRadius = getDistance();
-     class_1923 currentChunk = new class_1923(mc.field_1724.method_24515());
+     ChunkPos currentChunk = new ChunkPos(mc.field_1724.method_24515());
      
      if (scanRadius != this.lastScanRadius) {
        resetScanState();
@@ -101,15 +101,15 @@ package shame.nazuna.client.modules.impl.render;
        return;
      }
      
-     class_2338 playerPos = mc.field_1724.method_24515();
+     BlockPos playerPos = mc.field_1724.method_24515();
      int playerChunkX = playerPos.method_10263() >> 4;
      int playerChunkZ = playerPos.method_10260() >> 4;
      int chunkRange = (scanRadius >> 4) + 2;
      
-     List<class_1923> candidates = new ArrayList<>();
+     List<ChunkPos> candidates = new ArrayList<>();
      for (int cx = -chunkRange; cx <= chunkRange; cx++) {
        for (int cz = -chunkRange; cz <= chunkRange; cz++) {
-         class_1923 chunkPos = new class_1923(playerChunkX + cx, playerChunkZ + cz);
+         ChunkPos chunkPos = new ChunkPos(playerChunkX + cx, playerChunkZ + cz);
          if (!this.scannedChunks.contains(chunkPos)) {
            candidates.add(chunkPos);
          }
@@ -123,12 +123,12 @@ package shame.nazuna.client.modules.impl.render;
            return Long.compare(da, db);
          });
      int scannedThisPass = 0;
-     for (class_1923 chunkPos : candidates) {
+     for (ChunkPos chunkPos : candidates) {
        if (scannedThisPass >= 2) {
          break;
        }
        
-       class_2818 chunk = mc.field_1687.method_8497(chunkPos.field_9181, chunkPos.field_9180);
+       WorldChunk chunk = mc.field_1687.method_8497(chunkPos.field_9181, chunkPos.field_9180);
        if (chunk == null) {
          continue;
        }
@@ -139,7 +139,7 @@ package shame.nazuna.client.modules.impl.render;
      } 
    }
    
-   private void scanChunk(class_2818 chunk, class_2338 playerPos, int scanRadius) {
+   private void scanChunk(WorldChunk chunk, BlockPos playerPos, int scanRadius) {
      int minX = chunk.method_12004().method_8326();
      int minZ = chunk.method_12004().method_8328();
      int maxX = minX + 15;
@@ -149,23 +149,23 @@ package shame.nazuna.client.modules.impl.render;
      int maxY = Math.min(mc.field_1687.method_31600(), playerPos.method_10264() + scanRadius);
      int radiusSq = scanRadius * scanRadius;
      
-     class_2338.class_2339 mutable = new class_2338.class_2339();
+     BlockPos.class_2339 mutable = new BlockPos.class_2339();
      
      for (int x = minX; x <= maxX; x++) {
        for (int z = minZ; z <= maxZ; z++) {
          for (int y = minY; y <= maxY; y++) {
            mutable.method_10103(x, y, z);
            
-           if (mutable.method_10262((class_2382)playerPos) <= radiusSq) {
+           if (mutable.method_10262((Vec3i)playerPos) <= radiusSq) {
  
  
              
-             class_2680 state = chunk.method_8320((class_2338)mutable);
+             BlockState state = chunk.method_8320((BlockPos)mutable);
              if (!state.method_26215()) {
  
  
                
-               String blockName = class_7923.field_41175.method_10221(state.method_26204()).method_12832().toLowerCase();
+               String blockName = Registries.field_41175.method_10221(state.method_26204()).method_12832().toLowerCase();
                if (this.trackedBlocks.contains(blockName))
                  this.foundBlocks.put(mutable.method_10062(), blockName); 
              } 
@@ -174,7 +174,7 @@ package shame.nazuna.client.modules.impl.render;
        } 
      } 
    }
-   private void cleanupInvalidAndDistantBlocks(class_243 playerPos, int renderDistance) {
+   private void cleanupInvalidAndDistantBlocks(Vec3d playerPos, int renderDistance) {
      if (mc.field_1687 == null) {
        this.foundBlocks.clear();
        
@@ -182,13 +182,13 @@ package shame.nazuna.client.modules.impl.render;
      } 
      int renderDistanceSq = renderDistance * renderDistance;
      this.foundBlocks.entrySet().removeIf(entry -> {
-           class_2338 pos = (class_2338)entry.getKey();
-           class_2680 currentState = mc.field_1687.method_8320(pos);
+           BlockPos pos = (BlockPos)entry.getKey();
+           BlockState currentState = mc.field_1687.method_8320(pos);
            if (currentState.method_26215()) {
              return true;
            }
-           String currentBlockName = class_7923.field_41175.method_10221(currentState.method_26204()).method_12832().toLowerCase();
-           return !this.trackedBlocks.contains(currentBlockName) ? true : ((pos.method_19770((class_2374)playerPos) > renderDistanceSq));
+           String currentBlockName = Registries.field_41175.method_10221(currentState.method_26204()).method_12832().toLowerCase();
+           return !this.trackedBlocks.contains(currentBlockName) ? true : ((pos.method_19770((Position)playerPos) > renderDistanceSq));
          });
    }
  
@@ -197,12 +197,12 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void renderFoundBlocks(class_4587 matrices) {
+   private void renderFoundBlocks(MatrixStack matrices) {
      if (this.foundBlocks.isEmpty()) {
        return;
      }
      
-     class_243 camera = mc.field_1773.method_19418().method_19326();
+     Vec3d camera = mc.field_1773.method_19418().method_19326();
      
      matrices.method_22903();
      matrices.method_22904(-camera.field_1352, -camera.field_1351, -camera.field_1350);
@@ -213,21 +213,21 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.disableCull();
      RenderSystem.disableDepthTest();
      RenderSystem.depthMask(false);
-     RenderSystem.setShader(class_10142.field_53876);
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
      
-     class_289 tessellator = class_289.method_1348();
-     class_287 fillBuffer = tessellator.method_60827(class_293.class_5596.field_27382, class_290.field_1576);
-     for (class_2338 pos : this.foundBlocks.keySet()) {
+     Tessellator tessellator = Tessellator.method_1348();
+     BufferBuilder fillBuffer = tessellator.method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1576);
+     for (BlockPos pos : this.foundBlocks.keySet()) {
        addFilledBox(fillBuffer, matrix, pos, 0.1F, 1.0F, 0.15F, 0.18F);
      }
-     class_286.method_43433(fillBuffer.method_60800());
+     BufferRenderer.method_43433(fillBuffer.method_60800());
      
      RenderSystem.lineWidth(2.0F);
-     class_287 lineBuffer = tessellator.method_60827(class_293.class_5596.field_29344, class_290.field_1576);
-     for (class_2338 pos : this.foundBlocks.keySet()) {
+     BufferBuilder lineBuffer = tessellator.method_60827(VertexFormat.class_5596.field_29344, VertexFormats.field_1576);
+     for (BlockPos pos : this.foundBlocks.keySet()) {
        addOutlinedBox(lineBuffer, matrix, pos, 0.1F, 1.0F, 0.15F, 1.0F);
      }
-     class_286.method_43433(lineBuffer.method_60800());
+     BufferRenderer.method_43433(lineBuffer.method_60800());
      
      RenderSystem.enableCull();
      RenderSystem.enableDepthTest();
@@ -236,7 +236,7 @@ package shame.nazuna.client.modules.impl.render;
      matrices.method_22909();
    }
    
-   private void addFilledBox(class_287 buffer, Matrix4f matrix, class_2338 pos, float r, float g, float b, float a) {
+   private void addFilledBox(BufferBuilder buffer, Matrix4f matrix, BlockPos pos, float r, float g, float b, float a) {
      float minX = pos.method_10263();
      float minY = pos.method_10264();
      float minZ = pos.method_10260();
@@ -275,7 +275,7 @@ package shame.nazuna.client.modules.impl.render;
      buffer.method_22918(matrix, maxX, minY, maxZ).method_22915(r, g, b, a);
    }
    
-   private void addOutlinedBox(class_287 buffer, Matrix4f matrix, class_2338 pos, float r, float g, float b, float a) {
+   private void addOutlinedBox(BufferBuilder buffer, Matrix4f matrix, BlockPos pos, float r, float g, float b, float a) {
      float minX = pos.method_10263();
      float minY = pos.method_10264();
      float minZ = pos.method_10260();
@@ -339,7 +339,7 @@ package shame.nazuna.client.modules.impl.render;
      return Math.round(this.distance.get());
    }
    
-   private long chunkDistanceSq(class_1923 chunkPos, int playerChunkX, int playerChunkZ) {
+   private long chunkDistanceSq(ChunkPos chunkPos, int playerChunkX, int playerChunkZ) {
      long dx = (chunkPos.field_9181 - playerChunkX);
      long dz = (chunkPos.field_9180 - playerChunkZ);
      return dx * dx + dz * dz;

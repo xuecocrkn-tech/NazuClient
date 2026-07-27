@@ -1,14 +1,14 @@
 package shame.nazuna.api.utils.player;
  
- import net.minecraft.class_1294;
- import net.minecraft.class_1309;
- import net.minecraft.class_243;
- import net.minecraft.class_310;
- import net.minecraft.class_3532;
+ import net.minecraft.StatusEffects;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.MathHelper;
  
  public final class BoostUtils
  {
-   private static final class_310 mc = class_310.method_1551();
+   private static final MinecraftClient mc = MinecraftClient.method_1551();
    
    private static final float BASE_HORIZONTAL = 1.61F;
    
@@ -39,19 +39,19 @@ package shame.nazuna.api.utils.player;
  
  
    
-   public static class_243 getBoost(class_1309 entity) {
+   public static Vec3d getBoost(LivingEntity entity) {
      float speed = getRageSpeed(entity);
      
-     class_243 vec3d = entity.method_5720();
-     class_243 oldVelocity = class_243.method_1030(entity.method_36455(), entity.method_36454()).method_1021(speed);
+     Vec3d vec3d = entity.method_5720();
+     Vec3d oldVelocity = Vec3d.method_1030(entity.method_36455(), entity.method_36454()).method_1021(speed);
      
      float f = entity.method_36455() * 0.017453292F;
      double d = Math.sqrt(vec3d.field_1352 * vec3d.field_1352 + vec3d.field_1350 * vec3d.field_1350);
      double e = oldVelocity.method_37267();
      boolean bl = ((entity.method_18798()).field_1351 <= 0.0D);
      
-     double g = (bl && entity.method_6059(class_1294.field_5906)) ? Math.min(entity.method_56989(), 0.01D) : entity.method_56989();
-     double h = class_3532.method_33723(Math.cos(f));
+     double g = (bl && entity.method_6059(StatusEffects.field_5906)) ? Math.min(entity.method_56989(), 0.01D) : entity.method_56989();
+     double h = MathHelper.method_33723(Math.cos(f));
      
      oldVelocity = oldVelocity.method_1031(0.0D, g * (-1.0D + h * 0.75D), 0.0D);
  
@@ -62,7 +62,7 @@ package shame.nazuna.api.utils.player;
      } 
      
      if (f < 0.0F && d > 0.0D) {
-       double i = e * -class_3532.method_15374(f) * 0.04D;
+       double i = e * -MathHelper.method_15374(f) * 0.04D;
        oldVelocity = oldVelocity.method_1031(-vec3d.field_1352 * i / d, i * 3.2D, -vec3d.field_1350 * i / d);
      } 
      
@@ -75,11 +75,11 @@ package shame.nazuna.api.utils.player;
  
      
      double length = oldVelocity.method_1033();
-     return (new class_243(length, length, length)).method_18805(0.99D, 0.98D, 0.99D);
+     return (new Vec3d(length, length, length)).method_18805(0.99D, 0.98D, 0.99D);
    }
    
-   private static float getRageSpeed(class_1309 entity) {
-     float yawAbs = Math.abs(class_3532.method_15393(entity.method_36454()));
+   private static float getRageSpeed(LivingEntity entity) {
+     float yawAbs = Math.abs(MathHelper.method_15393(entity.method_36454()));
      float yawFolded = foldYaw(yawAbs);
      float pitchAbs = Math.abs(clampPitch(entity.method_36455()));
      
@@ -105,7 +105,7 @@ package shame.nazuna.api.utils.player;
    }
  
    
-   public static class_243 getBoostAntiTarget(class_1309 entity, float speedSetting) {
+   public static Vec3d getBoostAntiTarget(LivingEntity entity, float speedSetting) {
      float yaw = Math.abs((entity.method_36454() - 360.0F) % 360.0F);
      float pitch = entity.method_36455();
      float absPitch = Math.abs(pitch);
@@ -130,10 +130,10 @@ package shame.nazuna.api.utils.player;
      else if (minDiff < 25.0F) { speed += 0.05F; }
      
      speed = Math.min(speed, 2.8F);
-     return new class_243(speed, speed, speed);
+     return new Vec3d(speed, speed, speed);
    }
    
-   public static class_243 getBoostAntiTargetFast(class_1309 entity) {
+   public static Vec3d getBoostAntiTargetFast(LivingEntity entity) {
      float yaw = Math.abs((entity.method_36454() - 360.0F) % 360.0F);
      float pitch = entity.method_36455();
      float absPitch = Math.abs(pitch);
@@ -158,10 +158,10 @@ package shame.nazuna.api.utils.player;
      } 
      if (minDiff < 20.0F) speedXZ += 0.15F;
      
-     return new class_243(speedXZ, speedY, speedXZ);
+     return new Vec3d(speedXZ, speedY, speedXZ);
    }
    
-   public static class_243 getBoostAntiTargetWithAura(class_1309 entity, float auraRotatePitch, float auraRotateYaw, float speedSetting) {
+   public static Vec3d getBoostAntiTargetWithAura(LivingEntity entity, float auraRotatePitch, float auraRotateYaw, float speedSetting) {
      float absPitch = Math.abs(auraRotatePitch);
      float speedXZ = speedSetting;
      float speedY = speedSetting;
@@ -179,22 +179,22 @@ package shame.nazuna.api.utils.player;
        speedY = speedSetting - 0.15F;
      } 
      
-     return new class_243(speedXZ, speedY, speedXZ);
+     return new Vec3d(speedXZ, speedY, speedXZ);
    }
    
-   public static class_243 getBoostslime(class_1309 entity) {
+   public static Vec3d getBoostslime(LivingEntity entity) {
      return getBoostCustom(entity, 42.0F);
    }
    
-   public static class_243 getBoostbravo(class_1309 entity) {
+   public static Vec3d getBoostbravo(LivingEntity entity) {
      return getBoostCustom(entity, 39.0F);
    }
    
-   public static class_243 getBoostrw(class_1309 entity) {
+   public static Vec3d getBoostrw(LivingEntity entity) {
      return getBoostCustom(entity, 33.2F);
    }
    
-   public static class_243 getBoostCustom(class_1309 entity, float targetBps) {
+   public static Vec3d getBoostCustom(LivingEntity entity, float targetBps) {
      float maxSpeed = targetBps / 20.0F;
      float yaw = Math.abs((entity.method_36454() - 360.0F) % 360.0F);
      float pitch = entity.method_36455();
@@ -215,14 +215,14 @@ package shame.nazuna.api.utils.player;
      float speed = minSpeed + (maxSpeed - minSpeed) * combinedFactor;
  
      
-     class_243 vec3d = entity.method_5720();
-     class_243 oldVelocity = class_243.method_1030(pitch, entity.method_36454()).method_1021(speed);
+     Vec3d vec3d = entity.method_5720();
+     Vec3d oldVelocity = Vec3d.method_1030(pitch, entity.method_36454()).method_1021(speed);
      float f = pitch * 0.017453292F;
      double d = Math.sqrt(vec3d.field_1352 * vec3d.field_1352 + vec3d.field_1350 * vec3d.field_1350);
      double e = oldVelocity.method_37267();
      boolean bl = ((entity.method_18798()).field_1351 <= 0.0D);
-     double g = (bl && entity.method_6059(class_1294.field_5906)) ? Math.min(entity.method_56989(), 0.01D) : entity.method_56989();
-     double h = class_3532.method_33723(Math.cos(f));
+     double g = (bl && entity.method_6059(StatusEffects.field_5906)) ? Math.min(entity.method_56989(), 0.01D) : entity.method_56989();
+     double h = MathHelper.method_33723(Math.cos(f));
      oldVelocity = oldVelocity.method_1031(0.0D, g * (-1.0D + h * 0.75D), 0.0D);
  
      
@@ -231,7 +231,7 @@ package shame.nazuna.api.utils.player;
        oldVelocity = oldVelocity.method_1031(vec3d.field_1352 * i / d, i, vec3d.field_1350 * i / d);
      } 
      if (f < 0.0F && d > 0.0D) {
-       double i = e * -class_3532.method_15374(f) * 0.04D;
+       double i = e * -MathHelper.method_15374(f) * 0.04D;
        oldVelocity = oldVelocity.method_1031(-vec3d.field_1352 * i / d, i * 3.2D, -vec3d.field_1350 * i / d);
      } 
      if (d > 0.0D) {
@@ -239,12 +239,12 @@ package shame.nazuna.api.utils.player;
      }
      
      double length = oldVelocity.method_1033();
-     return (new class_243(length, length, length)).method_18805(0.99D, 0.98D, 0.99D);
+     return (new Vec3d(length, length, length)).method_18805(0.99D, 0.98D, 0.99D);
    }
    
-   public static class_243 getBoostFixedBps(class_1309 entity, float targetBps) {
+   public static Vec3d getBoostFixedBps(LivingEntity entity, float targetBps) {
      float speed = targetBps / 20.0F;
-     return (new class_243(speed, speed, speed)).method_18805(0.99D, 0.98D, 0.99D);
+     return (new Vec3d(speed, speed, speed)).method_18805(0.99D, 0.98D, 0.99D);
    }
    
    private static float getPitchFactor(float pitch) {

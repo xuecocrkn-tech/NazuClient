@@ -3,18 +3,18 @@ package shame.nazuna.client.modules.impl.render;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.util.ArrayList;
  import java.util.concurrent.CopyOnWriteArrayList;
- import net.minecraft.class_10142;
- import net.minecraft.class_1309;
- import net.minecraft.class_243;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_2960;
- import net.minecraft.class_3532;
- import net.minecraft.class_4587;
- import net.minecraft.class_7833;
+ import net.minecraft.ShaderProgramKeys;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.Identifier;
+ import net.minecraft.MathHelper;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.RotationAxis;
  import org.joml.Matrix4f;
  import org.joml.Quaternionf;
  import org.joml.Vector3f;
@@ -65,9 +65,9 @@ package shame.nazuna.client.modules.impl.render;
    private float rotFrom = -280.0F;
    private float rotTo = 280.0F;
    private long lastRotateUpdate = System.currentTimeMillis();
-   private class_1309 lastTarget = null;
-   private class_1309 lastHandledTarget = null;
-   private class_243 lastTargetPos = null;
+   private LivingEntity lastTarget = null;
+   private LivingEntity lastHandledTarget = null;
+   private Vec3d lastTargetPos = null;
    private float lastTargetHeight = 1.8F;
    private float lastTargetWidth = 0.6F;
    private final CopyOnWriteArrayList<GlowPoint> bmwPoints = new CopyOnWriteArrayList<>();
@@ -117,15 +117,15 @@ package shame.nazuna.client.modules.impl.render;
      return (this.mode.is("Картинка 1") || this.mode.is("Картинка 2"));
    }
    
-   private class_2960 getCaptureTexture() {
+   private Identifier getCaptureTexture() {
      if (this.mode.is("Картинка 2")) {
-       return class_2960.method_60655("astra", "textures/targetesp/targetesp_3.png");
+       return Identifier.method_60655("astra", "textures/targetesp/targetesp_3.png");
      }
-     return class_2960.method_60655("astra", "textures/targetesp/targetesp_2.png");
+     return Identifier.method_60655("astra", "textures/targetesp/targetesp_2.png");
    }
    
-   private class_2960 getBloomTexture() {
-     return class_2960.method_60655("astra", "textures/targetesp/bloom.png");
+   private Identifier getBloomTexture() {
+     return Identifier.method_60655("astra", "textures/targetesp/bloom.png");
    }
    
    private int getESPColor() {
@@ -145,7 +145,7 @@ package shame.nazuna.client.modules.impl.render;
      return current;
    }
    
-   private float getDistanceScale(class_243 cameraPos, double worldX, double worldY, double worldZ) {
+   private float getDistanceScale(Vec3d cameraPos, double worldX, double worldY, double worldZ) {
      double dx = worldX - cameraPos.field_1352;
      double dy = worldY - cameraPos.field_1351;
      double dz = worldZ - cameraPos.field_1350;
@@ -159,7 +159,7 @@ package shame.nazuna.client.modules.impl.render;
        return; 
      Aura aura = ModuleClass.aura;
      boolean auraEnabled = (aura != null && aura.isEnable());
-     class_1309 target = auraEnabled ? aura.getTarget() : null;
+     LivingEntity target = auraEnabled ? aura.getTarget() : null;
      boolean hasTarget = (target != null && target.method_5805());
      float speed = 0.05F;
      this.appearValue = animateTo(this.appearValue, hasTarget ? 1.0F : 0.0F, speed);
@@ -189,7 +189,7 @@ package shame.nazuna.client.modules.impl.render;
        this
  
          
-         .lastTargetPos = new class_243(class_3532.method_16436(td, target.field_6038, target.method_23317()), class_3532.method_16436(td, target.field_5971, target.method_23318()), class_3532.method_16436(td, target.field_5989, target.method_23321()));
+         .lastTargetPos = new Vec3d(MathHelper.method_16436(td, target.field_6038, target.method_23317()), MathHelper.method_16436(td, target.field_5971, target.method_23318()), MathHelper.method_16436(td, target.field_5989, target.method_23321()));
        
        this.lastTargetHeight = target.method_17682();
        this.lastTargetWidth = target.method_17681();
@@ -208,7 +208,7 @@ package shame.nazuna.client.modules.impl.render;
        return;
      } 
      if (this.mode.is("Кристаллы")) {
-       class_1309 crystalTarget = hasTarget ? target : this.lastTarget;
+       LivingEntity crystalTarget = hasTarget ? target : this.lastTarget;
        if ((crystalTarget != null || this.lastTargetPos != null) && this.crystalAnimation > 0.01F) {
          renderCrystals3D(event.getMatrices(), crystalTarget, event.getTickDelta());
        }
@@ -231,7 +231,7 @@ package shame.nazuna.client.modules.impl.render;
      }
    }
    
-   private void renderCubes(Event3DRender event, class_1309 target, boolean hasTarget) {
+   private void renderCubes(Event3DRender event, LivingEntity target, boolean hasTarget) {
      long now = System.currentTimeMillis();
      if (this.lastCubeTime == 0L) this.lastCubeTime = now; 
      float dt = Math.min((float)(now - this.lastCubeTime) / 1000.0F, 0.1F);
@@ -280,9 +280,9 @@ package shame.nazuna.client.modules.impl.render;
      }
      
      float partialTicks = event.getTickDelta();
-     class_4587 matrices = event.getMatrices();
-     class_243 camPos = mc.field_1773.method_19418().method_19326();
-     class_1309 colorTarget = hasTarget ? target : this.lastTarget;
+     MatrixStack matrices = event.getMatrices();
+     Vec3d camPos = mc.field_1773.method_19418().method_19326();
+     LivingEntity colorTarget = hasTarget ? target : this.lastTarget;
      float hurtPC = getHurtPC(colorTarget);
      int baseColor = getESPColor();
      int redColor = ColorUtils.rgb(255, 3, 3);
@@ -292,9 +292,9 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.disableCull();
      RenderSystem.depthMask(false);
      RenderSystem.blendFunc(770, 1);
-     RenderSystem.setShader(class_10142.field_53876);
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
      
-     class_287 faceBuilder = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1576);
+     BufferBuilder faceBuilder = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1576);
      boolean hasFaces = false;
      for (int j = 0, size = this.renderCubeParticles.size(); j < size; j++) {
        CubeParticle particle = this.renderCubeParticles.get(j);
@@ -307,9 +307,9 @@ package shame.nazuna.client.modules.impl.render;
        } catch (Throwable throwable) {}
      } 
      
-     if (hasFaces) class_286.method_43433(faceBuilder.method_60800());
+     if (hasFaces) BufferRenderer.method_43433(faceBuilder.method_60800());
      
-     class_287 lineBuilder = class_289.method_1348().method_60827(class_293.class_5596.field_29344, class_290.field_1576);
+     BufferBuilder lineBuilder = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_29344, VertexFormats.field_1576);
      boolean hasLines = false;
      for (int k = 0, m = this.renderCubeParticles.size(); k < m; k++) {
        CubeParticle particle = this.renderCubeParticles.get(k);
@@ -322,11 +322,11 @@ package shame.nazuna.client.modules.impl.render;
        } catch (Throwable throwable) {}
      } 
      
-     if (hasLines) class_286.method_43433(lineBuilder.method_60800());
+     if (hasLines) BufferRenderer.method_43433(lineBuilder.method_60800());
      
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      RenderSystem.setShaderTexture(0, getBloomTexture());
-     class_287 bloomBuilder = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder bloomBuilder = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      boolean hasBloom = false;
      float camYaw = mc.field_1773.method_19418().method_19330();
      float camPitch = mc.field_1773.method_19418().method_19329();
@@ -340,7 +340,7 @@ package shame.nazuna.client.modules.impl.render;
        } catch (Throwable throwable) {}
      } 
      
-     if (hasBloom) class_286.method_43433(bloomBuilder.method_60800());
+     if (hasBloom) BufferRenderer.method_43433(bloomBuilder.method_60800());
      
      RenderSystem.depthMask(true);
      RenderSystem.defaultBlendFunc();
@@ -348,20 +348,20 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.enableCull();
      RenderSystem.enableDepthTest();
    } private void drawRing3D(Event3DRender event) {
-     class_243 vec;
+     Vec3d vec;
      float entityHeight;
      if (this.appearValue <= 0.001F || this.lastTargetPos == null)
        return; 
      float partialTicks = mc.method_61966().method_60637(true);
  
      
-     class_1309 target = this.lastTarget;
+     LivingEntity target = this.lastTarget;
      
      if (target != null && target.method_5805()) {
  
  
        
-       vec = new class_243(class_3532.method_16436(partialTicks, target.field_6038, target.method_23317()), class_3532.method_16436(partialTicks, target.field_5971, target.method_23318()), class_3532.method_16436(partialTicks, target.field_5989, target.method_23321()));
+       vec = new Vec3d(MathHelper.method_16436(partialTicks, target.field_6038, target.method_23317()), MathHelper.method_16436(partialTicks, target.field_5971, target.method_23318()), MathHelper.method_16436(partialTicks, target.field_5989, target.method_23321()));
        
        entityHeight = target.method_17682();
      } else {
@@ -369,7 +369,7 @@ package shame.nazuna.client.modules.impl.render;
        entityHeight = this.lastTargetHeight;
      } 
      
-     class_243 cam = mc.field_1773.method_19418().method_19326();
+     Vec3d cam = mc.field_1773.method_19418().method_19326();
      double x = vec.field_1352 - cam.field_1352;
      double y = vec.field_1351 - cam.field_1351;
      double z = vec.field_1350 - cam.field_1350;
@@ -398,7 +398,7 @@ package shame.nazuna.client.modules.impl.render;
      int colorFull = setAlpha(mainColor, this.appearValue);
      double radius = this.ringRadius.get();
      
-     class_4587 matrices = event.getMatrices();
+     MatrixStack matrices = event.getMatrices();
      Matrix4f matrix = matrices.method_23760().method_23761();
      
      RenderSystem.depthMask(false);
@@ -406,9 +406,9 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.enableBlend();
      RenderSystem.blendFunc(770, 1);
      RenderSystem.disableCull();
-     RenderSystem.setShader(class_10142.field_53876);
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27380, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27380, VertexFormats.field_1576);
      for (int i = 0; i <= 360; i++) {
        double rad = Math.toRadians(i);
        float px = (float)(x + Math.cos(rad) * radius);
@@ -419,10 +419,10 @@ package shame.nazuna.client.modules.impl.render;
        buffer.method_22918(matrix, px, py1, pz).method_39415(colorWithAlpha);
        buffer.method_22918(matrix, px, py2, pz).method_39415(colorTransparent);
      } 
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.lineWidth(1.5F);
-     class_287 lineBuffer = class_289.method_1348().method_60827(class_293.class_5596.field_29345, class_290.field_1576);
+     BufferBuilder lineBuffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_29345, VertexFormats.field_1576);
      for (int j = 0; j <= 360; j++) {
        double rad = Math.toRadians(j);
        float px = (float)(x + Math.cos(rad) * radius);
@@ -431,7 +431,7 @@ package shame.nazuna.client.modules.impl.render;
        
        lineBuffer.method_22918(matrix, px, py, pz).method_39415(colorFull);
      } 
-     class_286.method_43433(lineBuffer.method_60800());
+     BufferRenderer.method_43433(lineBuffer.method_60800());
      
      RenderSystem.enableCull();
      RenderSystem.disableBlend();
@@ -448,7 +448,7 @@ package shame.nazuna.client.modules.impl.render;
    @EventLink(priority = -100)
    public void onRender2D(EventRender.Default event) {
      if (!this.mode.is("Кристаллы") || this.crystalAnimation <= 0.001F || this.lastTargetPos == null)
-       return;  class_1309 crystalTarget = (this.lastTarget != null && this.lastTarget.method_5805()) ? this.lastTarget : null;
+       return;  LivingEntity crystalTarget = (this.lastTarget != null && this.lastTarget.method_5805()) ? this.lastTarget : null;
      drawCrystalGlow2D(event.getContext().method_51448(), crystalTarget);
    }
    
@@ -474,26 +474,26 @@ package shame.nazuna.client.modules.impl.render;
      return a << 24 | r << 16 | g << 8 | b;
    }
    
-   private float getHurtPC(class_1309 target) {
+   private float getHurtPC(LivingEntity target) {
      if (!this.hurtColor.isState() || target == null) return 0.0F; 
      float partialTicks = (mc != null) ? mc.method_61966().method_60637(true) : 0.0F;
-     float hurtTicks = class_3532.method_15363(target.field_6235 - partialTicks, 0.0F, 10.0F);
+     float hurtTicks = MathHelper.method_15363(target.field_6235 - partialTicks, 0.0F, 10.0F);
      float progress = hurtTicks / 10.0F;
      return progress * progress * (3.0F - 2.0F * progress);
    }
    
-   private void drawBillboard(class_4587 matrices, class_243 cameraPos, double worldX, double worldY, double worldZ, float baseScreenSize, int color, float rotation) {
+   private void drawBillboard(MatrixStack matrices, Vec3d cameraPos, double worldX, double worldY, double worldZ, float baseScreenSize, int color, float rotation) {
      float distScale = getDistanceScale(cameraPos, worldX, worldY, worldZ);
      float half = baseScreenSize * distScale * 0.5F;
      drawBillboardInternal(matrices, cameraPos, worldX, worldY, worldZ, half, color, rotation);
    }
    
-   private void drawStaticBillboard(class_4587 matrices, class_243 cameraPos, double worldX, double worldY, double worldZ, float worldSize, int color, float rotation) {
+   private void drawStaticBillboard(MatrixStack matrices, Vec3d cameraPos, double worldX, double worldY, double worldZ, float worldSize, int color, float rotation) {
      float half = worldSize * 0.5F;
      drawBillboardInternal(matrices, cameraPos, worldX, worldY, worldZ, half, color, rotation);
    }
    
-   private void drawBillboardInternal(class_4587 matrices, class_243 cameraPos, double worldX, double worldY, double worldZ, float half, int color, float rotation) {
+   private void drawBillboardInternal(MatrixStack matrices, Vec3d cameraPos, double worldX, double worldY, double worldZ, float half, int color, float rotation) {
      int r = color >> 16 & 0xFF;
      int g = color >> 8 & 0xFF;
      int b = color & 0xFF;
@@ -502,26 +502,26 @@ package shame.nazuna.client.modules.impl.render;
        return; 
      matrices.method_22903();
      matrices.method_22904(worldX - cameraPos.field_1352, worldY - cameraPos.field_1351, worldZ - cameraPos.field_1350);
-     matrices.method_22907(class_7833.field_40716.rotationDegrees(-mc.field_1773.method_19418().method_19330()));
-     matrices.method_22907(class_7833.field_40714.rotationDegrees(mc.field_1773.method_19418().method_19329()));
+     matrices.method_22907(RotationAxis.field_40716.rotationDegrees(-mc.field_1773.method_19418().method_19330()));
+     matrices.method_22907(RotationAxis.field_40714.rotationDegrees(mc.field_1773.method_19418().method_19329()));
      if (rotation != 0.0F) {
-       matrices.method_22907(class_7833.field_40718.rotationDegrees(rotation));
+       matrices.method_22907(RotationAxis.field_40718.rotationDegrees(rotation));
      }
      
      Matrix4f matrix = matrices.method_23760().method_23761();
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      buffer.method_22918(matrix, -half, -half, 0.0F).method_22913(0.0F, 1.0F).method_1336(r, g, b, a);
      buffer.method_22918(matrix, -half, half, 0.0F).method_22913(0.0F, 0.0F).method_1336(r, g, b, a);
      buffer.method_22918(matrix, half, half, 0.0F).method_22913(1.0F, 0.0F).method_1336(r, g, b, a);
      buffer.method_22918(matrix, half, -half, 0.0F).method_22913(1.0F, 1.0F).method_1336(r, g, b, a);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      matrices.method_22909();
    }
    
    private void renderMarker3D(Event3DRender event) {
      if (this.lastTargetPos == null || this.appearValue <= 0.001F)
        return; 
-     class_243 cam = mc.field_1773.method_19418().method_19326();
+     Vec3d cam = mc.field_1773.method_19418().method_19326();
      double worldX = this.lastTargetPos.field_1352;
      double worldY = this.lastTargetPos.field_1351 + ((this.lastTargetHeight + 0.4F) * 0.5F);
      double worldZ = this.lastTargetPos.field_1350;
@@ -541,7 +541,7 @@ package shame.nazuna.client.modules.impl.render;
      } 
      
      float accel = (float)Easings.SINE_IN_OUT.ease(this.rotProgress);
-     float rotation = class_3532.method_16439(accel, this.rotFrom, this.rotTo);
+     float rotation = MathHelper.method_16439(accel, this.rotFrom, this.rotTo);
      
      float hurtPC = getHurtPC(this.lastTarget);
      int baseColor = multAlpha(getESPColor(), this.appearValue);
@@ -553,7 +553,7 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.depthMask(false);
      RenderSystem.disableCull();
      RenderSystem.blendFunc(770, 1);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      RenderSystem.setShaderTexture(0, getCaptureTexture());
      
      drawBillboard(event.getMatrices(), cam, worldX, worldY, worldZ, renderSize, color, rotation);
@@ -564,19 +564,19 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.defaultBlendFunc();
      RenderSystem.disableBlend();
    } private void drawSouls3D(Event3DRender event) {
-     class_243 vec;
+     Vec3d vec;
      float height;
      if (this.appearValue <= 0.001F || this.lastTargetPos == null)
        return; 
      float partialTicks = mc.method_61966().method_60637(true);
  
      
-     class_1309 target = this.lastTarget;
+     LivingEntity target = this.lastTarget;
      if (target != null && target.method_5805()) {
  
  
        
-       vec = new class_243(class_3532.method_16436(partialTicks, target.field_6038, target.method_23317()), class_3532.method_16436(partialTicks, target.field_5971, target.method_23318()), class_3532.method_16436(partialTicks, target.field_5989, target.method_23321()));
+       vec = new Vec3d(MathHelper.method_16436(partialTicks, target.field_6038, target.method_23317()), MathHelper.method_16436(partialTicks, target.field_5971, target.method_23318()), MathHelper.method_16436(partialTicks, target.field_5989, target.method_23321()));
        
        height = target.method_17682();
      } else {
@@ -584,7 +584,7 @@ package shame.nazuna.client.modules.impl.render;
        height = this.lastTargetHeight;
      } 
      
-     class_243 cam = mc.field_1773.method_19418().method_19326();
+     Vec3d cam = mc.field_1773.method_19418().method_19326();
      double baseX = vec.field_1352;
      double baseY = vec.field_1351 + (height / 2.0F);
      double baseZ = vec.field_1350;
@@ -600,10 +600,10 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.depthMask(false);
      RenderSystem.disableCull();
      RenderSystem.blendFunc(770, 1);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      RenderSystem.setShaderTexture(0, getBloomTexture());
      
-     class_4587 matrices = event.getMatrices();
+     MatrixStack matrices = event.getMatrices();
      int i;
      for (i = 0; i < 20; i++) {
        float trailFactor = 1.0F - i / 20.0F * 0.7F;
@@ -672,7 +672,7 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.depthMask(true);
    }
    
-   private void addBMWGhosts(class_1309 entity, float partialTicks, int cornersCount, int maxTime, int colorBase) {
+   private void addBMWGhosts(LivingEntity entity, float partialTicks, int cornersCount, int maxTime, int colorBase) {
      float xzRange = 0.7F;
      float yRange = entity.method_17682();
      int delayXZ = (int)this.bmwStrengthXZ.getValue().floatValue();
@@ -681,11 +681,11 @@ package shame.nazuna.client.modules.impl.render;
      float rotateProgress = (float)(time % delayXZ) / delayXZ;
      float xzRotate = rotateProgress * 360.0F;
      float yProgress = (float)(time % delayY) / delayY;
-     float yLrpPC = 0.5F - 0.5F * class_3532.method_15362(yProgress * 6.2831855F);
+     float yLrpPC = 0.5F - 0.5F * MathHelper.method_15362(yProgress * 6.2831855F);
      
      for (int corner = 0; corner < cornersCount; corner++) {
        float cornersPC = corner / cornersCount;
-       double yawRad = Math.toRadians(class_3532.method_15393(cornersPC * 360.0F + xzRotate));
+       double yawRad = Math.toRadians(MathHelper.method_15393(cornersPC * 360.0F + xzRotate));
        float offsetX = -((float)Math.sin(yawRad)) * xzRange;
        float offsetY = yRange * yLrpPC;
        float offsetZ = (float)Math.cos(yawRad) * xzRange;
@@ -693,10 +693,10 @@ package shame.nazuna.client.modules.impl.render;
      } 
    }
    private void drawBMW3D(Event3DRender event) {
-     class_243 basePos;
+     Vec3d basePos;
      if (this.bmwPoints.isEmpty() || this.appearValue <= 0.001F)
        return; 
-     class_1309 renderTarget = (this.lastTarget != null) ? this.lastTarget : this.lastHandledTarget;
+     LivingEntity renderTarget = (this.lastTarget != null) ? this.lastTarget : this.lastHandledTarget;
      if (renderTarget == null && this.lastTargetPos == null)
        return; 
      float partialTicks = mc.method_61966().method_60637(true);
@@ -705,7 +705,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
        
-       basePos = new class_243(class_3532.method_16436(partialTicks, renderTarget.field_6038, renderTarget.method_23317()), class_3532.method_16436(partialTicks, renderTarget.field_5971, renderTarget.method_23318()), class_3532.method_16436(partialTicks, renderTarget.field_5989, renderTarget.method_23321()));
+       basePos = new Vec3d(MathHelper.method_16436(partialTicks, renderTarget.field_6038, renderTarget.method_23317()), MathHelper.method_16436(partialTicks, renderTarget.field_5971, renderTarget.method_23318()), MathHelper.method_16436(partialTicks, renderTarget.field_5989, renderTarget.method_23321()));
      } else {
        
        basePos = this.lastTargetPos;
@@ -713,7 +713,7 @@ package shame.nazuna.client.modules.impl.render;
      
      if (basePos == null)
        return; 
-     class_243 cam = mc.field_1773.method_19418().method_19326();
+     Vec3d cam = mc.field_1773.method_19418().method_19326();
      float hurtPC = getHurtPC(renderTarget);
      float fixedScreenSize = 6.0F;
      
@@ -722,10 +722,10 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.depthMask(false);
      RenderSystem.disableCull();
      RenderSystem.blendFunc(770, 1);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      RenderSystem.setShaderTexture(0, getBloomTexture());
      
-     class_4587 matrices = event.getMatrices();
+     MatrixStack matrices = event.getMatrices();
      
      for (GlowPoint point : this.bmwPoints) {
        float timePC = point.getTimeProgress();
@@ -752,18 +752,18 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.depthMask(true);
    }
    private void drawCelka3D(Event3DRender event) {
-     class_243 vec;
+     Vec3d vec;
      if (this.appearValue <= 0.001F || this.lastTargetPos == null)
        return; 
      float partialTicks = mc.method_61966().method_60637(true);
  
      
-     class_1309 target = this.lastTarget;
+     LivingEntity target = this.lastTarget;
      if (target != null && target.method_5805()) {
  
  
        
-       vec = new class_243(class_3532.method_16436(partialTicks, target.field_6038, target.method_23317()), class_3532.method_16436(partialTicks, target.field_5971, target.method_23318()), class_3532.method_16436(partialTicks, target.field_5989, target.method_23321()));
+       vec = new Vec3d(MathHelper.method_16436(partialTicks, target.field_6038, target.method_23317()), MathHelper.method_16436(partialTicks, target.field_5971, target.method_23318()), MathHelper.method_16436(partialTicks, target.field_5989, target.method_23321()));
        
        float entityHeight = target.method_17682();
      } else {
@@ -771,7 +771,7 @@ package shame.nazuna.client.modules.impl.render;
        float entityHeight = this.lastTargetHeight;
      } 
      
-     class_243 cam = mc.field_1773.method_19418().method_19326();
+     Vec3d cam = mc.field_1773.method_19418().method_19326();
      double bx = vec.field_1352;
      double by = vec.field_1351;
      double bz = vec.field_1350;
@@ -785,10 +785,10 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.depthMask(false);
      RenderSystem.disableCull();
      RenderSystem.blendFunc(770, 1);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      RenderSystem.setShaderTexture(0, getBloomTexture());
      
-     class_4587 matrices = event.getMatrices();
+     MatrixStack matrices = event.getMatrices();
      
      float radius = 0.65F;
      for (int k = 0; k < 4; k++) {
@@ -829,11 +829,11 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.depthMask(true);
    }
    
-   private void renderCrystals3D(class_4587 ms, class_1309 target, float partialTicks) {
-     class_243 renderPos;
+   private void renderCrystals3D(MatrixStack ms, LivingEntity target, float partialTicks) {
+     Vec3d renderPos;
      if (this.lastTargetPos == null || this.crystalAnimation <= 0.01F)
        return; 
-     class_243 cameraPos = mc.field_1773.method_19418().method_19326();
+     Vec3d cameraPos = mc.field_1773.method_19418().method_19326();
      int baseColor = ColorUtils.getThemeColor();
      int color = multAlpha(baseColor, this.crystalAnimation);
      int glowColor = multAlpha(baseColor, this.crystalAnimation * 0.28F);
@@ -853,7 +853,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
        
-       renderPos = new class_243(class_3532.method_16436(partialTicks, target.field_6038, target.method_23317()), class_3532.method_16436(partialTicks, target.field_5971, target.method_23318()), class_3532.method_16436(partialTicks, target.field_5989, target.method_23321()));
+       renderPos = new Vec3d(MathHelper.method_16436(partialTicks, target.field_6038, target.method_23317()), MathHelper.method_16436(partialTicks, target.field_5971, target.method_23318()), MathHelper.method_16436(partialTicks, target.field_5989, target.method_23321()));
      } else {
        
        renderPos = this.lastTargetPos;
@@ -869,16 +869,16 @@ package shame.nazuna.client.modules.impl.render;
      ms.method_22904(renderPos.field_1352 - cameraPos.field_1352, renderPos.field_1351 - cameraPos.field_1351, renderPos.field_1350 - cameraPos.field_1350);
      
      RenderSystem.defaultBlendFunc();
-     RenderSystem.setShader(class_10142.field_53876);
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27379, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27379, VertexFormats.field_1576);
      
      for (int i = 0; i < 360; i += 20) {
        float angleRad = (float)Math.toRadians((i + this.crystalRotationAngle));
        float sin = (float)(Math.sin(angleRad) * width * orbitScale);
        float cos = (float)(Math.cos(angleRad) * width * orbitScale);
        float crystalSize = 0.1F;
-       float yOffset = 0.1F + entityHeight * Math.abs(class_3532.method_15374(i));
+       float yOffset = 0.1F + entityHeight * Math.abs(MathHelper.method_15374(i));
        
        float offsetX = sin;
        float offsetY = yOffset;
@@ -912,21 +912,21 @@ package shame.nazuna.client.modules.impl.render;
          ms.method_22909();
        } 
      } 
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      ms.method_22909();
      
      float glowBaseSize = 4.5F + entityWidth * 3.0F;
      float outerGlowSize = glowBaseSize * 1.28F;
      RenderSystem.blendFunc(770, 1);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      RenderSystem.setShaderTexture(0, getBloomTexture());
      
      for (int j = 0; j < 360; j += 20) {
        float angleRad = (float)Math.toRadians((j + this.crystalRotationAngle));
        float sin = (float)(Math.sin(angleRad) * width * orbitScale);
        float cos = (float)(Math.cos(angleRad) * width * orbitScale);
-       float yOffset = 0.1F + entityHeight * Math.abs(class_3532.method_15374(j));
+       float yOffset = 0.1F + entityHeight * Math.abs(MathHelper.method_15374(j));
        
        double worldX = renderPos.field_1352 + sin;
        double worldY = renderPos.field_1351 + yOffset;
@@ -942,7 +942,7 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.depthMask(true);
    }
    
-   private void renderCrystalShape(class_287 buffer, Matrix4f matrix, float size, int color) {
+   private void renderCrystalShape(BufferBuilder buffer, Matrix4f matrix, float size, int color) {
      int r = color >> 16 & 0xFF;
      int g = color >> 8 & 0xFF;
      int b = color & 0xFF;
@@ -967,7 +967,7 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private double getScale(double worldX, double worldY, double worldZ) {
-     class_243 cam = mc.field_1773.method_19418().method_19326();
+     Vec3d cam = mc.field_1773.method_19418().method_19326();
      double dx = worldX - cam.field_1352;
      double dy = worldY - cam.field_1351;
      double dz = worldZ - cam.field_1350;
@@ -975,30 +975,30 @@ package shame.nazuna.client.modules.impl.render;
      return Math.max(0.5D, 8.0D / Math.max(0.1D, distance));
    }
    
-   private void drawTexturedRect2D(class_4587 matrix, float x, float y, float width, float height, int color) {
+   private void drawTexturedRect2D(MatrixStack matrix, float x, float y, float width, float height, int color) {
      int r = color >> 16 & 0xFF;
      int g = color >> 8 & 0xFF;
      int b = color & 0xFF;
      int a = color >> 24 & 0xFF;
      if (a <= 0)
        return;  Matrix4f mat = matrix.method_23760().method_23761();
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      buffer.method_22918(mat, x, y, 0.0F).method_22913(0.0F, 0.0F).method_1336(r, g, b, a);
      buffer.method_22918(mat, x, y + height, 0.0F).method_22913(0.0F, 1.0F).method_1336(r, g, b, a);
      buffer.method_22918(mat, x + width, y + height, 0.0F).method_22913(1.0F, 1.0F).method_1336(r, g, b, a);
      buffer.method_22918(mat, x + width, y, 0.0F).method_22913(1.0F, 0.0F).method_1336(r, g, b, a);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
  
  
  
    
-   private void drawCrystalGlow2D(class_4587 matrix, class_1309 target) {}
+   private void drawCrystalGlow2D(MatrixStack matrix, LivingEntity target) {}
  
  
  
    
-   private void tri(class_287 buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, int r, int g, int b, int a) {
+   private void tri(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, int r, int g, int b, int a) {
      buffer.method_22918(matrix, x1, y1, z1).method_1336(r, g, b, a);
      buffer.method_22918(matrix, x2, y2, z2).method_1336(r, g, b, a);
      buffer.method_22918(matrix, x3, y3, z3).method_1336(r, g, b, a);
@@ -1024,7 +1024,7 @@ package shame.nazuna.client.modules.impl.render;
      }
      
      float getTimeProgress() {
-       return class_3532.method_15363((float)(System.currentTimeMillis() - this.startTime) / this.maxLife, 0.0F, 1.0F);
+       return MathHelper.method_15363((float)(System.currentTimeMillis() - this.startTime) / this.maxLife, 0.0F, 1.0F);
      }
      
      int getColor(float timePC) {

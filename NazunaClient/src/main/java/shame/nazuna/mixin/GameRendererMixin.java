@@ -1,8 +1,8 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_757;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.GameRenderer;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
@@ -10,12 +10,12 @@ package shame.nazuna.mixin;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.client.modules.impl.render.Removals;
  
- @Mixin({class_757.class})
+ @Mixin({GameRenderer.class})
  public class GameRendererMixin
  {
    @Inject(method = {"method_3189"}, at = {@At("HEAD")}, cancellable = true)
-   private void astra$hideTotemAnimation(class_1799 stack, CallbackInfo ci) {
-     if (ModuleClass.INSTANCE == null || stack == null || !stack.method_31574(class_1802.field_8288)) {
+   private void astra$hideTotemAnimation(ItemStack stack, CallbackInfo ci) {
+     if (ModuleClass.INSTANCE == null || stack == null || !stack.method_31574(Items.field_8288)) {
        return;
      }
      

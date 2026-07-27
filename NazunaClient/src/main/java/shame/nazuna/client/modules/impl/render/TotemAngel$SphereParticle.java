@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -1164,7 +1164,7 @@ package shame.nazuna.client.modules.impl.render;
  
  class SphereParticle
  {
-   private final class_243 direction;
+   private final Vec3d direction;
    private final float spread;
    private final float swirlAmount;
    private final float rotationScale;
@@ -1172,7 +1172,7 @@ package shame.nazuna.client.modules.impl.render;
    private final float progressOffset;
    private final int color;
    
-   private SphereParticle(class_243 direction, float spread, float swirlAmount, float rotationScale, float timeScale, float progressOffset, int color) {
+   private SphereParticle(Vec3d direction, float spread, float swirlAmount, float rotationScale, float timeScale, float progressOffset, int color) {
      this.direction = direction;
      this.spread = spread;
      this.swirlAmount = swirlAmount;

@@ -1,12 +1,12 @@
 package shame.nazuna.api;
  
- import net.minecraft.class_1041;
- import net.minecraft.class_310;
+ import net.minecraft.Window;
+ import net.minecraft.MinecraftClient;
  
  public interface QClient
  {
-   public static final class_310 mc = class_310.method_1551();
-   public static final class_1041 mw = mc.method_22683();
+   public static final MinecraftClient mc = MinecraftClient.method_1551();
+   public static final Window mw = mc.method_22683();
  }
 
 

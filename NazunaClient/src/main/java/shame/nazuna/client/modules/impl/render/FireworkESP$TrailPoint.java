@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -200,11 +200,11 @@ package shame.nazuna.client.modules.impl.render;
  
  class TrailPoint
  {
-   final class_243 pos;
+   final Vec3d pos;
    final long timestamp;
    final float ageSec;
    
-   TrailPoint(class_243 pos, long timestamp, float ageSec) {
+   TrailPoint(Vec3d pos, long timestamp, float ageSec) {
      this.pos = pos;
      this.timestamp = timestamp;
      this.ageSec = ageSec;

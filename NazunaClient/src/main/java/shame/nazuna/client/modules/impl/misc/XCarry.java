@@ -24,7 +24,7 @@ package shame.nazuna.client.modules.impl.misc;
    public void onPacket(EventPacket event) {
      if (mc.field_1724 == null || mc.field_1687 == null)
        return; 
-     if (event.getPacket() instanceof net.minecraft.class_2815 && mc.field_1755 instanceof net.minecraft.class_490) {
+     if (event.getPacket() instanceof net.minecraft.CloseHandledScreenC2SPacket && mc.field_1755 instanceof net.minecraft.InventoryScreen) {
        event.cancel();
        this.wasInInventory = true;
      } 

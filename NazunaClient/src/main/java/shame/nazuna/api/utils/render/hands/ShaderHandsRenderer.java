@@ -4,15 +4,15 @@ package shame.nazuna.api.utils.render.hands;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_276;
- import net.minecraft.class_284;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_5944;
- import net.minecraft.class_6367;
+ import net.minecraft.Framebuffer;
+ import net.minecraft.GlUniform;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.ShaderProgram;
+ import net.minecraft.SimpleFramebuffer;
  import org.lwjgl.opengl.GL11;
  import org.lwjgl.opengl.GL30;
  import shame.nazuna.api.QClient;
@@ -29,10 +29,10 @@ package shame.nazuna.api.utils.render.hands;
  {
    private static final float EPSILON = 0.001F;
    private static ShaderHandsRenderer instance;
-   private class_276 beforeBuffer;
-   private class_276 afterBuffer;
-   private class_276 maskBuffer;
-   private final List<class_276> bloomBuffers = new ArrayList<>();
+   private Framebuffer beforeBuffer;
+   private Framebuffer afterBuffer;
+   private Framebuffer maskBuffer;
+   private final List<Framebuffer> bloomBuffers = new ArrayList<>();
    private int width = -1;
    private int height = -1;
    private boolean hasBeforeCapture;
@@ -81,7 +81,7 @@ package shame.nazuna.api.utils.render.hands;
        
        return;
      } 
-     class_5944 maskShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsMaskDiff);
+     ShaderProgram maskShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsMaskDiff);
      if (maskShader == null) {
        invalidateState();
        return;
@@ -138,7 +138,7 @@ package shame.nazuna.api.utils.render.hands;
      RenderSystem.colorMask(true, true, true, false);
      RenderSystem.disableDepthTest();
      
-     class_5944 glowShader = hasGlow ? mc.method_62887().method_62947(ShaderUtils.shaderHandsGlow) : null;
+     ShaderProgram glowShader = hasGlow ? mc.method_62887().method_62947(ShaderUtils.shaderHandsGlow) : null;
      if (glowShader != null) {
        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE);
  
@@ -156,7 +156,7 @@ package shame.nazuna.api.utils.render.hands;
      } 
      
      if (hasFill) {
-       class_5944 overlayShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsOverlay);
+       ShaderProgram overlayShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsOverlay);
        if (overlayShader == null) {
          restoreCompositeState();
          invalidateState();
@@ -194,14 +194,14 @@ package shame.nazuna.api.utils.render.hands;
      }
      
      int currentTexture = this.maskBuffer.method_30277();
-     class_5944 downShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsKawaseDown);
-     class_5944 upShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsKawaseUp);
+     ShaderProgram downShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsKawaseDown);
+     ShaderProgram upShader = mc.method_62887().method_62947(ShaderUtils.shaderHandsKawaseUp);
      if (downShader == null || upShader == null) {
        return currentTexture;
      }
      int i;
      for (i = 0; i < iterations; i++) {
-       class_276 dst = this.bloomBuffers.get(i);
+       Framebuffer dst = this.bloomBuffers.get(i);
        dst.method_1236(0.0F, 0.0F, 0.0F, 0.0F);
        dst.method_1230();
        dst.method_1235(true);
@@ -215,7 +215,7 @@ package shame.nazuna.api.utils.render.hands;
      } 
      
      for (i = iterations - 1; i >= 1; i--) {
-       class_276 dst = this.bloomBuffers.get(i - 1);
+       Framebuffer dst = this.bloomBuffers.get(i - 1);
        dst.method_1236(0.0F, 0.0F, 0.0F, 0.0F);
        dst.method_1230();
        dst.method_1235(true);
@@ -233,7 +233,7 @@ package shame.nazuna.api.utils.render.hands;
      return currentTexture;
    }
    
-   private void copyMainFramebuffer(class_276 target) {
+   private void copyMainFramebuffer(Framebuffer target) {
      int readFbo = GL11.glGetInteger(36010);
      int drawFbo = GL11.glGetInteger(36006);
      
@@ -268,14 +268,14 @@ package shame.nazuna.api.utils.render.hands;
      if (this.beforeBuffer != null) this.beforeBuffer.method_1238(); 
      if (this.afterBuffer != null) this.afterBuffer.method_1238(); 
      if (this.maskBuffer != null) this.maskBuffer.method_1238(); 
-     for (class_276 fb : this.bloomBuffers) {
+     for (Framebuffer fb : this.bloomBuffers) {
        fb.method_1238();
      }
      this.bloomBuffers.clear();
      
-     this.beforeBuffer = (class_276)new class_6367(w, h, true);
-     this.afterBuffer = (class_276)new class_6367(w, h, true);
-     this.maskBuffer = (class_276)new class_6367(w, h, true);
+     this.beforeBuffer = (Framebuffer)new SimpleFramebuffer(w, h, true);
+     this.afterBuffer = (Framebuffer)new SimpleFramebuffer(w, h, true);
+     this.maskBuffer = (Framebuffer)new SimpleFramebuffer(w, h, true);
      this.width = w;
      this.height = h;
      this.configuredBeforeDepthTex = -1;
@@ -285,7 +285,7 @@ package shame.nazuna.api.utils.render.hands;
    private void ensureBloomBuffers(int iterations) {
      while (this.bloomBuffers.size() > iterations) {
        int last = this.bloomBuffers.size() - 1;
-       ((class_276)this.bloomBuffers.get(last)).method_1238();
+       ((Framebuffer)this.bloomBuffers.get(last)).method_1238();
        this.bloomBuffers.remove(last);
      } 
      
@@ -294,23 +294,23 @@ package shame.nazuna.api.utils.render.hands;
        int h = Math.max(2, this.height >> i + 1);
        
        if (i >= this.bloomBuffers.size()) {
-         class_6367 class_6367 = new class_6367(w, h, false);
-         setLinearFiltering((class_276)class_6367);
-         this.bloomBuffers.add(class_6367);
+         SimpleFramebuffer SimpleFramebuffer = new SimpleFramebuffer(w, h, false);
+         setLinearFiltering((Framebuffer)SimpleFramebuffer);
+         this.bloomBuffers.add(SimpleFramebuffer);
        }
        else {
          
-         class_276 fb = this.bloomBuffers.get(i);
+         Framebuffer fb = this.bloomBuffers.get(i);
          if (fb.field_1482 != w || fb.field_1481 != h) {
            fb.method_1238();
-           class_6367 class_6367 = new class_6367(w, h, false);
-           setLinearFiltering((class_276)class_6367);
-           this.bloomBuffers.set(i, class_6367);
+           SimpleFramebuffer SimpleFramebuffer = new SimpleFramebuffer(w, h, false);
+           setLinearFiltering((Framebuffer)SimpleFramebuffer);
+           this.bloomBuffers.set(i, SimpleFramebuffer);
          } 
        } 
      } 
    }
-   private void setLinearFiltering(class_276 fb) {
+   private void setLinearFiltering(Framebuffer fb) {
      RenderSystem.bindTexture(fb.method_30277());
      GL11.glTexParameteri(3553, 10241, 9729);
      GL11.glTexParameteri(3553, 10240, 9729);
@@ -323,7 +323,7 @@ package shame.nazuna.api.utils.render.hands;
    }
    
    private void renderPrettyMode(ShaderHands module, int color1, int color2, float glowValue, float fillValue, float alphaValue, float outlineValue) {
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.blockOverlay);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.blockOverlay);
      if (shader == null)
        return; 
      mc.method_1522().method_1235(false);
@@ -377,22 +377,22 @@ package shame.nazuna.api.utils.render.hands;
      return (hasGlow || hasFill);
    }
    
-   private void setUniform(class_5944 shader, String name, float v) {
-     class_284 u = shader.method_34582(name);
+   private void setUniform(ShaderProgram shader, String name, float v) {
+     GlUniform u = shader.method_34582(name);
      if (u != null) u.method_1251(v); 
    }
    
-   private void setUniform(class_5944 shader, String name, float x, float y) {
-     class_284 u = shader.method_34582(name);
+   private void setUniform(ShaderProgram shader, String name, float x, float y) {
+     GlUniform u = shader.method_34582(name);
      if (u != null) u.method_1255(x, y); 
    }
    
-   private void setUniform(class_5944 shader, String name, float x, float y, float z) {
-     class_284 u = shader.method_34582(name);
+   private void setUniform(ShaderProgram shader, String name, float x, float y, float z) {
+     GlUniform u = shader.method_34582(name);
      if (u != null) u.method_1249(x, y, z); 
    }
    
-   private void setHandsKawaseUniforms(class_5944 shader, int texWidth, int texHeight, float offset) {
+   private void setHandsKawaseUniforms(ShaderProgram shader, int texWidth, int texHeight, float offset) {
      setUniform(shader, "uSize", Math.max(1, texWidth), Math.max(1, texHeight));
      setUniform(shader, "uOffset", offset, offset);
      setUniform(shader, "uHalfPixel", 0.5F / Math.max(1, texWidth), 0.5F / Math.max(1, texHeight));
@@ -401,12 +401,12 @@ package shame.nazuna.api.utils.render.hands;
    private void drawFullscreenQuad() {
      float sw = Math.max(mc.method_22683().method_4486(), 1);
      float sh = Math.max(mc.method_22683().method_4502(), 1);
-     class_287 b = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder b = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      b.method_22912(0.0F, 0.0F, 0.0F).method_22913(0.0F, 1.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      b.method_22912(0.0F, sh, 0.0F).method_22913(0.0F, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      b.method_22912(sw, sh, 0.0F).method_22913(1.0F, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      b.method_22912(sw, 0.0F, 0.0F).method_22913(1.0F, 1.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
-     class_286.method_43433(b.method_60800());
+     BufferRenderer.method_43433(b.method_60800());
    }
  }
 

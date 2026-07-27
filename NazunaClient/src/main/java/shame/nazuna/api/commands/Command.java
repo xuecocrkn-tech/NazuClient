@@ -3,7 +3,7 @@ package shame.nazuna.api.commands;
  import com.mojang.brigadier.arguments.ArgumentType;
  import com.mojang.brigadier.builder.LiteralArgumentBuilder;
  import com.mojang.brigadier.builder.RequiredArgumentBuilder;
- import net.minecraft.class_2172;
+ import net.minecraft.CommandSource;
  import shame.nazuna.api.QClient;
  
  public abstract class Command implements QClient {
@@ -16,21 +16,21 @@ package shame.nazuna.api.commands;
  
  
    
-   public void register(CommandDispatcher<class_2172> dispatcher) {
-     LiteralArgumentBuilder<class_2172> builder = LiteralArgumentBuilder.literal(this.command);
+   public void register(CommandDispatcher<CommandSource> dispatcher) {
+     LiteralArgumentBuilder<CommandSource> builder = LiteralArgumentBuilder.literal(this.command);
      execute(builder);
      dispatcher.register(builder);
    }
    
-   protected <T> RequiredArgumentBuilder<class_2172, T> arg(String name, ArgumentType<T> type) {
+   protected <T> RequiredArgumentBuilder<CommandSource, T> arg(String name, ArgumentType<T> type) {
      return RequiredArgumentBuilder.argument(name, type);
    }
    
-   protected LiteralArgumentBuilder<class_2172> literal(String name) {
+   protected LiteralArgumentBuilder<CommandSource> literal(String name) {
      return LiteralArgumentBuilder.literal(name);
    }
    
-   public abstract void execute(LiteralArgumentBuilder<class_2172> paramLiteralArgumentBuilder);
+   public abstract void execute(LiteralArgumentBuilder<CommandSource> paramLiteralArgumentBuilder);
  }
 
 

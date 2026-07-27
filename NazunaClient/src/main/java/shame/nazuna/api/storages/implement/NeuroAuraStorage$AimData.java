@@ -1,9 +1,9 @@
 package shame.nazuna.api.storages.implement;
 
-import net.minecraft.class_243;
+import net.minecraft.Vec3d;
 
 class AimData {
-  class_243 targetPoint;
+  Vec3d targetPoint;
   
   float perfectYaw;
   

@@ -7,8 +7,8 @@ package shame.nazuna.api.commands.impl;
  import com.mojang.brigadier.suggestion.SuggestionsBuilder;
  import java.util.Objects;
  import java.util.concurrent.CompletableFuture;
- import net.minecraft.class_2172;
- import net.minecraft.class_640;
+ import net.minecraft.CommandSource;
+ import net.minecraft.PlayerListEntry;
  import shame.nazuna.api.utils.chat.ChatUtils;
  import shame.nazuna.astra;
  
@@ -19,12 +19,12 @@ package shame.nazuna.api.commands.impl;
  
  
    
-   public void execute(LiteralArgumentBuilder<class_2172> builder) {
+   public void execute(LiteralArgumentBuilder<CommandSource> builder) {
      ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)builder
        .then(literal("add")
          .then(arg("player", (ArgumentType)StringArgumentType.word())
            .suggests((context, builder1) -> {
-               for (class_640 entry : mc.method_1562().method_2880()) {
+               for (PlayerListEntry entry : mc.method_1562().method_2880()) {
                  String name = entry.method_2966().getName();
                  
                  if (name.toLowerCase().startsWith(builder1.getRemaining().toLowerCase())) {

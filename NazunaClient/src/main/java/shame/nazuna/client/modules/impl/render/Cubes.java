@@ -3,18 +3,18 @@ package shame.nazuna.client.modules.impl.render;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.util.ArrayList;
  import java.util.Random;
- import net.minecraft.class_10142;
- import net.minecraft.class_243;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_2960;
- import net.minecraft.class_3532;
- import net.minecraft.class_4184;
- import net.minecraft.class_4587;
- import net.minecraft.class_7833;
+ import net.minecraft.ShaderProgramKeys;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.Identifier;
+ import net.minecraft.MathHelper;
+ import net.minecraft.Camera;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.RotationAxis;
  import org.joml.Matrix4f;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.Event3DRender;
@@ -26,7 +26,7 @@ package shame.nazuna.client.modules.impl.render;
  public class Cubes extends Module {
    public static Cubes INSTANCE = new Cubes();
    
-   private static final class_2960 GLOW_TEX = class_2960.method_60655("astra", "textures/particle/bloom.png");
+   private static final Identifier GLOW_TEX = Identifier.method_60655("astra", "textures/particle/bloom.png");
    
    private static final float SPAWN_RADIUS = 12.0F;
    private static final float PARTICLE_SIZE = 0.18F;
@@ -96,16 +96,16 @@ package shame.nazuna.client.modules.impl.render;
      }
    }
    
-   private void applyHitImpulseFromCrosshair(class_4184 camera) {
+   private void applyHitImpulseFromCrosshair(Camera camera) {
      if (this.cubes.isEmpty() || camera == null)
        return; 
-     class_243 origin = camera.method_19326();
+     Vec3d origin = camera.method_19326();
      float yaw = (float)Math.toRadians(camera.method_19330());
      float pitch = (float)Math.toRadians(camera.method_19329());
      
-     double dirX = (-class_3532.method_15374(yaw) * class_3532.method_15362(pitch));
-     double dirY = -class_3532.method_15374(pitch);
-     double dirZ = (class_3532.method_15362(yaw) * class_3532.method_15362(pitch));
+     double dirX = (-MathHelper.method_15374(yaw) * MathHelper.method_15362(pitch));
+     double dirY = -MathHelper.method_15374(pitch);
+     double dirZ = (MathHelper.method_15362(yaw) * MathHelper.method_15362(pitch));
      
      CubeParticle best = null;
      double bestT = Double.MAX_VALUE;
@@ -154,7 +154,7 @@ package shame.nazuna.client.modules.impl.render;
      float spd = 0.25F * this.speed.get();
      float maxR = 12.0F;
      boolean falling = this.animation.is("Падение");
-     class_243 playerPos = mc.field_1724.method_19538();
+     Vec3d playerPos = mc.field_1724.method_19538();
      double maxRSq = (maxR * maxR) * 6.25D;
      
      for (int i = this.cubes.size() - 1; i >= 0; i--) {
@@ -198,9 +198,9 @@ package shame.nazuna.client.modules.impl.render;
    private void renderCubes(Event3DRender e) {
      if (mc.field_1724 == null)
        return; 
-     class_4587 ms = e.getMatrices();
-     class_243 cam = e.getCamera().method_19326();
-     class_4184 camera = e.getCamera();
+     MatrixStack ms = e.getMatrices();
+     Vec3d cam = e.getCamera().method_19326();
+     Camera camera = e.getCamera();
      float s = 0.18F * this.size.get();
      float glow = 1.7F;
      
@@ -212,9 +212,9 @@ package shame.nazuna.client.modules.impl.render;
      this.visibleCubes.clear();
      float yaw = (float)Math.toRadians(camera.method_19330());
      float pitch = (float)Math.toRadians(camera.method_19329());
-     double lookX = (-class_3532.method_15374(yaw) * class_3532.method_15362(pitch));
-     double lookY = -class_3532.method_15374(pitch);
-     double lookZ = (class_3532.method_15362(yaw) * class_3532.method_15362(pitch));
+     double lookX = (-MathHelper.method_15374(yaw) * MathHelper.method_15362(pitch));
+     double lookY = -MathHelper.method_15374(pitch);
+     double lookZ = (MathHelper.method_15362(yaw) * MathHelper.method_15362(pitch));
      
      for (int i = 0, sz = this.cubes.size(); i < sz; i++) {
        CubeParticle p = this.cubes.get(i);
@@ -238,12 +238,12 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.disableDepthTest();
      RenderSystem.depthMask(false);
      RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      RenderSystem.setShaderTexture(0, GLOW_TEX);
      drawGlowBatch(ms, camera, cam, s, glow);
      
      RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
-     RenderSystem.setShader(class_10142.field_53876);
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
      
      boolean isCubes = this.shape.is("Кубы");
      boolean isTriangles = this.shape.is("Треугольники");
@@ -270,8 +270,8 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.disableBlend();
    }
    
-   private void drawGlowBatch(class_4587 ms, class_4184 camera, class_243 cam, float s, float glow) {
-     class_287 builder = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+   private void drawGlowBatch(MatrixStack ms, Camera camera, Vec3d cam, float s, float glow) {
+     BufferBuilder builder = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      
      for (int particleIndex = 0, sz = this.visibleCubes.size(); particleIndex < sz; particleIndex++) {
        CubeParticle p = this.visibleCubes.get(particleIndex);
@@ -279,8 +279,8 @@ package shame.nazuna.client.modules.impl.render;
        
        ms.method_22903();
        ms.method_22904(p.x - cam.field_1352, p.y - cam.field_1351, p.z - cam.field_1350);
-       ms.method_22907(class_7833.field_40716.rotationDegrees(-camera.method_19330()));
-       ms.method_22907(class_7833.field_40714.rotationDegrees(camera.method_19329()));
+       ms.method_22907(RotationAxis.field_40716.rotationDegrees(-camera.method_19330()));
+       ms.method_22907(RotationAxis.field_40714.rotationDegrees(camera.method_19329()));
        
        Matrix4f matrix = ms.method_23760().method_23761();
        for (int i = 0; i < 3; i++) {
@@ -296,18 +296,18 @@ package shame.nazuna.client.modules.impl.render;
        ms.method_22909();
      } 
      
-     class_286.method_43433(builder.method_60800());
+     BufferRenderer.method_43433(builder.method_60800());
    }
    
    private float getAlpha(CubeParticle p) {
-     float lifePct = class_3532.method_15363(p.life / p.maxLife, 0.0F, 1.0F);
+     float lifePct = MathHelper.method_15363(p.life / p.maxLife, 0.0F, 1.0F);
      float fadeIn = Math.min(1.0F, (p.maxLife - p.life) / 20.0F);
      return lifePct * fadeIn;
    }
    
-   private void drawCubeFacesBatch(class_4587 ms, class_243 cam, float s) {
+   private void drawCubeFacesBatch(MatrixStack ms, Vec3d cam, float s) {
      if (!hasFaceRenderableParticles())
-       return;  class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1576);
+       return;  BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1576);
      for (int i = 0, sz = this.visibleCubes.size(); i < sz; i++) {
        CubeParticle p = this.visibleCubes.get(i);
        float alpha = p.renderAlpha * 0.4F;
@@ -315,18 +315,18 @@ package shame.nazuna.client.modules.impl.render;
          
          ms.method_22903();
          ms.method_22904(p.x - cam.field_1352, p.y - cam.field_1351, p.z - cam.field_1350);
-         ms.method_22907(class_7833.field_40714.rotationDegrees(p.rotX));
-         ms.method_22907(class_7833.field_40716.rotationDegrees(p.rotY));
-         ms.method_22907(class_7833.field_40718.rotationDegrees(p.rotZ));
+         ms.method_22907(RotationAxis.field_40714.rotationDegrees(p.rotX));
+         ms.method_22907(RotationAxis.field_40716.rotationDegrees(p.rotY));
+         ms.method_22907(RotationAxis.field_40718.rotationDegrees(p.rotZ));
          appendCubeFaces(buffer, ms.method_23760().method_23761(), s, alpha);
          ms.method_22909();
        } 
-     }  class_286.method_43433(buffer.method_60800());
+     }  BufferRenderer.method_43433(buffer.method_60800());
    }
    
-   private void drawTriangleFacesBatch(class_4587 ms, class_243 cam, float s) {
+   private void drawTriangleFacesBatch(MatrixStack ms, Vec3d cam, float s) {
      if (!hasFaceRenderableParticles())
-       return;  class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27379, class_290.field_1576);
+       return;  BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27379, VertexFormats.field_1576);
      for (int i = 0, sz = this.visibleCubes.size(); i < sz; i++) {
        CubeParticle p = this.visibleCubes.get(i);
        float alpha = p.renderAlpha * 0.4F;
@@ -334,13 +334,13 @@ package shame.nazuna.client.modules.impl.render;
          
          ms.method_22903();
          ms.method_22904(p.x - cam.field_1352, p.y - cam.field_1351, p.z - cam.field_1350);
-         ms.method_22907(class_7833.field_40714.rotationDegrees(p.rotX));
-         ms.method_22907(class_7833.field_40716.rotationDegrees(p.rotY));
-         ms.method_22907(class_7833.field_40718.rotationDegrees(p.rotZ));
+         ms.method_22907(RotationAxis.field_40714.rotationDegrees(p.rotX));
+         ms.method_22907(RotationAxis.field_40716.rotationDegrees(p.rotY));
+         ms.method_22907(RotationAxis.field_40718.rotationDegrees(p.rotZ));
          appendTriangleFaces(buffer, ms.method_23760().method_23761(), s, alpha);
          ms.method_22909();
        } 
-     }  class_286.method_43433(buffer.method_60800());
+     }  BufferRenderer.method_43433(buffer.method_60800());
    }
    
    private boolean hasFaceRenderableParticles() {
@@ -350,7 +350,7 @@ package shame.nazuna.client.modules.impl.render;
      return false;
    }
    
-   private void appendCubeFaces(class_287 buffer, Matrix4f m, float s, float a) {
+   private void appendCubeFaces(BufferBuilder buffer, Matrix4f m, float s, float a) {
      buffer.method_22918(m, -s, -s, s).method_22915(this.cr, this.cg, this.cb, a);
      buffer.method_22918(m, s, -s, s).method_22915(this.cr, this.cg, this.cb, a);
      buffer.method_22918(m, s, s, s).method_22915(this.cr, this.cg, this.cb, a);
@@ -382,7 +382,7 @@ package shame.nazuna.client.modules.impl.render;
      buffer.method_22918(m, -s, s, -s).method_22915(this.cr, this.cg, this.cb, a);
    }
    
-   private void appendTriangleFaces(class_287 buffer, Matrix4f m, float s, float a) {
+   private void appendTriangleFaces(BufferBuilder buffer, Matrix4f m, float s, float a) {
      float top = s;
      float bottom = -s;
      float halfBase = s * 0.866F;
@@ -412,8 +412,8 @@ package shame.nazuna.client.modules.impl.render;
      buffer.method_22918(m, -halfBase, bottom, -halfBase).method_22915(this.cr, this.cg, this.cb, a);
    }
    
-   private void drawCubeDashedEdgesBatch(class_4587 ms, class_243 cam, float s) {
-     class_287 buf = class_289.method_1348().method_60827(class_293.class_5596.field_29344, class_290.field_1576);
+   private void drawCubeDashedEdgesBatch(MatrixStack ms, Vec3d cam, float s) {
+     BufferBuilder buf = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_29344, VertexFormats.field_1576);
      int lineCount = 0;
      for (int i = 0, sz = this.visibleCubes.size(); i < sz; i++) {
        CubeParticle p = this.visibleCubes.get(i);
@@ -421,20 +421,20 @@ package shame.nazuna.client.modules.impl.render;
        
        ms.method_22903();
        ms.method_22904(p.x - cam.field_1352, p.y - cam.field_1351, p.z - cam.field_1350);
-       ms.method_22907(class_7833.field_40714.rotationDegrees(p.rotX));
-       ms.method_22907(class_7833.field_40716.rotationDegrees(p.rotY));
-       ms.method_22907(class_7833.field_40718.rotationDegrees(p.rotZ));
+       ms.method_22907(RotationAxis.field_40714.rotationDegrees(p.rotX));
+       ms.method_22907(RotationAxis.field_40716.rotationDegrees(p.rotY));
+       ms.method_22907(RotationAxis.field_40718.rotationDegrees(p.rotZ));
        lineCount += appendCubeDashedEdges(buf, ms.method_23760().method_23761(), s, alpha);
        ms.method_22909();
      } 
      
      if (lineCount > 0) {
-       class_286.method_43433(buf.method_60800());
+       BufferRenderer.method_43433(buf.method_60800());
      }
    }
    
-   private void drawTriangleDashedEdgesBatch(class_4587 ms, class_243 cam, float s) {
-     class_287 buf = class_289.method_1348().method_60827(class_293.class_5596.field_29344, class_290.field_1576);
+   private void drawTriangleDashedEdgesBatch(MatrixStack ms, Vec3d cam, float s) {
+     BufferBuilder buf = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_29344, VertexFormats.field_1576);
      int lineCount = 0;
      for (int i = 0, sz = this.visibleCubes.size(); i < sz; i++) {
        CubeParticle p = this.visibleCubes.get(i);
@@ -442,19 +442,19 @@ package shame.nazuna.client.modules.impl.render;
        
        ms.method_22903();
        ms.method_22904(p.x - cam.field_1352, p.y - cam.field_1351, p.z - cam.field_1350);
-       ms.method_22907(class_7833.field_40714.rotationDegrees(p.rotX));
-       ms.method_22907(class_7833.field_40716.rotationDegrees(p.rotY));
-       ms.method_22907(class_7833.field_40718.rotationDegrees(p.rotZ));
+       ms.method_22907(RotationAxis.field_40714.rotationDegrees(p.rotX));
+       ms.method_22907(RotationAxis.field_40716.rotationDegrees(p.rotY));
+       ms.method_22907(RotationAxis.field_40718.rotationDegrees(p.rotZ));
        lineCount += appendTriangleDashedEdges(buf, ms.method_23760().method_23761(), s, alpha);
        ms.method_22909();
      } 
      
      if (lineCount > 0) {
-       class_286.method_43433(buf.method_60800());
+       BufferRenderer.method_43433(buf.method_60800());
      }
    }
    
-   private int appendCubeDashedEdges(class_287 buf, Matrix4f mat, float s, float alpha) {
+   private int appendCubeDashedEdges(BufferBuilder buf, Matrix4f mat, float s, float alpha) {
      int color = colorToInt(Math.min(1.0F, this.cr * 1.5F), Math.min(1.0F, this.cg * 1.5F), Math.min(1.0F, this.cb * 1.5F), alpha);
      
      float dashLen = s * 0.3F;
@@ -473,7 +473,7 @@ package shame.nazuna.client.modules.impl.render;
        float dx = x2 - x1;
        float dy = y2 - y1;
        float dz = z2 - z1;
-       float len = class_3532.method_15355(dx * dx + dy * dy + dz * dz);
+       float len = MathHelper.method_15355(dx * dx + dy * dy + dz * dz);
        
        if (len >= 0.001F) {
          
@@ -502,7 +502,7 @@ package shame.nazuna.client.modules.impl.render;
      return lineCount;
    }
    
-   private int appendTriangleDashedEdges(class_287 buf, Matrix4f mat, float s, float alpha) {
+   private int appendTriangleDashedEdges(BufferBuilder buf, Matrix4f mat, float s, float alpha) {
      int color = colorToInt(Math.min(1.0F, this.cr * 1.5F), Math.min(1.0F, this.cg * 1.5F), Math.min(1.0F, this.cb * 1.5F), alpha);
      
      float dashLen = s * 0.3F;
@@ -525,7 +525,7 @@ package shame.nazuna.client.modules.impl.render;
        float dx = x2 - x1;
        float dy = y2 - y1;
        float dz = z2 - z1;
-       float len = class_3532.method_15355(dx * dx + dy * dy + dz * dz);
+       float len = MathHelper.method_15355(dx * dx + dy * dy + dz * dz);
        
        if (len >= 0.001F) {
          
@@ -589,8 +589,8 @@ package shame.nazuna.client.modules.impl.render;
      } else {
        float yaw = this.random.nextFloat() * 360.0F;
        float vel = (0.01F + this.random.nextFloat() * 0.02F) * speedMult;
-       vx = -class_3532.method_15374((float)Math.toRadians(yaw)) * vel;
-       vz = class_3532.method_15362((float)Math.toRadians(yaw)) * vel;
+       vx = -MathHelper.method_15374((float)Math.toRadians(yaw)) * vel;
+       vz = MathHelper.method_15362((float)Math.toRadians(yaw)) * vel;
        vy = (this.random.nextFloat() - 0.5F) * 0.01F * speedMult;
      } 
      

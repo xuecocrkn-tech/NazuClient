@@ -1,16 +1,16 @@
 package shame.nazuna.mixin;
 
-import net.minecraft.class_10185;
-import net.minecraft.class_2851;
+import net.minecraft.PlayerInput;
+import net.minecraft.PlayerInputC2SPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin({class_2851.class})
+@Mixin({PlayerInputC2SPacket.class})
 public interface IPlayerInputC2SPacketAccessor {
   @Mutable
   @Accessor("comp_3139")
-  void setInput(class_10185 paramclass_10185);
+  void setInput(PlayerInput paramclass_10185);
 }
 
 

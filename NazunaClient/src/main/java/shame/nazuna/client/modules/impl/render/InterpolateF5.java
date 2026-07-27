@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_3532;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventRotation;
  import shame.nazuna.api.events.implement.EventUpdate;
@@ -87,8 +87,8 @@ package shame.nazuna.client.modules.impl.render;
      
      float rotationSpeed = 0.28F;
      
-     this.currentYaw += class_3532.method_15393(getReferenceYaw() - this.currentYaw) * rotationSpeed;
-     this.currentPitch = class_3532.method_15363(this.currentPitch + (getReferencePitch() - this.currentPitch) * rotationSpeed, -90.0F, 90.0F);
+     this.currentYaw += MathHelper.method_15393(getReferenceYaw() - this.currentYaw) * rotationSpeed;
+     this.currentPitch = MathHelper.method_15363(this.currentPitch + (getReferencePitch() - this.currentPitch) * rotationSpeed, -90.0F, 90.0F);
      
      float distanceSpeed = this.switchAnimating ? 0.26F : 0.13F;
      this.currentDistance += (4.1F - this.currentDistance) * distanceSpeed;
@@ -115,7 +115,7 @@ package shame.nazuna.client.modules.impl.render;
    
    public float getInterpolatedPitch(float partialTicks) {
      if (mc.field_1724 == null) return 0.0F; 
-     return class_3532.method_15363(this.prevPitch + (this.currentPitch - this.prevPitch) * partialTicks, -90.0F, 90.0F);
+     return MathHelper.method_15363(this.prevPitch + (this.currentPitch - this.prevPitch) * partialTicks, -90.0F, 90.0F);
    }
    
    public float getInterpolatedDistance(float partialTicks) {

@@ -1,6 +1,6 @@
 package shame.nazuna.api.utils.combat;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  public class PositionData {
    private double serverX;
@@ -18,12 +18,12 @@ package shame.nazuna.api.utils.combat;
    
    public long getLastUpdate() { return this.lastUpdate; }
    
-   public class_243 getResolvedPos() {
-     return new class_243(this.serverX, this.serverY, this.serverZ);
+   public Vec3d getResolvedPos() {
+     return new Vec3d(this.serverX, this.serverY, this.serverZ);
    }
    
-   public class_243 getResolvedForward() {
-     return new class_243(this.serverX - this.prevServerX, this.serverY - this.prevServerY, this.serverZ - this.prevServerZ);
+   public Vec3d getResolvedForward() {
+     return new Vec3d(this.serverX - this.prevServerX, this.serverY - this.prevServerY, this.serverZ - this.prevServerZ);
    }
  
  

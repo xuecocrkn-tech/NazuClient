@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.movement;
- import net.minecraft.class_1268;
- import net.minecraft.class_2596;
- import net.minecraft.class_2886;
+ import net.minecraft.Hand;
+ import net.minecraft.Packet;
+ import net.minecraft.PlayerInteractItemC2SPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventSlowWalking;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
@@ -33,7 +33,7 @@ package shame.nazuna.client.modules.impl.movement;
  
      
      if (this.mode.is("Grim Old")) {
-       class_1268 activeHand = mc.field_1724.method_6058();
+       Hand activeHand = mc.field_1724.method_6058();
        boolean legacyProtocol = ViaProtocolUtils.isTargetProtocolBelowOneNineteen();
        
        if (this.sprint.isState()) {
@@ -45,8 +45,8 @@ package shame.nazuna.client.modules.impl.movement;
        }
  
        
-       class_1268 otherHand = (activeHand == class_1268.field_5808) ? class_1268.field_5810 : class_1268.field_5808;
-       mc.method_1562().method_52787((class_2596)new class_2886(otherHand, 0, mc.field_1724.method_36454(), mc.field_1724.method_36455()));
+       Hand otherHand = (activeHand == Hand.field_5808) ? Hand.field_5810 : Hand.field_5808;
+       mc.method_1562().method_52787((Packet)new PlayerInteractItemC2SPacket(otherHand, 0, mc.field_1724.method_36454(), mc.field_1724.method_36455()));
        
        event.setCancelled(true);
      } 

@@ -1,16 +1,16 @@
 package shame.nazuna.mixin;
  
  import com.mojang.brigadier.exceptions.CommandSyntaxException;
- import net.minecraft.class_10264;
- import net.minecraft.class_124;
- import net.minecraft.class_2596;
- import net.minecraft.class_2664;
- import net.minecraft.class_2678;
- import net.minecraft.class_2743;
- import net.minecraft.class_310;
- import net.minecraft.class_634;
- import net.minecraft.class_638;
- import net.minecraft.class_7439;
+ import net.minecraft.EntityPositionSyncS2CPacket;
+ import net.minecraft.Formatting;
+ import net.minecraft.Packet;
+ import net.minecraft.ExplosionS2CPacket;
+ import net.minecraft.GameJoinS2CPacket;
+ import net.minecraft.EntityVelocityUpdateS2CPacket;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.ClientPlayNetworkHandler;
+ import net.minecraft.ClientWorld;
+ import net.minecraft.GameMessageS2CPacket;
  import org.jetbrains.annotations.NotNull;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.Shadow;
@@ -23,10 +23,10 @@ package shame.nazuna.mixin;
  import shame.nazuna.api.utils.chat.ChatUtils;
  import shame.nazuna.astra;
  
- @Mixin({class_634.class})
+ @Mixin({ClientPlayNetworkHandler.class})
  public abstract class ClientPlayNetworkHandlerMixin {
    @Shadow
-   private class_638 field_3699;
+   private ClientWorld field_3699;
    
    @Inject(method = {"method_45729"}, at = {@At("HEAD")}, cancellable = true)
    public void sendChatMessage(@NotNull String message, CallbackInfo ci) {
@@ -34,7 +34,7 @@ package shame.nazuna.mixin;
        try {
          astra.INSTANCE.commandStorage.getDispatcher().execute(message.substring(astra.INSTANCE.commandStorage.getPrefix().length()), astra.INSTANCE.commandStorage.getSource());
        } catch (CommandSyntaxException e) {
-         ChatUtils.sendMessage(String.valueOf(class_124.field_1061) + "Ошибка в использовании!");
+         ChatUtils.sendMessage(String.valueOf(Formatting.field_1061) + "Ошибка в использовании!");
        } 
        ci.cancel();
        return;
@@ -42,8 +42,8 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_11132"}, at = {@At("HEAD")}, cancellable = true)
-   private void onVelocityUpdate(class_2743 packet, CallbackInfo ci) {
-     EventPacket event = new EventPacket((class_2596)packet, EventPacket.Type.RECEIVE);
+   private void onVelocityUpdate(EntityVelocityUpdateS2CPacket packet, CallbackInfo ci) {
+     EventPacket event = new EventPacket((Packet)packet, EventPacket.Type.RECEIVE);
      event.call();
      if (event.isCancelled()) {
        ci.cancel();
@@ -51,8 +51,8 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_11124"}, at = {@At("HEAD")}, cancellable = true)
-   private void onExplosion(class_2664 packet, CallbackInfo ci) {
-     EventPacket event = new EventPacket((class_2596)packet, EventPacket.Type.RECEIVE);
+   private void onExplosion(ExplosionS2CPacket packet, CallbackInfo ci) {
+     EventPacket event = new EventPacket((Packet)packet, EventPacket.Type.RECEIVE);
      event.call();
      if (event.isCancelled()) {
        ci.cancel();
@@ -60,20 +60,20 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_64553"}, at = {@At("HEAD")}, cancellable = true)
-   private void onEntityPositionSync(class_10264 packet, CallbackInfo ci) {
-     class_310 mc = class_310.method_1551();
+   private void onEntityPositionSync(EntityPositionSyncS2CPacket packet, CallbackInfo ci) {
+     MinecraftClient mc = MinecraftClient.method_1551();
      if (this.field_3699 == null || mc.field_1724 == null || mc.field_1687 == null) {
        ci.cancel();
      }
    }
    
    @Inject(method = {"method_43596"}, at = {@At("HEAD")})
-   private void onGameMessage(class_7439 packet, CallbackInfo ci) {
+   private void onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) {
      BaritoneAntiStuck.onGameMessage(packet.comp_763().getString());
    }
    
    @Inject(method = {"method_11120"}, at = {@At("HEAD")})
-   private void onGameJoin(class_2678 packet, CallbackInfo ci) {
+   private void onGameJoin(GameJoinS2CPacket packet, CallbackInfo ci) {
      BotSessionManager.finishBotConnectStage();
    }
  }

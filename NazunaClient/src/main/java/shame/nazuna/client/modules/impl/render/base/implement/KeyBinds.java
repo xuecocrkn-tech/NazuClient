@@ -5,7 +5,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  import java.util.HashMap;
  import java.util.List;
  import java.util.Map;
- import net.minecraft.class_4587;
+ import net.minecraft.MatrixStack;
  import shame.nazuna.api.events.implement.EventRender;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.api.utils.animation.AnimationUtils;
@@ -166,7 +166,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    }
    
    public void WaveStyle(EventRender.Default eventRender) {
-     class_4587 context = eventRender.getContext().method_51448();
+     MatrixStack context = eventRender.getContext().method_51448();
      float x = this.draggable.getX(), y = this.draggable.getY();
      
      int time = (int)((float)(System.currentTimeMillis() % 2000L) / 2000.0F * 360.0F);

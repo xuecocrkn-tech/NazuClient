@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -148,10 +148,10 @@ package shame.nazuna.client.modules.impl.render;
  
  class Point
  {
-   public class_243 pos;
+   public Vec3d pos;
    public long time;
    
-   public Point(class_243 pos) {
+   public Point(Vec3d pos) {
      this.pos = pos;
      this.time = System.currentTimeMillis();
    }

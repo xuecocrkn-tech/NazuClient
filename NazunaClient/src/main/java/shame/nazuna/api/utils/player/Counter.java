@@ -1,6 +1,6 @@
 package shame.nazuna.api.utils.player;
  
- import net.minecraft.class_3532;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.QClient;
  
  public final class Counter implements QClient {
@@ -9,7 +9,7 @@ package shame.nazuna.api.utils.player;
    }
    public static void updateFPS() {
      int prevFPS = mc.method_47599();
-     currentFPS = class_3532.method_48781(0.5F, prevFPS, currentFPS);
+     currentFPS = MathHelper.method_48781(0.5F, prevFPS, currentFPS);
    }
  }
 

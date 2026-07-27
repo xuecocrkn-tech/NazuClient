@@ -6,7 +6,7 @@ package shame.nazuna.client.ui.clickgui;
  import java.util.List;
  import java.util.Locale;
  import java.util.Map;
- import net.minecraft.class_1041;
+ import net.minecraft.Window;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.api.utils.animation.AnimationUtils;
  import shame.nazuna.api.utils.animation.Easings;
@@ -79,7 +79,7 @@ package shame.nazuna.client.ui.clickgui;
      } 
    }
    
-   public void updatePosition(class_1041 window, int categoryCount) {
+   public void updatePosition(Window window, int categoryCount) {
      float totalCategoriesWidth = ClickGuiLayout.getTotalCategoriesWidth(categoryCount);
      this.x = window.method_4486() / 2.0F - totalCategoriesWidth / 2.0F;
      this.y = window.method_4502() / 2.0F - 137.5F;

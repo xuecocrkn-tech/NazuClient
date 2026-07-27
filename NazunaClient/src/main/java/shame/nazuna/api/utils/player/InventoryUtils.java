@@ -1,38 +1,38 @@
 package shame.nazuna.api.utils.player;
- import net.minecraft.class_10192;
- import net.minecraft.class_1268;
- import net.minecraft.class_1657;
- import net.minecraft.class_1713;
- import net.minecraft.class_1738;
- import net.minecraft.class_1792;
- import net.minecraft.class_1799;
- import net.minecraft.class_1802;
- import net.minecraft.class_1839;
- import net.minecraft.class_1887;
- import net.minecraft.class_1893;
- import net.minecraft.class_2596;
- import net.minecraft.class_2815;
- import net.minecraft.class_2848;
- import net.minecraft.class_2851;
- import net.minecraft.class_2868;
- import net.minecraft.class_5321;
- import net.minecraft.class_6880;
- import net.minecraft.class_9304;
- import net.minecraft.class_9334;
+ import net.minecraft.EquippableComponent;
+ import net.minecraft.Hand;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.ArmorItem;
+ import net.minecraft.Item;
+ import net.minecraft.ItemStack;
+ import net.minecraft.Items;
+ import net.minecraft.UseAction;
+ import net.minecraft.Enchantment;
+ import net.minecraft.Enchantments;
+ import net.minecraft.Packet;
+ import net.minecraft.CloseHandledScreenC2SPacket;
+ import net.minecraft.ClientCommandC2SPacket;
+ import net.minecraft.PlayerInputC2SPacket;
+ import net.minecraft.UpdateSelectedSlotC2SPacket;
+ import net.minecraft.RegistryKey;
+ import net.minecraft.RegistryEntry;
+ import net.minecraft.ItemEnchantmentsComponent;
+ import net.minecraft.DataComponentTypes;
  
  public final class InventoryUtils implements QClient {
    private InventoryUtils() {
      throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
    }
-   public static int getItemSlot(class_1792 input) {
-     for (class_1799 stack : mc.field_1724.method_5661()) {
+   public static int getItemSlot(Item input) {
+     for (ItemStack stack : mc.field_1724.method_5661()) {
        if (stack.method_7909() == input) {
          return -2;
        }
      } 
      int slot = -1;
      for (int i = 0; i < 36; i++) {
-       class_1799 s = mc.field_1724.method_31548().method_5438(i);
+       ItemStack s = mc.field_1724.method_31548().method_5438(i);
        if (s.method_7909() == input) {
          slot = i;
          break;
@@ -44,13 +44,13 @@ package shame.nazuna.api.utils.player;
      return slot;
    }
    
-   public static int getEnchantmentLevel(class_1799 stack, class_5321<class_1887> enchantmentKey) {
-     class_9304 enchantments = (class_9304)stack.method_57825(class_9334.field_49633, class_9304.field_49385);
+   public static int getEnchantmentLevel(ItemStack stack, RegistryKey<Enchantment> enchantmentKey) {
+     ItemEnchantmentsComponent enchantments = (ItemEnchantmentsComponent)stack.method_57825(DataComponentTypes.field_49633, ItemEnchantmentsComponent.field_49385);
  
  
  
      
-     for (class_6880<class_1887> enchantment : (Iterable<class_6880<class_1887>>)enchantments.method_57534()) {
+     for (RegistryEntry<Enchantment> enchantment : (Iterable<RegistryEntry<Enchantment>>)enchantments.method_57534()) {
        if (enchantment.method_40225(enchantmentKey)) {
          return enchantments.method_57536(enchantment);
        }
@@ -66,13 +66,13 @@ package shame.nazuna.api.utils.player;
      double bestScore = -1.0D;
      
      for (int slot = 0; slot < 36; slot++) {
-       class_1799 stack = mc.field_1724.method_31548().method_5438(slot);
+       ItemStack stack = mc.field_1724.method_31548().method_5438(slot);
        
-       if (stack.method_7909() == class_1802.field_8833) {
+       if (stack.method_7909() == Items.field_8833) {
          
-         int protection = getEnchantmentLevel(stack, class_1893.field_9111);
-         int unbreaking = getEnchantmentLevel(stack, class_1893.field_9119);
-         int mending = getEnchantmentLevel(stack, class_1893.field_9101);
+         int protection = getEnchantmentLevel(stack, Enchantments.field_9111);
+         int unbreaking = getEnchantmentLevel(stack, Enchantments.field_9119);
+         int mending = getEnchantmentLevel(stack, Enchantments.field_9101);
          
          int maxDurability = stack.method_7936();
          int currentDamage = stack.method_7919();
@@ -96,16 +96,16 @@ package shame.nazuna.api.utils.player;
      double bestScore = -1.0D;
      
      for (int slot = 0; slot < 36; slot++) {
-       class_1799 stack = mc.field_1724.method_31548().method_5438(slot);
-       class_1792 class_1792 = stack.method_7909(); if (class_1792 instanceof class_1738) { class_1738 armor = (class_1738)class_1792;
+       ItemStack stack = mc.field_1724.method_31548().method_5438(slot);
+       Item Item = stack.method_7909(); if (Item instanceof ArmorItem) { ArmorItem armor = (ArmorItem)Item;
          
-         class_10192 equippable = (class_10192)stack.method_57824(class_9334.field_54196);
-         if (equippable != null && equippable.comp_3174() == class_1304.field_6174) {
+         EquippableComponent equippable = (EquippableComponent)stack.method_57824(DataComponentTypes.field_54196);
+         if (equippable != null && equippable.comp_3174() == EquipmentSlot.field_6174) {
            
-           int protection = getEnchantmentLevel(stack, class_1893.field_9111);
-           int unbreaking = getEnchantmentLevel(stack, class_1893.field_9119);
-           int mending = getEnchantmentLevel(stack, class_1893.field_9101);
-           int priority = getChestplatePriority((class_1792)armor);
+           int protection = getEnchantmentLevel(stack, Enchantments.field_9111);
+           int unbreaking = getEnchantmentLevel(stack, Enchantments.field_9119);
+           int mending = getEnchantmentLevel(stack, Enchantments.field_9101);
+           int priority = getChestplatePriority((Item)armor);
            
            int maxDamage = stack.method_7936();
            int damage = stack.method_7919();
@@ -125,17 +125,17 @@ package shame.nazuna.api.utils.player;
      }  return bestSlot;
    }
    
-   public static int getChestplatePriority(class_1792 item) {
-     if (item == class_1802.field_22028) return 5; 
-     if (item == class_1802.field_8058) return 4; 
-     if (item == class_1802.field_8523) return 3; 
-     if (item == class_1802.field_8678) return 2; 
-     if (item == class_1802.field_8873) return 2; 
-     if (item == class_1802.field_8577) return 1; 
+   public static int getChestplatePriority(Item item) {
+     if (item == Items.field_22028) return 5; 
+     if (item == Items.field_8058) return 4; 
+     if (item == Items.field_8523) return 3; 
+     if (item == Items.field_8678) return 2; 
+     if (item == Items.field_8873) return 2; 
+     if (item == Items.field_8577) return 1; 
      return 0;
    }
    
-   public static int find(class_1792 item, int start, int end) {
+   public static int find(Item item, int start, int end) {
      if (mc.field_1724 != null) {
        for (int i = end; i >= start; i--) {
          if (mc.field_1724.field_7512.field_7763 != 0 && mc.field_1724.field_7512.method_7611(i).method_7677().method_7909() == item) {
@@ -151,7 +151,7 @@ package shame.nazuna.api.utils.player;
      return -1;
    }
    
-   public static void swapAndUseHvH(class_1792 item) {
+   public static void swapAndUseHvH(Item item) {
      int slot = find(item, 9, 45);
      int slotHotbar = find(item, 0, 8);
      int previousSlot = (mc.field_1724.method_31548()).field_7545;
@@ -160,37 +160,37 @@ package shame.nazuna.api.utils.player;
      
      if (mc.field_1724.method_6047().method_7909() == item) {
        if (!isUsingItem) {
-         mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
+         mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
        }
        
        return;
      } 
      if (mc.field_1724.method_6079().method_7909() == item) {
-       mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5810);
+       mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5810);
        
        return;
      } 
      if (isUsingItem) {
        if (slotHotbar != -1) {
-         mc.field_1761.method_2906(0, 36 + slotHotbar, 40, class_1713.field_7791, (class_1657)mc.field_1724);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
-         mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5810);
-         mc.field_1761.method_2906(0, 36 + slotHotbar, 40, class_1713.field_7791, (class_1657)mc.field_1724);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+         mc.field_1761.method_2906(0, 36 + slotHotbar, 40, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+         mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
+         mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5810);
+         mc.field_1761.method_2906(0, 36 + slotHotbar, 40, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+         mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
        } else if (slot != -1) {
-         mc.field_1761.method_2906(0, slot, 40, class_1713.field_7791, (class_1657)mc.field_1724);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
-         mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5810);
-         mc.field_1761.method_2906(0, slot, 40, class_1713.field_7791, (class_1657)mc.field_1724);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+         mc.field_1761.method_2906(0, slot, 40, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+         mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
+         mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5810);
+         mc.field_1761.method_2906(0, slot, 40, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+         mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
        } 
        
        return;
      } 
      if (slotHotbar != -1) {
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2868(slotHotbar));
-       mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2868(previousSlot));
+       mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(slotHotbar));
+       mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
+       mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(previousSlot));
        
        return;
      } 
@@ -198,14 +198,14 @@ package shame.nazuna.api.utils.player;
        int slotCorrectable = -1;
        
        for (int slotNone = 0; slotNone < 8; slotNone++) {
-         class_1799 stack = mc.field_1724.method_31548().method_5438(slotNone);
+         ItemStack stack = mc.field_1724.method_31548().method_5438(slotNone);
          if (stack.method_7960()) {
            slotCorrectable = slotNone;
            
            break;
          } 
-         class_1839 action = stack.method_7976();
-         if (action == class_1839.field_8952) {
+         UseAction action = stack.method_7976();
+         if (action == UseAction.field_8952) {
            slotCorrectable = slotNone;
          }
        } 
@@ -213,9 +213,9 @@ package shame.nazuna.api.utils.player;
        boolean wasSprinting = false;
        
        if (mc.field_1724.method_5624()) {
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2851(new class_10185(false, false, false, false, false, false, false)));
+         mc.field_1724.field_3944.method_52787((Packet)new PlayerInputC2SPacket(new PlayerInput(false, false, false, false, false, false, false)));
          mc.field_1724.method_5728(false);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2848((class_1297)mc.field_1724, class_2848.class_2849.field_12985));
+         mc.field_1724.field_3944.method_52787((Packet)new ClientCommandC2SPacket((Entity)mc.field_1724, ClientCommandC2SPacket.class_2849.field_12985));
          if (!ModuleClass.sprint.isEnable()) {
            mc.field_1690.field_1867.method_23481(false);
          }
@@ -223,23 +223,23 @@ package shame.nazuna.api.utils.player;
        } 
        
        if (slotCorrectable == -1) {
-         mc.field_1761.method_2906(0, slot, 8, class_1713.field_7791, (class_1657)mc.field_1724);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2868(8));
-         mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2868(previousSlot));
+         mc.field_1761.method_2906(0, slot, 8, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+         mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
+         mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(8));
+         mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
+         mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(previousSlot));
        } else {
-         mc.field_1761.method_2906(0, slot, slotCorrectable, class_1713.field_7791, (class_1657)mc.field_1724);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2868(slotCorrectable));
-         mc.field_1761.method_2919((class_1657)mc.field_1724, class_1268.field_5808);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2868(previousSlot));
-         mc.field_1761.method_2906(0, slot, slotCorrectable, class_1713.field_7791, (class_1657)mc.field_1724);
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2815(0));
+         mc.field_1761.method_2906(0, slot, slotCorrectable, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+         mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
+         mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(slotCorrectable));
+         mc.field_1761.method_2919((PlayerEntity)mc.field_1724, Hand.field_5808);
+         mc.field_1724.field_3944.method_52787((Packet)new UpdateSelectedSlotC2SPacket(previousSlot));
+         mc.field_1761.method_2906(0, slot, slotCorrectable, SlotActionType.field_7791, (PlayerEntity)mc.field_1724);
+         mc.field_1724.field_3944.method_52787((Packet)new CloseHandledScreenC2SPacket(0));
        } 
        
        if (wasSprinting)
-         mc.field_1724.field_3944.method_52787((class_2596)new class_2851(mc.field_1724.field_3913.field_54155)); 
+         mc.field_1724.field_3944.method_52787((Packet)new PlayerInputC2SPacket(mc.field_1724.field_3913.field_54155)); 
      } 
    }
  }

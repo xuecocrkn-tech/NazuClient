@@ -1,8 +1,8 @@
 package shame.nazuna.client.modules.impl.movement;
  
- import net.minecraft.class_2246;
- import net.minecraft.class_2338;
- import net.minecraft.class_2680;
+ import net.minecraft.Blocks;
+ import net.minecraft.BlockPos;
+ import net.minecraft.BlockState;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -64,9 +64,9 @@ package shame.nazuna.client.modules.impl.movement;
    }
    
    private void handleShulker() {
-     if (!(mc.field_1755 instanceof net.minecraft.class_495))
+     if (!(mc.field_1755 instanceof net.minecraft.ShulkerBoxScreen))
        return; 
-     class_2338 playerPos = mc.field_1724.method_24515();
+     BlockPos playerPos = mc.field_1724.method_24515();
  
  
  
@@ -74,13 +74,13 @@ package shame.nazuna.client.modules.impl.movement;
  
  
      
-     class_2338[] checkPositions = { playerPos.method_10074(), playerPos, playerPos.method_10095(), playerPos.method_10072(), playerPos.method_10078(), playerPos.method_10067() };
+     BlockPos[] checkPositions = { playerPos.method_10074(), playerPos, playerPos.method_10095(), playerPos.method_10072(), playerPos.method_10078(), playerPos.method_10067() };
  
      
      boolean onShulker = false;
-     for (class_2338 pos : checkPositions) {
-       class_2680 state = mc.field_1687.method_8320(pos);
-       if (state.method_26204() instanceof net.minecraft.class_2480) {
+     for (BlockPos pos : checkPositions) {
+       BlockState state = mc.field_1687.method_8320(pos);
+       if (state.method_26204() instanceof net.minecraft.ShulkerBoxBlock) {
          onShulker = true;
          
          break;
@@ -95,11 +95,11 @@ package shame.nazuna.client.modules.impl.movement;
    private void handleSlime() {
      double velY = (mc.field_1724.method_18798()).field_1351;
      
-     class_2338 below = mc.field_1724.method_24515().method_10074();
-     class_2338 belowTwo = mc.field_1724.method_24515().method_10087(2);
+     BlockPos below = mc.field_1724.method_24515().method_10074();
+     BlockPos belowTwo = mc.field_1724.method_24515().method_10087(2);
  
      
-     boolean onSlime = (mc.field_1687.method_8320(below).method_27852(class_2246.field_10030) || mc.field_1687.method_8320(belowTwo).method_27852(class_2246.field_10030));
+     boolean onSlime = (mc.field_1687.method_8320(below).method_27852(Blocks.field_10030) || mc.field_1687.method_8320(belowTwo).method_27852(Blocks.field_10030));
      
      if (this.lastVelY < -0.1D && velY > 0.1D && onSlime && this.cooldown == 0) {
        double boostedVel = velY * this.slimeMultiplier.get();
@@ -111,7 +111,7 @@ package shame.nazuna.client.modules.impl.movement;
    }
    
    private void handleBoat() {
-     boolean inBoat = mc.field_1724.method_5854() instanceof net.minecraft.class_1690;
+     boolean inBoat = mc.field_1724.method_5854() instanceof net.minecraft.BoatEntity;
      
      if (this.wasInBoat && !inBoat && this.cooldown == 0) {
        mc.field_1724.method_18800((mc.field_1724.method_18798()).field_1352, 1.5D, (mc.field_1724.method_18798()).field_1350);

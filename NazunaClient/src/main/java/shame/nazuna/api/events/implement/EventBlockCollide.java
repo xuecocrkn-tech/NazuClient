@@ -1,12 +1,12 @@
 package shame.nazuna.api.events.implement;
- import net.minecraft.class_2338;
+ import net.minecraft.BlockPos;
  import shame.nazuna.api.events.Event;
  
  public class EventBlockCollide extends Event {
-   public class_2338 getPos() {
+   public BlockPos getPos() {
      return this.pos;
-   } private final class_2338 pos;
-   public EventBlockCollide(class_2338 pos) {
+   } private final BlockPos pos;
+   public EventBlockCollide(BlockPos pos) {
      this.pos = pos;
    }
  }

@@ -1,7 +1,7 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_1309;
- import net.minecraft.class_310;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.MinecraftClient;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
@@ -9,12 +9,12 @@ package shame.nazuna.mixin;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.client.modules.impl.render.SwingAnimations;
  
- @Mixin({class_1309.class})
+ @Mixin({LivingEntity.class})
  public abstract class LivingEntityMixin
  {
    @Inject(method = {"method_6028"}, at = {@At("HEAD")}, cancellable = true)
    private void onGetHandSwingDuration(CallbackInfoReturnable<Integer> cir) {
-     if (this != (class_310.method_1551()).field_1724) {
+     if (this != (MinecraftClient.method_1551()).field_1724) {
        return;
      }
      

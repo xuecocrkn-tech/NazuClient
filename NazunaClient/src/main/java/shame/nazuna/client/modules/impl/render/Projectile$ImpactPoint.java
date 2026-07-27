@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -24,7 +24,7 @@ package shame.nazuna.client.modules.impl.render;
  final class ImpactPoint
    extends Record
  {
-   private final class_243 pos;
+   private final Vec3d pos;
    private final float seconds;
    
    public final String toString() {
@@ -68,8 +68,8 @@ package shame.nazuna.client.modules.impl.render;
      //   0	8	1	o	Ljava/lang/Object;
    }
    
-   private ImpactPoint(class_243 pos, float seconds) {
-     this.pos = pos; this.seconds = seconds; } public class_243 pos() { return this.pos; } public float seconds() { return this.seconds; }
+   private ImpactPoint(Vec3d pos, float seconds) {
+     this.pos = pos; this.seconds = seconds; } public Vec3d pos() { return this.pos; } public float seconds() { return this.seconds; }
  
  }
 

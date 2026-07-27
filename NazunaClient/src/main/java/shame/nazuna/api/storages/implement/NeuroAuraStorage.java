@@ -15,10 +15,10 @@ package shame.nazuna.api.storages.implement;
  import java.util.List;
  import java.util.concurrent.CopyOnWriteArrayList;
  import java.util.concurrent.ThreadLocalRandom;
- import net.minecraft.class_1309;
- import net.minecraft.class_238;
- import net.minecraft.class_243;
- import net.minecraft.class_3532;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Box;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.storages.implement.helpertstorages.NeuroPattern;
  import shame.nazuna.api.utils.rotate.Rotation;
@@ -62,10 +62,10 @@ package shame.nazuna.api.storages.implement;
    private float yawSpeedFactor = 1.0F;
    private float pitchSpeedFactor = 1.0F;
    private int speedProfileTicks = 0;
-   private class_243 currentAimPoint = null;
-   private class_243 targetRandomPoint = null;
+   private Vec3d currentAimPoint = null;
+   private Vec3d targetRandomPoint = null;
    private int aimPointTicks = 0;
-   private class_1309 lastAimTarget = null;
+   private LivingEntity lastAimTarget = null;
    private boolean lastWasIdle = true;
    private int attackCount = 0;
    private float randomXOffset = 0.0F;
@@ -87,7 +87,7 @@ package shame.nazuna.api.storages.implement;
      } 
    }
    
-   public void recordTick(class_1309 target, float currentYaw, float currentPitch) {
+   public void recordTick(LivingEntity target, float currentYaw, float currentPitch) {
      if (!this.isRecording || mc.field_1724 == null) {
        return;
      }
@@ -101,7 +101,7 @@ package shame.nazuna.api.storages.implement;
      float deltaPitch = 0.0F;
      
      if (this.hasRecordedBefore) {
-       deltaYaw = class_3532.method_15393(currentYaw - this.prevRecordYaw);
+       deltaYaw = MathHelper.method_15393(currentYaw - this.prevRecordYaw);
        deltaPitch = currentPitch - this.prevRecordPitch;
      } 
      
@@ -133,7 +133,7 @@ package shame.nazuna.api.storages.implement;
      
      if (hasTarget) {
        boolean crit = (mc.field_1724.field_6017 > 0.0F && !mc.field_1724.method_24828());
-       String type = (target instanceof net.minecraft.class_1657) ? "player" : "mob";
+       String type = (target instanceof net.minecraft.PlayerEntity) ? "player" : "mob";
        this.recordedPatterns.add(new NeuroPattern(angleYaw, anglePitch, deltaYaw, deltaPitch, distance, crit, 0.0D, type, frame.smoothness));
  
  
@@ -154,7 +154,7 @@ package shame.nazuna.api.storages.implement;
      }
    }
    
-   public Rotation getNeuroRotation(class_1309 target, float currentYaw, float currentPitch, boolean idle) {
+   public Rotation getNeuroRotation(LivingEntity target, float currentYaw, float currentPitch, boolean idle) {
      if (!this.isUsingNeuro || target == null || mc.field_1724 == null || this.frames.isEmpty()) {
        resetState();
        return null;
@@ -180,7 +180,7 @@ package shame.nazuna.api.storages.implement;
      
      if (!needSync && this.ticksSinceSync >= 5) {
        Frame currentFrame = this.frames.get(this.playbackIndex);
-       float yawDiff = Math.abs(class_3532.method_15393(currentFrame.angleYaw - aimData.angleYaw));
+       float yawDiff = Math.abs(MathHelper.method_15393(currentFrame.angleYaw - aimData.angleYaw));
        float pitchDiff = Math.abs(currentFrame.anglePitch - aimData.anglePitch);
        float distDiff = (float)Math.abs(currentFrame.distance - aimData.distance);
        if (yawDiff + pitchDiff + distDiff * 0.3F > 45.0F) {
@@ -212,11 +212,11 @@ package shame.nazuna.api.storages.implement;
      applyPitch = adaptRecordedDelta(applyPitch, aimData.anglePitch, frame.smoothness, idle, 6.0F);
      
      if (Math.abs(aimData.angleYaw) < 32.0F) {
-       applyYaw = class_3532.method_16439(0.58F, applyYaw, aimData.angleYaw);
+       applyYaw = MathHelper.method_16439(0.58F, applyYaw, aimData.angleYaw);
      }
      
      if (Math.abs(aimData.anglePitch) < 24.0F) {
-       applyPitch = class_3532.method_16439(0.52F, applyPitch, aimData.anglePitch);
+       applyPitch = MathHelper.method_16439(0.52F, applyPitch, aimData.anglePitch);
      }
      
      this.smoothedYawDelta = smoothDelta(this.smoothedYawDelta, applyYaw, frame.smoothness);
@@ -227,8 +227,8 @@ package shame.nazuna.api.storages.implement;
      quantizedYaw += getMicroJitter(true, idle, airborne, aimData);
      quantizedPitch += getMicroJitter(false, idle, airborne, aimData);
      
-     float rawYaw = class_3532.method_15393(currentYaw + quantizedYaw);
-     float rawPitch = class_3532.method_15363(currentPitch + quantizedPitch, -90.0F, 90.0F);
+     float rawYaw = MathHelper.method_15393(currentYaw + quantizedYaw);
+     float rawPitch = MathHelper.method_15363(currentPitch + quantizedPitch, -90.0F, 90.0F);
      float finalYaw = smoothOutputRotation(rawYaw, currentYaw, frame.smoothness, idle, true);
      float finalPitch = smoothOutputRotation(rawPitch, currentPitch, frame.smoothness, idle, false);
      
@@ -242,7 +242,7 @@ package shame.nazuna.api.storages.implement;
      } 
      
      if (this.playbackIndex >= this.frames.size()) {
-       float newAngleYaw = class_3532.method_15393(aimData.perfectYaw - finalYaw);
+       float newAngleYaw = MathHelper.method_15393(aimData.perfectYaw - finalYaw);
        float newAnglePitch = aimData.perfectPitch - finalPitch;
        this.playbackIndex = findBest(newAngleYaw, newAnglePitch, aimData.distance);
        this.ticksSinceSync = 0;
@@ -259,9 +259,9 @@ package shame.nazuna.api.storages.implement;
      this.randomZOffset = r.nextFloat(-0.38F, 0.38F);
    }
    
-   private AimData getAimData(class_1309 target, float currentYaw, float currentPitch, Frame frame, boolean relaxed) {
-     class_243 eyePos = mc.field_1724.method_33571();
-     class_243 point = selectAimPoint(target, relaxed);
+   private AimData getAimData(LivingEntity target, float currentYaw, float currentPitch, Frame frame, boolean relaxed) {
+     Vec3d eyePos = mc.field_1724.method_33571();
+     Vec3d point = selectAimPoint(target, relaxed);
      double distance = eyePos.method_1022(point);
      
      double dx = point.field_1352 - eyePos.field_1352;
@@ -277,7 +277,7 @@ package shame.nazuna.api.storages.implement;
      aimData.distance = distance;
      aimData.perfectYaw = perfectYaw;
      aimData.perfectPitch = perfectPitch;
-     aimData.angleYaw = class_3532.method_15393(perfectYaw - currentYaw);
+     aimData.angleYaw = MathHelper.method_15393(perfectYaw - currentYaw);
      aimData.anglePitch = perfectPitch - currentPitch;
      return aimData;
    }
@@ -285,7 +285,7 @@ package shame.nazuna.api.storages.implement;
    private float adaptRecordedDelta(float recordedDelta, float currentAngle, float smoothness, boolean idle, float maxCorrection) {
      float correctionWeight = idle ? 0.14F : 0.045F;
      float correctionLimit = idle ? (maxCorrection * 0.65F) : (maxCorrection * 0.3F);
-     float correction = class_3532.method_15363(currentAngle - recordedDelta, -correctionLimit, correctionLimit);
+     float correction = MathHelper.method_15363(currentAngle - recordedDelta, -correctionLimit, correctionLimit);
      float result = recordedDelta + correction * correctionWeight;
      
      if (Math.abs(currentAngle) < Math.abs(result) && Math.signum(currentAngle) == Math.signum(result)) {
@@ -294,7 +294,7 @@ package shame.nazuna.api.storages.implement;
  
  
      
-     float preserveFactor = idle ? class_3532.method_15363(1.0F - smoothness * 0.22F, 0.8F, 0.97F) : class_3532.method_15363(1.0F - smoothness * 0.1F, 0.91F, 0.99F);
+     float preserveFactor = idle ? MathHelper.method_15363(1.0F - smoothness * 0.22F, 0.8F, 0.97F) : MathHelper.method_15363(1.0F - smoothness * 0.1F, 0.91F, 0.99F);
      result *= preserveFactor;
      
      if (Math.abs(currentAngle) <= GCDUtil.getGCDValue()) {
@@ -304,7 +304,7 @@ package shame.nazuna.api.storages.implement;
      return result;
    }
    
-   private class_243 selectAimPoint(class_1309 target, boolean relaxed) {
+   private Vec3d selectAimPoint(LivingEntity target, boolean relaxed) {
      if (target != this.lastAimTarget) {
        this.lastAimTarget = target;
        this.currentAimPoint = null;
@@ -313,12 +313,12 @@ package shame.nazuna.api.storages.implement;
        rollNewRandomPoint();
      } 
      
-     class_238 box = target.method_5829();
-     class_243 eyePos = mc.field_1724.method_33571();
+     Box box = target.method_5829();
+     Vec3d eyePos = mc.field_1724.method_33571();
  
  
      
-     class_243 stablePoint = new class_243((box.method_1005()).field_1352, box.field_1322 + box.method_17940() * 0.72D, (box.method_1005()).field_1350);
+     Vec3d stablePoint = new Vec3d((box.method_1005()).field_1352, box.field_1322 + box.method_17940() * 0.72D, (box.method_1005()).field_1350);
      
      if (box.method_1014(0.12D).method_1006(eyePos) || eyePos.method_1025(stablePoint) <= 2.25D) {
        this.currentAimPoint = stablePoint;
@@ -333,7 +333,7 @@ package shame.nazuna.api.storages.implement;
      double halfD = box.method_17941() * 0.5D;
      double height = box.method_17940();
      
-     class_243 desired = new class_243(xCenter + halfW * this.randomXOffset, box.field_1322 + height * this.randomYRatio, zCenter + halfD * this.randomZOffset);
+     Vec3d desired = new Vec3d(xCenter + halfW * this.randomXOffset, box.field_1322 + height * this.randomYRatio, zCenter + halfD * this.randomZOffset);
  
  
  
@@ -346,7 +346,7 @@ package shame.nazuna.api.storages.implement;
        this
  
          
-         .targetRandomPoint = new class_243(class_3532.method_16436(driftLerp, this.targetRandomPoint.field_1352, desired.field_1352), class_3532.method_16436(driftLerp, this.targetRandomPoint.field_1351, desired.field_1351), class_3532.method_16436(driftLerp, this.targetRandomPoint.field_1350, desired.field_1350));
+         .targetRandomPoint = new Vec3d(MathHelper.method_16436(driftLerp, this.targetRandomPoint.field_1352, desired.field_1352), MathHelper.method_16436(driftLerp, this.targetRandomPoint.field_1351, desired.field_1351), MathHelper.method_16436(driftLerp, this.targetRandomPoint.field_1350, desired.field_1350));
      } 
  
      
@@ -360,14 +360,14 @@ package shame.nazuna.api.storages.implement;
      this
  
        
-       .currentAimPoint = new class_243(class_3532.method_16436(pointLerp, this.currentAimPoint.field_1352, this.targetRandomPoint.field_1352), class_3532.method_16436(pointLerp, this.currentAimPoint.field_1351, this.targetRandomPoint.field_1351), class_3532.method_16436(pointLerp, this.currentAimPoint.field_1350, this.targetRandomPoint.field_1350));
+       .currentAimPoint = new Vec3d(MathHelper.method_16436(pointLerp, this.currentAimPoint.field_1352, this.targetRandomPoint.field_1352), MathHelper.method_16436(pointLerp, this.currentAimPoint.field_1351, this.targetRandomPoint.field_1351), MathHelper.method_16436(pointLerp, this.currentAimPoint.field_1350, this.targetRandomPoint.field_1350));
      
      this.aimPointTicks++;
      return this.currentAimPoint;
    }
    
    private float smoothDelta(float current, float target, float smoothness) {
-     float lerpFactor = class_3532.method_15363(0.035F + (1.0F - smoothness) * 0.12F, 0.035F, 0.15F);
+     float lerpFactor = MathHelper.method_15363(0.035F + (1.0F - smoothness) * 0.12F, 0.035F, 0.15F);
      return current + (target - current) * lerpFactor;
    }
    
@@ -379,24 +379,24 @@ package shame.nazuna.api.storages.implement;
  
  
      
-     float delta = yawAxis ? class_3532.method_15393(targetRotation - previous) : (targetRotation - previous);
+     float delta = yawAxis ? MathHelper.method_15393(targetRotation - previous) : (targetRotation - previous);
  
  
      
      float maxStep = yawAxis ? (idle ? 1.68F : 0.86F) : (idle ? 1.26F : 0.62F);
  
      
-     float lerpFactor = idle ? class_3532.method_15363(0.08F + (1.0F - smoothness) * 0.09F, 0.08F, 0.17F) : class_3532.method_15363(0.04F + (1.0F - smoothness) * 0.055F, 0.04F, 0.095F);
+     float lerpFactor = idle ? MathHelper.method_15363(0.08F + (1.0F - smoothness) * 0.09F, 0.08F, 0.17F) : MathHelper.method_15363(0.04F + (1.0F - smoothness) * 0.055F, 0.04F, 0.095F);
      
      maxStep *= yawAxis ? this.yawSpeedFactor : this.pitchSpeedFactor;
      lerpFactor *= yawAxis ? this.yawSpeedFactor : this.pitchSpeedFactor;
      
-     float smoothed = previous + class_3532.method_15363(delta * lerpFactor, -maxStep, maxStep);
+     float smoothed = previous + MathHelper.method_15363(delta * lerpFactor, -maxStep, maxStep);
      if (yawAxis) {
-       smoothed = class_3532.method_15393(smoothed);
+       smoothed = MathHelper.method_15393(smoothed);
        this.smoothedOutputYaw = smoothed;
      } else {
-       smoothed = class_3532.method_15363(smoothed, -90.0F, 90.0F);
+       smoothed = MathHelper.method_15363(smoothed, -90.0F, 90.0F);
        this.smoothedOutputPitch = smoothed;
      } 
      return smoothed;
@@ -409,7 +409,7 @@ package shame.nazuna.api.storages.implement;
        return;
      } 
      ThreadLocalRandom random = ThreadLocalRandom.current();
-     float anglePressure = class_3532.method_15363((Math.abs(aimData.angleYaw) + Math.abs(aimData.anglePitch)) / 35.0F, 0.0F, 1.0F);
+     float anglePressure = MathHelper.method_15363((Math.abs(aimData.angleYaw) + Math.abs(aimData.anglePitch)) / 35.0F, 0.0F, 1.0F);
      float baseYawMin = idle ? 1.06F : 0.96F;
      float baseYawMax = idle ? 1.34F : 1.12F;
      float basePitchMin = idle ? 1.0F : 0.9F;
@@ -478,7 +478,7 @@ package shame.nazuna.api.storages.implement;
      float base = 1.0F - magnitude / 18.0F;
      float periodic = (float)Math.sin(((this.recordedThisSession + mc.field_1724.field_6012 * 0.31F) * 0.34F)) * 0.012F;
      float noise = ThreadLocalRandom.current().nextFloat(-0.008F, 0.008F);
-     return class_3532.method_15363(base + periodic + noise, 0.22F, 0.88F);
+     return MathHelper.method_15363(base + periodic + noise, 0.22F, 0.88F);
    }
    
    private int findBest(float angleYaw, float anglePitch, double distance) {
@@ -491,7 +491,7 @@ package shame.nazuna.api.storages.implement;
  
  
          
-         float yawDiff = Math.abs(class_3532.method_15393(frame.angleYaw - angleYaw));
+         float yawDiff = Math.abs(MathHelper.method_15393(frame.angleYaw - angleYaw));
          float pitchDiff = Math.abs(frame.anglePitch - anglePitch);
          float distanceDiff = (float)Math.abs(frame.distance - distance);
          float score = yawDiff + pitchDiff + distanceDiff * 0.3F;
@@ -573,7 +573,7 @@ package shame.nazuna.api.storages.implement;
        frame.anglePitch = pattern.getPitch();
        frame.distance = pattern.getDistance();
        frame.hasTarget = true;
-       frame.smoothness = class_3532.method_15363(pattern.getSmoothness(), 0.18F, 0.9F);
+       frame.smoothness = MathHelper.method_15363(pattern.getSmoothness(), 0.18F, 0.9F);
        this.frames.add(frame);
      } 
    }
@@ -707,7 +707,7 @@ package shame.nazuna.api.storages.implement;
    }
    
    private static class AimData {
-     class_243 targetPoint;
+     Vec3d targetPoint;
      float perfectYaw;
      float perfectPitch;
      float angleYaw;

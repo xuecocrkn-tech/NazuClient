@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.misc;
  
- import net.minecraft.class_2338;
- import net.minecraft.class_2561;
+ import net.minecraft.BlockPos;
+ import net.minecraft.Text;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -13,7 +13,7 @@ package shame.nazuna.client.modules.impl.misc;
    
    private final BooleanSetting copyToClipboard = new BooleanSetting("Копировать в буфер", true);
    
-   private class_2338 deathPos = null;
+   private BlockPos deathPos = null;
    private boolean isDead = false;
    
    public DeathCoord() {
@@ -40,7 +40,7 @@ package shame.nazuna.client.modules.impl.misc;
        String dimension = getDimension();
        String message = "§cВы умерли! §f" + coords + " §7(" + dimension + ")";
        
-       mc.field_1724.method_7353((class_2561)class_2561.method_43470(message), false);
+       mc.field_1724.method_7353((Text)Text.method_43470(message), false);
        
        if (this.copyToClipboard.isState()) {
          mc.field_1774.method_1455("" + this.deathPos.method_10263() + " " + this.deathPos.method_10263() + " " + this.deathPos.method_10264());

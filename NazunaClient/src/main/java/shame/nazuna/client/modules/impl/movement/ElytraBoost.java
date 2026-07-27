@@ -1,5 +1,5 @@
 package shame.nazuna.client.modules.impl.movement;
- import net.minecraft.class_241;
+ import net.minecraft.Vec2f;
  import shame.nazuna.api.utils.chat.ChatUtils;
  import shame.nazuna.client.modules.Module;
  import shame.nazuna.client.modules.impl.combat.Aura;
@@ -43,20 +43,20 @@ package shame.nazuna.client.modules.impl.movement;
      return this.mode.is("Custom");
    }
    
-   public class_241 getBoostV2() {
+   public Vec2f getBoostV2() {
      float yaw = (mc.field_1724 != null) ? mc.field_1724.method_36454() : 0.0F;
      float pitch = (mc.field_1724 != null) ? mc.field_1724.method_36455() : 0.0F;
      
      Aura aura = Aura.INSTANCE;
      if (aura != null && aura.isEnable() && aura.getTarget() != null) {
-       class_241 rotations = aura.getTargetRotations();
+       Vec2f rotations = aura.getTargetRotations();
        if (rotations != null) {
          yaw = rotations.field_1343;
          pitch = rotations.field_1342;
        } 
      } 
      
-     float normalizedYaw = convertValToRange(class_3532.method_15393(yaw));
+     float normalizedYaw = convertValToRange(MathHelper.method_15393(yaw));
      float normalizedPitch = convertValToRange(Math.abs(pitch));
      int yawIndex = getRangeIndex(normalizedYaw, this.yawSpeeds.length);
      int pitchIndex = getRangeIndex(normalizedPitch, this.pitchSpeeds.length);
@@ -68,7 +68,7 @@ package shame.nazuna.client.modules.impl.movement;
      }
      
      logDebug(yawIndex, yawSpeed, pitchIndex, pitchSpeed);
-     return new class_241(yawSpeed, pitchSpeed);
+     return new Vec2f(yawSpeed, pitchSpeed);
    }
    
    private void logDebug(int yawIndex, float yawSpeed, int pitchIndex, float pitchSpeed) {

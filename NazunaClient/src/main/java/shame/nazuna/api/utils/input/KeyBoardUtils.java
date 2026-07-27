@@ -20,10 +20,10 @@ package shame.nazuna.api.utils.input;
      if (action == 1) {
        if (key == 344) {
          ClientSoundPlayer.playSound("opengui.wav", 0.6D, 1.0F);
-         mc.method_1507((class_437)new MenuPanel());
+         mc.method_1507((Screen)new MenuPanel());
        } 
        if (key == ModuleClass.autoBuy.openKey.getKey()) {
-         mc.method_1507((class_437)new AutoBuy());
+         mc.method_1507((Screen)new AutoBuy());
        }
        
        (new EventBinding(key, EventBinding.BindType.KEYBOARD)).call();

@@ -2,9 +2,9 @@ package shame.nazuna.api.utils.player;
  public final class SlotSearchResult extends Record implements QClient {
    private final int slot;
    private final boolean found;
-   private final class_1799 stack;
+   private final ItemStack stack;
    
-   public SlotSearchResult(int slot, boolean found, class_1799 stack) { this.slot = slot; this.found = found; this.stack = stack; } public final String toString() { // Byte code:
+   public SlotSearchResult(int slot, boolean found, ItemStack stack) { this.slot = slot; this.found = found; this.stack = stack; } public final String toString() { // Byte code:
      //   0: aload_0
      //   1: <illegal opcode> toString : (Lshame/astra/api/utils/player/SlotSearchResult;)Ljava/lang/String;
      //   6: areturn
@@ -33,14 +33,14 @@ package shame.nazuna.api.utils.player;
      // Local variable table:
      //   start	length	slot	name	descriptor
      //   0	8	0	this	Lshame/astra/api/utils/player/SlotSearchResult;
-     //   0	8	1	o	Ljava/lang/Object; } public boolean found() { return this.found; } public class_1799 stack() { return this.stack; }
-    private static final SlotSearchResult NOT_FOUND_RESULT = new SlotSearchResult(-1, false, class_1799.field_8037);
+     //   0	8	1	o	Ljava/lang/Object; } public boolean found() { return this.found; } public ItemStack stack() { return this.stack; }
+    private static final SlotSearchResult NOT_FOUND_RESULT = new SlotSearchResult(-1, false, ItemStack.field_8037);
    
    public static SlotSearchResult notFound() {
      return NOT_FOUND_RESULT;
    }
    @NotNull
-   public static SlotSearchResult inOffhand(class_1799 stack) {
+   public static SlotSearchResult inOffhand(ItemStack stack) {
      return new SlotSearchResult(999, true, stack);
    }
    

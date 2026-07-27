@@ -3,7 +3,7 @@ package shame.nazuna.api.utils.color.fontscolor;
  import java.awt.Color;
  import java.nio.ByteBuffer;
  import java.util.Objects;
- import net.minecraft.class_3532;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.utils.color.ColorUtils;
  import shame.nazuna.api.utils.math.MathUtils;
  
@@ -36,10 +36,10 @@ package shame.nazuna.api.utils.color.fontscolor;
    }
    
    public ColorRGBA(int red, int green, int blue, int alpha) {
-     red = class_3532.method_15340(red, 0, 255);
-     green = class_3532.method_15340(green, 0, 255);
-     blue = class_3532.method_15340(blue, 0, 255);
-     alpha = class_3532.method_15340(alpha, 0, 255);
+     red = MathHelper.method_15340(red, 0, 255);
+     green = MathHelper.method_15340(green, 0, 255);
+     blue = MathHelper.method_15340(blue, 0, 255);
+     alpha = MathHelper.method_15340(alpha, 0, 255);
      this.red = red;
      this.green = green;
      this.blue = blue;
@@ -47,10 +47,10 @@ package shame.nazuna.api.utils.color.fontscolor;
    }
    
    public ColorRGBA(int red, int green, int blue, float alpha) {
-     red = class_3532.method_15340(red, 0, 255);
-     green = class_3532.method_15340(green, 0, 255);
-     blue = class_3532.method_15340(blue, 0, 255);
-     alpha = class_3532.method_15363(alpha, 0.0F, 255.0F);
+     red = MathHelper.method_15340(red, 0, 255);
+     green = MathHelper.method_15340(green, 0, 255);
+     blue = MathHelper.method_15340(blue, 0, 255);
+     alpha = MathHelper.method_15363(alpha, 0.0F, 255.0F);
      this.red = red;
      this.green = green;
      this.blue = blue;
@@ -117,7 +117,7 @@ package shame.nazuna.api.utils.color.fontscolor;
    }
    
    public ColorRGBA darker(float amount) {
-     amount = class_3532.method_15363(amount, 0.0F, 1.0F);
+     amount = MathHelper.method_15363(amount, 0.0F, 1.0F);
      return new ColorRGBA((int)(this.red * (1.0F - amount)), (int)(this.green * (1.0F - amount)), (int)(this.blue * (1.0F - amount)), this.alpha);
    }
    
@@ -218,7 +218,7 @@ package shame.nazuna.api.utils.color.fontscolor;
    }
    
    public ColorRGBA brighter(float amount) {
-     amount = class_3532.method_15363(amount, 0.0F, 1.0F);
+     amount = MathHelper.method_15363(amount, 0.0F, 1.0F);
      return new ColorRGBA((int)(this.red + (255.0F - this.red) * amount), (int)(this.green + (255.0F - this.green) * amount), (int)(this.blue + (255.0F - this.blue) * amount), this.alpha);
    }
    

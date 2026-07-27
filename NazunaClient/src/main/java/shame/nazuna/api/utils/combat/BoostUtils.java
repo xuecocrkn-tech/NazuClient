@@ -1,5 +1,5 @@
 package shame.nazuna.api.utils.combat;
- import net.minecraft.class_3532;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.QClient;
  
  public final class BoostUtils implements QClient {
@@ -15,9 +15,9 @@ package shame.nazuna.api.utils.combat;
      float lastYaw = mc.field_1724.field_5982;
      float lastPitch = mc.field_1724.field_6004;
      int minDist = findClosestVector(lastYaw, vectors);
-     float maxDist = Math.abs(class_3532.method_15393(lastYaw) - vectors[minDist]);
+     float maxDist = Math.abs(MathHelper.method_15393(lastYaw) - vectors[minDist]);
      int addMinDist = findClosestVector(lastYaw, addVectors);
-     float addMaxDist = Math.abs(class_3532.method_15393(lastYaw) - addVectors[addMinDist]);
+     float addMaxDist = Math.abs(MathHelper.method_15393(lastYaw) - addVectors[addMinDist]);
      float countableSpeed = (minDist == -1) ? 1.5F : (1.95F - maxDist * 0.56F / 45.0F);
      if (addMaxDist < 10.0F) countableSpeed += 0.1F - 0.1F * addMaxDist / 10.0F; 
      int pitchMinDist = findClosestVector(lastPitch, pitchVectors);
@@ -43,7 +43,7 @@ package shame.nazuna.api.utils.combat;
      float minDist = Float.MAX_VALUE;
      
      for (int vector : vectors) {
-       float dist = Math.abs(class_3532.method_15393(lastYaw) - vector);
+       float dist = Math.abs(MathHelper.method_15393(lastYaw) - vector);
        if (dist < minDist) {
          minDist = dist;
          minDistIndex = index;

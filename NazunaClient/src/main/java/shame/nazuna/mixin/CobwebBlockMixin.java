@@ -1,20 +1,20 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_1297;
- import net.minecraft.class_1937;
- import net.minecraft.class_2338;
- import net.minecraft.class_2560;
- import net.minecraft.class_2680;
+ import net.minecraft.Entity;
+ import net.minecraft.World;
+ import net.minecraft.BlockPos;
+ import net.minecraft.CobwebBlock;
+ import net.minecraft.BlockState;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
  import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  
- @Mixin({class_2560.class})
+ @Mixin({CobwebBlock.class})
  public class CobwebBlockMixin {
    @Inject(method = {"method_9548"}, at = {@At("HEAD")}, cancellable = true)
-   public void onEntityCollision(class_2680 state, class_1937 world, class_2338 pos, class_1297 entity, CallbackInfo ci) {
+   public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo ci) {
      if (ModuleClass.noWeb.isEnable()) if (ModuleClass.noWeb.web.is("Коллизия")) ci.cancel();  
    }
  }

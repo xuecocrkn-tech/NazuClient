@@ -1,10 +1,10 @@
 package shame.nazuna.client.modules.impl.render.base.implement;
 
-import net.minecraft.class_1291;
-import net.minecraft.class_6880;
+import net.minecraft.StatusEffect;
+import net.minecraft.RegistryEntry;
 
 final class PotionSnapshot {
-  class_6880<class_1291> entry;
+  RegistryEntry<StatusEffect> entry;
   
   String baseName;
   

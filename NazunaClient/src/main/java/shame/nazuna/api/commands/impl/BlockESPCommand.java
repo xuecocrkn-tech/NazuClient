@@ -9,10 +9,10 @@ package shame.nazuna.api.commands.impl;
  import java.util.Set;
  import java.util.concurrent.CompletableFuture;
  import java.util.stream.Collectors;
- import net.minecraft.class_2172;
- import net.minecraft.class_2248;
- import net.minecraft.class_2960;
- import net.minecraft.class_7923;
+ import net.minecraft.CommandSource;
+ import net.minecraft.Block;
+ import net.minecraft.Identifier;
+ import net.minecraft.Registries;
  import shame.nazuna.api.utils.chat.ChatUtils;
  import shame.nazuna.client.modules.impl.render.BlockESP;
  
@@ -23,18 +23,18 @@ package shame.nazuna.api.commands.impl;
  
  
    
-   public void execute(LiteralArgumentBuilder<class_2172> builder) {
+   public void execute(LiteralArgumentBuilder<CommandSource> builder) {
      ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)builder
        .then(literal("add")
          .then(arg("block", (ArgumentType)StringArgumentType.word())
            .suggests((context, builder1) -> {
                String input = builder1.getRemaining().toLowerCase();
                
-               Objects.requireNonNull(class_7923.field_41175);
+               Objects.requireNonNull(Registries.field_41175);
                
                Objects.requireNonNull(builder1);
                
-               class_7923.field_41175.method_10220().map(class_7923.field_41175::method_10221).map(class_2960::method_12832).filter(()).limit(20L).forEach(builder1::suggest);
+               Registries.field_41175.method_10220().map(Registries.field_41175::method_10221).map(Identifier::method_12832).filter(()).limit(20L).forEach(builder1::suggest);
                
                return builder1.buildFuture();
              }).executes(context -> {
@@ -49,7 +49,7 @@ package shame.nazuna.api.commands.impl;
                } 
  
                
-               boolean exists = class_7923.field_41175.method_10220().anyMatch(());
+               boolean exists = Registries.field_41175.method_10220().anyMatch(());
                
                if (!exists) {
                  ChatUtils.sendMessage("§cБлок §e" + blockName + "§c не найден!");

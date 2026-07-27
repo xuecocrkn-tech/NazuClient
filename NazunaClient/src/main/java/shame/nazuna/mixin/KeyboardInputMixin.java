@@ -1,9 +1,9 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_10185;
- import net.minecraft.class_310;
- import net.minecraft.class_743;
- import net.minecraft.class_744;
+ import net.minecraft.PlayerInput;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.KeyboardInput;
+ import net.minecraft.Input;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
@@ -11,9 +11,9 @@ package shame.nazuna.mixin;
  import shame.nazuna.api.events.EventInvoker;
  import shame.nazuna.api.events.implement.EventMoveInput;
  
- @Mixin({class_743.class})
- public abstract class KeyboardInputMixin extends class_744 {
-   private static final class_310 mc = class_310.method_1551();
+ @Mixin({KeyboardInput.class})
+ public abstract class KeyboardInputMixin extends Input {
+   private static final MinecraftClient mc = MinecraftClient.method_1551();
    
    @Inject(method = {"method_3129"}, at = {@At("TAIL")})
    private void onTickTail(CallbackInfo ci) {
@@ -39,7 +39,7 @@ package shame.nazuna.mixin;
  
  
        
-       .field_54155 = new class_10185((forward > 0.0F), (forward < 0.0F), (strafe > 0.0F), (strafe < 0.0F), eventInput.isJump(), eventInput.isSneak(), this.field_54155.comp_3165());
+       .field_54155 = new PlayerInput((forward > 0.0F), (forward < 0.0F), (strafe > 0.0F), (strafe < 0.0F), eventInput.isJump(), eventInput.isSneak(), this.field_54155.comp_3165());
      
      this.field_3905 = forward;
      this.field_3907 = strafe;

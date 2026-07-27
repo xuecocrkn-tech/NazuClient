@@ -4,9 +4,9 @@ package shame.nazuna.client.modules.impl.misc;
  import java.util.Map;
  import java.util.Set;
  import java.util.UUID;
- import net.minecraft.class_124;
- import net.minecraft.class_1657;
- import net.minecraft.class_2338;
+ import net.minecraft.Formatting;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.BlockPos;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.api.utils.chat.ChatUtils;
@@ -16,7 +16,7 @@ package shame.nazuna.client.modules.impl.misc;
    public static LeaveTracker INSTANCE = new LeaveTracker();
    
    private final Map<UUID, TrackedPlayer> trackedPlayers = new HashMap<>();
-   private class_638 lastWorld;
+   private ClientWorld lastWorld;
    private boolean initialized;
    
    public LeaveTracker() {
@@ -48,7 +48,7 @@ package shame.nazuna.client.modules.impl.misc;
      } 
      Set<UUID> seenPlayers = new HashSet<>();
      
-     for (class_1657 player : mc.field_1687.method_18456()) {
+     for (PlayerEntity player : mc.field_1687.method_18456()) {
        if (player == mc.field_1724 || !player.method_5805())
          continue; 
        UUID uuid = player.method_5667();
@@ -70,7 +70,7 @@ package shame.nazuna.client.modules.impl.misc;
  
        
        if (distSq < 65536.0D) {
-         ChatUtils.sendMessage(String.valueOf(class_124.field_1080) + String.valueOf(class_124.field_1080) + tracked.name + " ливнул на " + String.valueOf(class_124.field_1068) + String.valueOf(class_124.field_1080) + " " + tracked.pos
+         ChatUtils.sendMessage(String.valueOf(Formatting.field_1080) + String.valueOf(Formatting.field_1080) + tracked.name + " ливнул на " + String.valueOf(Formatting.field_1068) + String.valueOf(Formatting.field_1080) + " " + tracked.pos
  
              
              .method_10263() + " " + tracked.pos
@@ -84,16 +84,16 @@ package shame.nazuna.client.modules.impl.misc;
    
    private void snapshotPlayers() {
      this.trackedPlayers.clear();
-     for (class_1657 player : mc.field_1687.method_18456()) {
+     for (PlayerEntity player : mc.field_1687.method_18456()) {
        if (player == mc.field_1724 || !player.method_5805())
          continue;  this.trackedPlayers.put(player
            .method_5667(), new TrackedPlayer(player
              .method_5477().getString(), player.method_24515()));
      } 
    }
-   private static final class TrackedPlayer extends Record { private final String name; private final class_2338 pos;
+   private static final class TrackedPlayer extends Record { private final String name; private final BlockPos pos;
      
-     private TrackedPlayer(String name, class_2338 pos) { this.name = name; this.pos = pos; } public final String toString() { // Byte code:
+     private TrackedPlayer(String name, BlockPos pos) { this.name = name; this.pos = pos; } public final String toString() { // Byte code:
        //   0: aload_0
        //   1: <illegal opcode> toString : (Lshame/astra/client/modules/impl/misc/LeaveTracker$TrackedPlayer;)Ljava/lang/String;
        //   6: areturn
@@ -122,7 +122,7 @@ package shame.nazuna.client.modules.impl.misc;
        // Local variable table:
        //   start	length	slot	name	descriptor
        //   0	8	0	this	Lshame/astra/client/modules/impl/misc/LeaveTracker$TrackedPlayer;
-       //   0	8	1	o	Ljava/lang/Object; } public class_2338 pos() { return this.pos; }
+       //   0	8	1	o	Ljava/lang/Object; } public BlockPos pos() { return this.pos; }
       }
  
  }

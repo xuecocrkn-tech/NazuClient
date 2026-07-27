@@ -1,10 +1,10 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_1713;
- import net.minecraft.class_1735;
- import net.minecraft.class_310;
- import net.minecraft.class_332;
- import net.minecraft.class_465;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.Slot;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.DrawContext;
+ import net.minecraft.HandledScreen;
  import org.jetbrains.annotations.Nullable;
  import org.lwjgl.glfw.GLFW;
  import org.spongepowered.asm.mixin.Mixin;
@@ -14,19 +14,19 @@ package shame.nazuna.mixin;
  import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  import shame.nazuna.client.modules.impl.player.ItemScroller;
  
- @Mixin({class_465.class})
+ @Mixin({HandledScreen.class})
  public abstract class HandledScreenMixin
  {
    @Shadow
    @Nullable
-   protected abstract class_1735 method_64240(double paramDouble1, double paramDouble2);
+   protected abstract Slot method_64240(double paramDouble1, double paramDouble2);
    
    @Shadow
-   protected abstract void method_2383(@Nullable class_1735 paramclass_1735, int paramInt1, int paramInt2, class_1713 paramclass_1713);
+   protected abstract void method_2383(@Nullable Slot paramclass_1735, int paramInt1, int paramInt2, SlotActionType paramclass_1713);
    
    @Inject(method = {"method_25394"}, at = {@At("HEAD")})
-   private void onRender(class_332 context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-     class_310 mc = class_310.method_1551();
+   private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+     MinecraftClient mc = MinecraftClient.method_1551();
      ItemScroller itemScroller = ItemScroller.INSTANCE;
      
      if (!itemScroller.isEnable() || mc.field_1724 == null || mc.field_1761 == null) {
@@ -43,7 +43,7 @@ package shame.nazuna.mixin;
        
        return;
      } 
-     class_1735 slot = method_64240(mouseX, mouseY);
+     Slot slot = method_64240(mouseX, mouseY);
      if (slot == null || !slot.method_7681()) {
        return;
      }
@@ -52,7 +52,7 @@ package shame.nazuna.mixin;
        return;
      }
      
-     method_2383(slot, slot.field_7874, 0, class_1713.field_7794);
+     method_2383(slot, slot.field_7874, 0, SlotActionType.field_7794);
    }
  }
 

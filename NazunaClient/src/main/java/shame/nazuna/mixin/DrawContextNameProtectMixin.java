@@ -1,6 +1,6 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_332;
+ import net.minecraft.DrawContext;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -12,7 +12,7 @@ package shame.nazuna.mixin;
  
  
  
- @Mixin({class_332.class})
+ @Mixin({DrawContext.class})
  public class DrawContextNameProtectMixin
  {
    @ModifyVariable(method = {"method_25303"}, at = @At("HEAD"), argsOnly = true, ordinal = 0)

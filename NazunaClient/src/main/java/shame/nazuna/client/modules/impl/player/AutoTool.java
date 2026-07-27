@@ -1,9 +1,9 @@
 package shame.nazuna.client.modules.impl.player;
- import net.minecraft.class_239;
- import net.minecraft.class_2596;
- import net.minecraft.class_2680;
- import net.minecraft.class_2868;
- import net.minecraft.class_3965;
+ import net.minecraft.HitResult;
+ import net.minecraft.Packet;
+ import net.minecraft.BlockState;
+ import net.minecraft.UpdateSelectedSlotC2SPacket;
+ import net.minecraft.BlockHitResult;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
@@ -50,27 +50,27 @@ package shame.nazuna.client.modules.impl.player;
        return;  if ((mc.field_1724.method_31548()).field_7545 == slot)
        return; 
      if (this.silent.isState()) {
-       mc.method_1562().method_52787((class_2596)new class_2868(slot));
+       mc.method_1562().method_52787((Packet)new UpdateSelectedSlotC2SPacket(slot));
      } else if (this.packet.isState()) {
        (mc.field_1724.method_31548()).field_7545 = slot;
-       mc.method_1562().method_52787((class_2596)new class_2868(slot));
+       mc.method_1562().method_52787((Packet)new UpdateSelectedSlotC2SPacket(slot));
      } else {
        (mc.field_1724.method_31548()).field_7545 = slot;
      } 
    }
    private int findOptimalTool() {
-     class_3965 blockHitResult;
-     class_239 hitResult = mc.field_1765;
+     BlockHitResult blockHitResult;
+     HitResult hitResult = mc.field_1765;
      
-     if (hitResult instanceof class_3965) { blockHitResult = (class_3965)hitResult; }
+     if (hitResult instanceof BlockHitResult) { blockHitResult = (BlockHitResult)hitResult; }
      else { return -1; }
  
      
-     class_2680 blockState = mc.field_1687.method_8320(blockHitResult.method_17777());
+     BlockState blockState = mc.field_1687.method_8320(blockHitResult.method_17777());
      return findBestToolSlot(blockState);
    }
    
-   private int findBestToolSlot(class_2680 blockState) {
+   private int findBestToolSlot(BlockState blockState) {
      int bestSlot = -1;
      float bestSpeed = 1.0F;
      

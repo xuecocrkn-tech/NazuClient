@@ -1,8 +1,8 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_1309;
- import net.minecraft.class_243;
- import net.minecraft.class_3532;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.storages.implement.RotationStorage;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.api.utils.rotate.Rotation;
@@ -414,21 +414,21 @@ package shame.nazuna.client.modules.impl.combat;
  {
    null(Aura this$0) {}
    
-   public void updateRotations(class_1309 target) {
+   public void updateRotations(LivingEntity target) {
      if (!mc.field_1724.method_6128()) {
-       class_243 relativePos = target.method_19538().method_1031(0.0D, (target.method_17682() * 0.6F), 0.0D).method_1020(mc.field_1724.method_33571());
-       float yaw = (float)class_3532.method_15338(Math.toDegrees(Math.atan2(relativePos.field_1350, relativePos.field_1352)) - 90.0D);
+       Vec3d relativePos = target.method_19538().method_1031(0.0D, (target.method_17682() * 0.6F), 0.0D).method_1020(mc.field_1724.method_33571());
+       float yaw = (float)MathHelper.method_15338(Math.toDegrees(Math.atan2(relativePos.field_1350, relativePos.field_1352)) - 90.0D);
        float pitch = (float)-Math.toDegrees(Math.atan2(relativePos.field_1351, Math.hypot(relativePos.field_1352, relativePos.field_1350)));
        RotationStorage.update(new Rotation(yaw, pitch), 360.0F, 360.0F, 360.0F, 360.0F, 1, 1, Aura.clientLook.isState());
      } else {
-       class_243 interpolatedRotation = class_243.method_1030(target.method_53829(), target.method_53831());
-       class_243 rotationVector = target.method_5720();
-       class_243 relativePos = target.method_19538().method_1031(0.0D, (target.method_17682() * 0.6F), 0.0D).method_1020(mc.field_1724.method_33571());
-       class_243 blendedDirection = interpolatedRotation.method_1029().method_35590(rotationVector, interpolatedRotation.method_1033());
+       Vec3d interpolatedRotation = Vec3d.method_1030(target.method_53829(), target.method_53831());
+       Vec3d rotationVector = target.method_5720();
+       Vec3d relativePos = target.method_19538().method_1031(0.0D, (target.method_17682() * 0.6F), 0.0D).method_1020(mc.field_1724.method_33571());
+       Vec3d blendedDirection = interpolatedRotation.method_1029().method_35590(rotationVector, interpolatedRotation.method_1033());
        if (mc.field_1724.method_6128() && target.method_6128() && ModuleClass.elytraTarget.isEnable()) {
          relativePos = relativePos.method_1019(blendedDirection.method_1029().method_1021(ModuleClass.elytraTarget.forward.getValue().floatValue()));
        }
-       float yaw = (float)class_3532.method_15338(Math.toDegrees(Math.atan2(relativePos.field_1350, relativePos.field_1352)) - 90.0D);
+       float yaw = (float)MathHelper.method_15338(Math.toDegrees(Math.atan2(relativePos.field_1350, relativePos.field_1352)) - 90.0D);
        float pitch = (float)-Math.toDegrees(Math.atan2(relativePos.field_1351, Math.hypot(relativePos.field_1352, relativePos.field_1350)));
        RotationStorage.update(new Rotation(yaw, pitch), 360.0F, 360.0F, 360.0F, 360.0F, 1, 1, Aura.clientLook.isState());
      } 

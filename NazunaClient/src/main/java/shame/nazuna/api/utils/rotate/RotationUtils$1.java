@@ -1,6 +1,6 @@
 package shame.nazuna.api.utils.rotate;
  
- import net.minecraft.class_2350;
+ import net.minecraft.Direction;
  
 
 

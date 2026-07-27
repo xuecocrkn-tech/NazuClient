@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.render;
  
- import net.minecraft.class_243;
+ import net.minecraft.Vec3d;
  
  
  
@@ -197,7 +197,7 @@ package shame.nazuna.client.modules.impl.render;
  final class CircleData
    extends Record
  {
-   private final class_243 pos;
+   private final Vec3d pos;
    private final long startTimeMs;
    
    public final String toString() {
@@ -241,8 +241,8 @@ package shame.nazuna.client.modules.impl.render;
      //   0	8	1	o	Ljava/lang/Object;
    }
    
-   private CircleData(class_243 pos, long startTimeMs) {
-     this.pos = pos; this.startTimeMs = startTimeMs; } public class_243 pos() { return this.pos; } public long startTimeMs() { return this.startTimeMs; }
+   private CircleData(Vec3d pos, long startTimeMs) {
+     this.pos = pos; this.startTimeMs = startTimeMs; } public Vec3d pos() { return this.pos; } public long startTimeMs() { return this.startTimeMs; }
  
  }
 

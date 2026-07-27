@@ -1,6 +1,6 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_1839;
+ import net.minecraft.UseAction;
  
 
 

@@ -2,28 +2,28 @@ package shame.nazuna.client.modules.impl.render;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.awt.Color;
  import java.util.Objects;
- import net.minecraft.class_10042;
- import net.minecraft.class_10055;
- import net.minecraft.class_1007;
- import net.minecraft.class_10142;
- import net.minecraft.class_1297;
- import net.minecraft.class_1657;
- import net.minecraft.class_243;
- import net.minecraft.class_284;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_3532;
- import net.minecraft.class_4587;
- import net.minecraft.class_5498;
- import net.minecraft.class_572;
- import net.minecraft.class_591;
- import net.minecraft.class_5944;
- import net.minecraft.class_630;
- import net.minecraft.class_742;
- import net.minecraft.class_897;
+ import net.minecraft.LivingEntityRenderState;
+ import net.minecraft.PlayerEntityRenderState;
+ import net.minecraft.PlayerEntityRenderer;
+ import net.minecraft.ShaderProgramKeys;
+ import net.minecraft.Entity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.GlUniform;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.MathHelper;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.Perspective;
+ import net.minecraft.BipedEntityModel;
+ import net.minecraft.PlayerEntityModel;
+ import net.minecraft.ShaderProgram;
+ import net.minecraft.ModelPart;
+ import net.minecraft.AbstractClientPlayerEntity;
+ import net.minecraft.EntityRenderer;
  import org.joml.Matrix4f;
  import org.lwjgl.opengl.GL11;
  import shame.nazuna.api.events.implement.Event3DRender;
@@ -138,11 +138,11 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.disableDepthTest();
      RenderSystem.depthMask(false);
      
-     for (class_1657 player : mc.field_1687.method_18456()) {
+     for (PlayerEntity player : mc.field_1687.method_18456()) {
        if (!affects(player)) {
          continue;
        }
-       if (player == mc.field_1724 && mc.field_1690.method_31044() == class_5498.field_26664) {
+       if (player == mc.field_1724 && mc.field_1690.method_31044() == Perspective.field_26664) {
          continue;
        }
        renderManualPlayer(event, player);
@@ -153,37 +153,37 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.enableCull();
      RenderSystem.disableBlend();
      RenderSystem.lineWidth(1.0F);
-   } private void renderManualPlayer(Event3DRender event, class_1657 player) {
-     class_742 clientPlayer;
-     class_1007 renderer;
-     if (player instanceof class_742) { clientPlayer = (class_742)player; }
+   } private void renderManualPlayer(Event3DRender event, PlayerEntity player) {
+     AbstractClientPlayerEntity clientPlayer;
+     PlayerEntityRenderer renderer;
+     if (player instanceof AbstractClientPlayerEntity) { clientPlayer = (AbstractClientPlayerEntity)player; }
      else
      { return; }
      
-     class_897<?, ?> rawRenderer = mc.method_1561().method_3953((class_1297)player);
-     if (rawRenderer instanceof class_1007) { renderer = (class_1007)rawRenderer; }
+     EntityRenderer<?, ?> rawRenderer = mc.method_1561().method_3953((Entity)player);
+     if (rawRenderer instanceof PlayerEntityRenderer) { renderer = (PlayerEntityRenderer)rawRenderer; }
      else
      { return; }
      
-     class_10055 state = renderer.method_62608();
+     PlayerEntityRenderState state = renderer.method_62608();
      renderer.method_62604(clientPlayer, state, event.getTickDelta());
-     class_591 model = (class_591)renderer.method_4038();
+     PlayerEntityModel model = (PlayerEntityModel)renderer.method_4038();
      model.method_62110(state);
      
-     class_4587 matrices = event.getMatrices();
+     MatrixStack matrices = event.getMatrices();
      matrices.method_22903();
      setupModelMatrix(matrices, state, renderer, event.getCamera().method_19326(), player, event.getTickDelta());
      
      int fillColor = resolveFillColor(player);
      int outlineColor = resolveOutlineColor(player);
-     renderShaderFillModel(matrices, (class_572<?>)model, 0.0F, fillColor);
-     renderOutlineModel(matrices, (class_572<?>)model, 0.0F, outlineColor);
+     renderShaderFillModel(matrices, (BipedEntityModel<?>)model, 0.0F, fillColor);
+     renderOutlineModel(matrices, (BipedEntityModel<?>)model, 0.0F, outlineColor);
      
      matrices.method_22909();
    }
    
-   private void setupModelMatrix(class_4587 matrices, class_10055 state, class_1007 renderer, class_243 cameraPos, class_1657 player, float tickDelta) {
-     class_243 pos = player.method_30950(tickDelta);
+   private void setupModelMatrix(MatrixStack matrices, PlayerEntityRenderState state, PlayerEntityRenderer renderer, Vec3d cameraPos, PlayerEntity player, float tickDelta) {
+     Vec3d pos = player.method_30950(tickDelta);
      double x = pos.field_1352 - cameraPos.field_1352;
      double y = pos.field_1351 - cameraPos.field_1351;
      double z = pos.field_1350 - cameraPos.field_1350;
@@ -197,19 +197,19 @@ package shame.nazuna.client.modules.impl.render;
      float baseScale = state.field_53453;
      matrices.method_22905(baseScale, baseScale, baseScale);
      LivingEntityRendererAccessor accessor = (LivingEntityRendererAccessor)renderer;
-     accessor.astra$setupTransforms((class_10042)state, matrices, state.field_53446, baseScale);
+     accessor.astra$setupTransforms((LivingEntityRenderState)state, matrices, state.field_53446, baseScale);
      matrices.method_22905(-1.0F, -1.0F, 1.0F);
-     accessor.astra$scale((class_10042)state, matrices);
+     accessor.astra$scale((LivingEntityRenderState)state, matrices);
      matrices.method_46416(0.0F, -1.501F, 0.0F);
    }
    
-   private void renderShaderFillModel(class_4587 matrices, class_572<?> model, float expand, int color) {
+   private void renderShaderFillModel(MatrixStack matrices, BipedEntityModel<?> model, float expand, int color) {
      if (!this.waves.isState()) {
        renderSolidFillModel(matrices, model, expand, color);
        
        return;
      } 
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.chamsFill);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.chamsFill);
      if (shader == null) {
        return;
      }
@@ -222,32 +222,32 @@ package shame.nazuna.client.modules.impl.render;
      setUniform(shader, "density", this.waveDensity.get());
      setUniform(shader, "glowStrength", this.waveGlow.get());
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
-     class_630 root = model.method_63512();
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
+     ModelPart root = model.method_63512();
      renderFillPart(matrices, buffer, root, model.field_3398, -4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, expand, color);
      renderFillPart(matrices, buffer, root, model.field_3391, -4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, expand, color);
      renderFillPart(matrices, buffer, root, model.field_3401, -3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
      renderFillPart(matrices, buffer, root, model.field_27433, -1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
      renderFillPart(matrices, buffer, root, model.field_3392, -2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
      renderFillPart(matrices, buffer, root, model.field_3397, -2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
    
-   private void renderSolidFillModel(class_4587 matrices, class_572<?> model, float expand, int color) {
-     RenderSystem.setShader(class_10142.field_53876);
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1576);
-     class_630 root = model.method_63512();
+   private void renderSolidFillModel(MatrixStack matrices, BipedEntityModel<?> model, float expand, int color) {
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1576);
+     ModelPart root = model.method_63512();
      renderSolidFillPart(matrices, buffer, root, model.field_3398, -4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, expand, color);
      renderSolidFillPart(matrices, buffer, root, model.field_3391, -4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, expand, color);
      renderSolidFillPart(matrices, buffer, root, model.field_3401, -3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
      renderSolidFillPart(matrices, buffer, root, model.field_27433, -1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
      renderSolidFillPart(matrices, buffer, root, model.field_3392, -2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
      renderSolidFillPart(matrices, buffer, root, model.field_3397, -2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
  
    
-   private void renderSolidFillPart(class_4587 baseStack, class_287 buffer, class_630 root, class_630 part, float offX, float offY, float offZ, float width, float height, float depth, float expand, int color) {
+   private void renderSolidFillPart(MatrixStack baseStack, BufferBuilder buffer, ModelPart root, ModelPart part, float offX, float offY, float offZ, float width, float height, float depth, float expand, int color) {
      baseStack.method_22903();
      root.method_22703(baseStack);
      part.method_22703(baseStack);
@@ -274,7 +274,7 @@ package shame.nazuna.client.modules.impl.render;
    }
  
    
-   private void renderFillPart(class_4587 baseStack, class_287 buffer, class_630 root, class_630 part, float offX, float offY, float offZ, float width, float height, float depth, float expand, int color) {
+   private void renderFillPart(MatrixStack baseStack, BufferBuilder buffer, ModelPart root, ModelPart part, float offX, float offY, float offZ, float width, float height, float depth, float expand, int color) {
      baseStack.method_22903();
      root.method_22703(baseStack);
      part.method_22703(baseStack);
@@ -305,7 +305,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void addQuad(class_287 buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int color) {
+   private void addQuad(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int color) {
      int r = ColorUtils.red(color);
      int g = ColorUtils.green(color);
      int b = ColorUtils.blue(color);
@@ -331,7 +331,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void addSolidQuad(class_287 buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int color) {
+   private void addSolidQuad(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int color) {
      int r = ColorUtils.red(color);
      int g = ColorUtils.green(color);
      int b = ColorUtils.blue(color);
@@ -351,8 +351,8 @@ package shame.nazuna.client.modules.impl.render;
      return y * 1.05F - z * 0.38F + x * 0.18F;
    }
    
-   private void renderOutlineModel(class_4587 matrices, class_572<?> model, float expand, int color) {
-     RenderSystem.setShader(class_10142.field_53876);
+   private void renderOutlineModel(MatrixStack matrices, BipedEntityModel<?> model, float expand, int color) {
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
      GL11.glEnable(2848);
      GL11.glHint(3154, 4354);
      RenderSystem.lineWidth(0.5F);
@@ -374,20 +374,20 @@ package shame.nazuna.client.modules.impl.render;
      GL11.glDisable(2848);
    }
    
-   private void drawOutlineParts(class_4587 matrices, class_572<?> model, float expand, int color) {
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_29344, class_290.field_1576);
-     class_630 root = model.method_63512();
+   private void drawOutlineParts(MatrixStack matrices, BipedEntityModel<?> model, float expand, int color) {
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_29344, VertexFormats.field_1576);
+     ModelPart root = model.method_63512();
      renderPartOutlineLines(matrices, buffer, root, model.field_3398, -4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, expand, color);
      renderPartOutlineLines(matrices, buffer, root, model.field_3391, -4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, expand, color);
      renderPartOutlineLines(matrices, buffer, root, model.field_3401, -3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
      renderPartOutlineLines(matrices, buffer, root, model.field_27433, -1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
      renderPartOutlineLines(matrices, buffer, root, model.field_3392, -2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
      renderPartOutlineLines(matrices, buffer, root, model.field_3397, -2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, expand, color);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
  
    
-   private void renderPartOutlineLines(class_4587 baseStack, class_287 buffer, class_630 root, class_630 part, float offX, float offY, float offZ, float width, float height, float depth, float expand, int color) {
+   private void renderPartOutlineLines(MatrixStack baseStack, BufferBuilder buffer, ModelPart root, ModelPart part, float offX, float offY, float offZ, float width, float height, float depth, float expand, int color) {
      baseStack.method_22903();
      root.method_22703(baseStack);
      part.method_22703(baseStack);
@@ -420,7 +420,7 @@ package shame.nazuna.client.modules.impl.render;
      baseStack.method_22909();
    }
    
-   private void addLine(class_287 buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, int color) {
+   private void addLine(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, int color) {
      int r = ColorUtils.red(color);
      int g = ColorUtils.green(color);
      int b = ColorUtils.blue(color);
@@ -430,19 +430,19 @@ package shame.nazuna.client.modules.impl.render;
      buffer.method_22918(matrix, x2, y2, z2).method_1336(r, g, b, a);
    }
    
-   private void setUniform(class_5944 shader, String name, float value) {
-     class_284 uniform = shader.method_34582(name);
+   private void setUniform(ShaderProgram shader, String name, float value) {
+     GlUniform uniform = shader.method_34582(name);
      if (uniform != null) {
        uniform.method_1251(value);
      }
    }
    
-   public boolean affects(class_1657 player) {
+   public boolean affects(PlayerEntity player) {
      if (!isEnable() || player == null || !player.method_5805()) {
        return false;
      }
      if (player == mc.field_1724) {
-       return (this.rendering.is("Себя") && mc.field_1690.method_31044() != class_5498.field_26664);
+       return (this.rendering.is("Себя") && mc.field_1690.method_31044() != Perspective.field_26664);
      }
      if (isFriend(player)) {
        return this.rendering.is("Друзей");
@@ -450,15 +450,15 @@ package shame.nazuna.client.modules.impl.render;
      return this.rendering.is("Игроков");
    }
    
-   public boolean shouldHideBaseModel(class_1657 player) {
+   public boolean shouldHideBaseModel(PlayerEntity player) {
      return (this.hideOriginal.isState() && affects(player));
    }
    
-   public boolean shouldHideItemsAndCape(class_1657 player) {
+   public boolean shouldHideItemsAndCape(PlayerEntity player) {
      return (this.hideItemsAndCape.isState() && affects(player));
    }
    
-   public boolean shouldUseOutlineAssist(class_1657 player) {
+   public boolean shouldUseOutlineAssist(PlayerEntity player) {
      return affects(player);
    }
    
@@ -466,22 +466,22 @@ package shame.nazuna.client.modules.impl.render;
      return (isEnable() && hasOutlineAssistTargets());
    }
    
-   public int resolveFillColor(class_1657 player) {
+   public int resolveFillColor(PlayerEntity player) {
      return applyPulse(baseFillColor(player));
    }
    
-   public int resolveOutlineColor(class_1657 player) {
+   public int resolveOutlineColor(PlayerEntity player) {
      return applyPulse(baseOutlineColor(player));
    }
    
-   private int baseFillColor(class_1657 player) {
+   private int baseFillColor(PlayerEntity player) {
      if (isFriend(player)) {
        return FRIEND_FILL_COLOR;
      }
      return vividWithAlpha(ColorUtils.getThemeColor(), 1.18F, 1.12F, 130);
    }
    
-   private int baseOutlineColor(class_1657 player) {
+   private int baseOutlineColor(PlayerEntity player) {
      if (isFriend(player)) {
        return FRIEND_OUTLINE_COLOR;
      }
@@ -500,8 +500,8 @@ package shame.nazuna.client.modules.impl.render;
    
    private int vividWithAlpha(int color, float saturationBoost, float brightnessBoost, int alpha) {
      float[] hsb = Color.RGBtoHSB(ColorUtils.red(color), ColorUtils.green(color), ColorUtils.blue(color), null);
-     float saturation = class_3532.method_15363(hsb[1] * saturationBoost, 0.0F, 1.0F);
-     float brightness = class_3532.method_15363(Math.max(hsb[2], 0.8F) * brightnessBoost, 0.0F, 1.0F);
+     float saturation = MathHelper.method_15363(hsb[1] * saturationBoost, 0.0F, 1.0F);
+     float brightness = MathHelper.method_15363(Math.max(hsb[2], 0.8F) * brightnessBoost, 0.0F, 1.0F);
      int rgb = Color.HSBtoRGB(hsb[0], saturation, brightness);
      return ColorUtils.rgba(ColorUtils.red(rgb), ColorUtils.green(rgb), ColorUtils.blue(rgb), alpha);
    }
@@ -510,7 +510,7 @@ package shame.nazuna.client.modules.impl.render;
      return color & 0xFFFFFF | (alpha & 0xFF) << 24;
    }
    
-   private boolean isFriend(class_1657 player) {
+   private boolean isFriend(PlayerEntity player) {
      return (astra.INSTANCE != null && astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage
        
        .isFriend(player.method_5477().getString()));
@@ -521,7 +521,7 @@ package shame.nazuna.client.modules.impl.render;
        return false;
      }
      
-     for (class_1657 player : mc.field_1687.method_18456()) {
+     for (PlayerEntity player : mc.field_1687.method_18456()) {
        if (shouldUseOutlineAssist(player)) {
          return true;
        }

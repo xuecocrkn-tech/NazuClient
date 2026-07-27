@@ -1,16 +1,16 @@
 package shame.nazuna.client.modules.impl.render;
  import com.mojang.blaze3d.systems.RenderSystem;
- import net.minecraft.class_243;
- import net.minecraft.class_276;
- import net.minecraft.class_284;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_3532;
- import net.minecraft.class_5944;
- import net.minecraft.class_6367;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Framebuffer;
+ import net.minecraft.GlUniform;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.MathHelper;
+ import net.minecraft.ShaderProgram;
+ import net.minecraft.SimpleFramebuffer;
  import org.joml.Matrix4f;
  import org.joml.Matrix4fc;
  import org.lwjgl.opengl.GL11;
@@ -31,12 +31,12 @@ package shame.nazuna.client.modules.impl.render;
    private final FloatSetting widthMul = new FloatSetting("Ширина", 1.0F, 0.35F, 2.2F, 0.05F);
    private final FloatSetting sharpness = new FloatSetting("Резкость", 24.0F, 4.0F, 80.0F, 1.0F);
    
-   private class_276 depthCopyBuffer;
+   private Framebuffer depthCopyBuffer;
    private int lastFbWidth = -1;
    private int lastFbHeight = -1;
    
    private long currentStart;
-   private class_243 center = class_243.field_1353;
+   private Vec3d center = Vec3d.field_1353;
    
    public Sonar() {
      super("Sonar", "Сканирует новые чанки", Module.ModuleCategory.RENDER);
@@ -65,7 +65,7 @@ package shame.nazuna.client.modules.impl.render;
      }
    }
    
-   public void renderFromMixin(Matrix4f positionMatrix, Matrix4f projectionMatrix, class_243 camPos) {
+   public void renderFromMixin(Matrix4f positionMatrix, Matrix4f projectionMatrix, Vec3d camPos) {
      if (mc.field_1724 == null || mc.field_1687 == null || this.currentStart <= 0L) {
        return;
      }
@@ -77,7 +77,7 @@ package shame.nazuna.client.modules.impl.render;
        
        return;
      } 
-     class_276 framebuffer = mc.method_1522();
+     Framebuffer framebuffer = mc.method_1522();
      ensureDepthCopyFramebuffer(framebuffer.field_1482, framebuffer.field_1481);
      if (this.depthCopyBuffer == null) {
        return;
@@ -88,22 +88,22 @@ package shame.nazuna.client.modules.impl.render;
      Matrix4f invProj = (new Matrix4f((Matrix4fc)projectionMatrix)).invert();
      
      float far = mc.field_1773.method_32796();
-     float t = class_3532.method_15363(elapsed / durationMs, 0.0F, 1.0F);
+     float t = MathHelper.method_15363(elapsed / durationMs, 0.0F, 1.0F);
      float r1 = lerp(1.0F, far, (float)Easings.QUINT_OUT.ease(t));
      float r2 = lerp(1.0F, far, (float)Easings.QUART_IN_OUT.ease(t));
-     float baseRadius = class_3532.method_16439(0.85F, r1, r2);
+     float baseRadius = MathHelper.method_16439(0.85F, r1, r2);
      
      float alphaPc = 1.0F - t;
      float alphaWave = ((alphaPc > 0.5F) ? (1.0F - alphaPc) : alphaPc) * 2.0F;
      alphaWave = Math.min(alphaWave * 1.75F, 1.0F);
-     float baseAlpha = class_3532.method_15363(this.alpha.get() * alphaWave, 0.0F, 1.0F);
+     float baseAlpha = MathHelper.method_15363(this.alpha.get() * alphaWave, 0.0F, 1.0F);
      
      int c1 = ColorUtils.getThemeColor(0);
      int c2 = ColorUtils.getThemeColor(90);
      int c3 = ColorUtils.getThemeColor(180);
      int c4 = ColorUtils.getThemeColor(270);
      
-     float baseWidth = class_3532.method_15363(6.0F + baseRadius * 0.18F * this.widthMul.get(), 4.0F, Math.max(10.0F, far * 0.42F));
+     float baseWidth = MathHelper.method_15363(6.0F + baseRadius * 0.18F * this.widthMul.get(), 4.0F, Math.max(10.0F, far * 0.42F));
      float baseSharp = this.sharpness.get();
      
      renderPass(invView, invProj, camPos, framebuffer, baseRadius, baseWidth, baseSharp, 
@@ -121,25 +121,25 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void renderPass(Matrix4f invView, Matrix4f invProj, class_243 camPos, class_276 framebuffer, float radius, float width, float sharp, int outerColor, int midColor, int innerColor, int scanlineColor) {
+   private void renderPass(Matrix4f invView, Matrix4f invProj, Vec3d camPos, Framebuffer framebuffer, float radius, float width, float sharp, int outerColor, int midColor, int innerColor, int scanlineColor) {
      if (radius <= 0.001F || width <= 0.001F) {
        return;
      }
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.scanEffect);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.scanEffect);
      
-     class_284 invViewUniform = shader.method_34582("invViewMat");
-     class_284 invProjUniform = shader.method_34582("invProjMat");
-     class_284 posUniform = shader.method_34582("pos");
-     class_284 centerUniform = shader.method_34582("center");
-     class_284 radiusUniform = shader.method_34582("radius");
-     class_284 widthUniform = shader.method_34582("width");
-     class_284 sharpnessUniform = shader.method_34582("sharpness");
-     class_284 outerColorUniform = shader.method_34582("outerColor");
-     class_284 midColorUniform = shader.method_34582("midColor");
-     class_284 innerColorUniform = shader.method_34582("innerColor");
-     class_284 scanlineColorUniform = shader.method_34582("scanlineColor");
-     class_284 debugModeUniform = shader.method_34582("DebugMode");
+     GlUniform invViewUniform = shader.method_34582("invViewMat");
+     GlUniform invProjUniform = shader.method_34582("invProjMat");
+     GlUniform posUniform = shader.method_34582("pos");
+     GlUniform centerUniform = shader.method_34582("center");
+     GlUniform radiusUniform = shader.method_34582("radius");
+     GlUniform widthUniform = shader.method_34582("width");
+     GlUniform sharpnessUniform = shader.method_34582("sharpness");
+     GlUniform outerColorUniform = shader.method_34582("outerColor");
+     GlUniform midColorUniform = shader.method_34582("midColor");
+     GlUniform innerColorUniform = shader.method_34582("innerColor");
+     GlUniform scanlineColorUniform = shader.method_34582("scanlineColor");
+     GlUniform debugModeUniform = shader.method_34582("DebugMode");
      
      if (invViewUniform != null) invViewUniform.method_1250(invView); 
      if (invProjUniform != null) invProjUniform.method_1250(invProj); 
@@ -182,18 +182,18 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private void drawFullscreenQuad() {
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1585);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1585);
      buffer.method_22912(-1.0F, -1.0F, 0.0F).method_22913(0.0F, 0.0F);
      buffer.method_22912(-1.0F, 1.0F, 0.0F).method_22913(0.0F, 1.0F);
      buffer.method_22912(1.0F, 1.0F, 0.0F).method_22913(1.0F, 1.0F);
      buffer.method_22912(1.0F, -1.0F, 0.0F).method_22913(1.0F, 0.0F);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
    
    private void ensureDepthCopyFramebuffer(int width, int height) {
      if (this.depthCopyBuffer == null || this.lastFbWidth != width || this.lastFbHeight != height) {
        deleteDepthCopyFramebuffer();
-       this.depthCopyBuffer = (class_276)new class_6367(width, height, true);
+       this.depthCopyBuffer = (Framebuffer)new SimpleFramebuffer(width, height, true);
        this.lastFbWidth = width;
        this.lastFbHeight = height;
      } 
@@ -208,12 +208,12 @@ package shame.nazuna.client.modules.impl.render;
      this.lastFbHeight = -1;
    }
    
-   private void ping(class_243 pos) {
+   private void ping(Vec3d pos) {
      this.currentStart = System.currentTimeMillis();
      this.center = pos;
    }
    
-   private void setColor(class_284 uniform, int color) {
+   private void setColor(GlUniform uniform, int color) {
      int a = color >> 24 & 0xFF;
      int r = color >> 16 & 0xFF;
      int g = color >> 8 & 0xFF;
@@ -225,7 +225,7 @@ package shame.nazuna.client.modules.impl.render;
    private int applyAlpha(int color, float alphaMul) {
      int a = color >> 24 & 0xFF;
      if (a == 0) a = 255; 
-     a = (int)(a * class_3532.method_15363(alphaMul, 0.0F, 1.0F));
+     a = (int)(a * MathHelper.method_15363(alphaMul, 0.0F, 1.0F));
      return color & 0xFFFFFF | a << 24;
    }
    

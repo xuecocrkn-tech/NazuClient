@@ -3,21 +3,21 @@ package shame.nazuna.api.utils.render;
  import java.awt.Color;
  import java.util.UUID;
  import java.util.concurrent.ConcurrentHashMap;
- import net.minecraft.class_1058;
- import net.minecraft.class_1068;
- import net.minecraft.class_1657;
- import net.minecraft.class_1799;
- import net.minecraft.class_284;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_2960;
- import net.minecraft.class_332;
- import net.minecraft.class_4587;
- import net.minecraft.class_5944;
- import net.minecraft.class_640;
+ import net.minecraft.Sprite;
+ import net.minecraft.DefaultSkinHelper;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.ItemStack;
+ import net.minecraft.GlUniform;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.Identifier;
+ import net.minecraft.DrawContext;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.ShaderProgram;
+ import net.minecraft.PlayerListEntry;
  import org.joml.Matrix4f;
  import shame.nazuna.api.utils.color.ColorUtils;
  import shame.nazuna.api.utils.render.blur.BlurProgram;
@@ -29,15 +29,15 @@ package shame.nazuna.api.utils.render;
    private RenderUtils() {
      throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
    }
-   private static final ConcurrentHashMap<String, class_2960> skinCache = new ConcurrentHashMap<>();
+   private static final ConcurrentHashMap<String, Identifier> skinCache = new ConcurrentHashMap<>();
    private static final UUID DEFAULT_SKIN_UUID = new UUID(0L, 0L);
    
-   public static void drawHudItem(class_332 context, class_1799 stack, float x, float y, float scale, float z) {
+   public static void drawHudItem(DrawContext context, ItemStack stack, float x, float y, float scale, float z) {
      if (context == null || stack == null || stack.method_7960()) {
        return;
      }
      
-     class_4587 matrices = context.method_51448();
+     MatrixStack matrices = context.method_51448();
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      RenderSystem.disableDepthTest();
@@ -57,23 +57,23 @@ package shame.nazuna.api.utils.render;
  
  
    
-   public static void drawGradient6Rect(class_4587 matrices, float x, float y, float width, float height, float radius, int leftTopColor, int leftBottomColor, int centerTopColor, int centerBottomColor, int rightTopColor, int rightBottomColor) {
+   public static void drawGradient6Rect(MatrixStack matrices, float x, float y, float width, float height, float radius, int leftTopColor, int leftBottomColor, int centerTopColor, int centerBottomColor, int rightTopColor, int rightBottomColor) {
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.gradient6Rect);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.gradient6Rect);
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      
-     class_284 sizeUniform = shader.method_34582("Size");
-     class_284 radiusUniform = shader.method_34582("Radius");
-     class_284 smoothnessUniform = shader.method_34582("Smoothness");
-     class_284 leftTopColorUniform = shader.method_34582("LeftTopColor");
-     class_284 leftBottomColorUniform = shader.method_34582("LeftBottomColor");
-     class_284 centerTopColorUniform = shader.method_34582("CenterTopColor");
-     class_284 centerBottomColorUniform = shader.method_34582("CenterBottomColor");
-     class_284 rightTopColorUniform = shader.method_34582("RightTopColor");
-     class_284 rightBottomColorUniform = shader.method_34582("RightBottomColor");
+     GlUniform sizeUniform = shader.method_34582("Size");
+     GlUniform radiusUniform = shader.method_34582("Radius");
+     GlUniform smoothnessUniform = shader.method_34582("Smoothness");
+     GlUniform leftTopColorUniform = shader.method_34582("LeftTopColor");
+     GlUniform leftBottomColorUniform = shader.method_34582("LeftBottomColor");
+     GlUniform centerTopColorUniform = shader.method_34582("CenterTopColor");
+     GlUniform centerBottomColorUniform = shader.method_34582("CenterBottomColor");
+     GlUniform rightTopColorUniform = shader.method_34582("RightTopColor");
+     GlUniform rightBottomColorUniform = shader.method_34582("RightBottomColor");
      
      if (sizeUniform != null) sizeUniform.method_1255(width, height); 
      if (radiusUniform != null) radiusUniform.method_35657(radius, radius, radius, radius); 
@@ -145,7 +145,7 @@ package shame.nazuna.api.utils.render;
  
  
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1576);
      
      buffer.method_22918(matrix, x, y, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      buffer.method_22918(matrix, x, y + height, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
@@ -153,7 +153,7 @@ package shame.nazuna.api.utils.render;
      buffer.method_22918(matrix, x + width, y, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      
      RenderSystem.setShader(ShaderUtils.gradient6Rect);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.disableBlend();
    }
@@ -164,11 +164,11 @@ package shame.nazuna.api.utils.render;
  
  
    
-   public static void drawShadow(class_4587 matrices, float x, float y, float width, float height, float radius, float softness, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
+   public static void drawShadow(MatrixStack matrices, float x, float y, float width, float height, float radius, float softness, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.shadowRect);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.shadowRect);
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      
@@ -177,13 +177,13 @@ package shame.nazuna.api.utils.render;
      float drawX = x - softness;
      float drawY = y - softness;
      
-     class_284 sizeUniform = shader.method_34582("Size");
-     class_284 softnessUniform = shader.method_34582("Softness");
-     class_284 radiusUniform = shader.method_34582("Radius");
-     class_284 topLeftColorUniform = shader.method_34582("TopLeftColor");
-     class_284 topRightColorUniform = shader.method_34582("TopRightColor");
-     class_284 bottomLeftColorUniform = shader.method_34582("BottomLeftColor");
-     class_284 bottomRightColorUniform = shader.method_34582("BottomRightColor");
+     GlUniform sizeUniform = shader.method_34582("Size");
+     GlUniform softnessUniform = shader.method_34582("Softness");
+     GlUniform radiusUniform = shader.method_34582("Radius");
+     GlUniform topLeftColorUniform = shader.method_34582("TopLeftColor");
+     GlUniform topRightColorUniform = shader.method_34582("TopRightColor");
+     GlUniform bottomLeftColorUniform = shader.method_34582("BottomLeftColor");
+     GlUniform bottomRightColorUniform = shader.method_34582("BottomRightColor");
      
      if (sizeUniform != null) sizeUniform.method_1255(extendedWidth, extendedHeight); 
      if (softnessUniform != null) softnessUniform.method_1251(softness); 
@@ -233,7 +233,7 @@ package shame.nazuna.api.utils.render;
  
  
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1585);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1585);
      
      buffer.method_22918(matrix, drawX, drawY, 0.0F).method_22913(0.0F, 0.0F);
      buffer.method_22918(matrix, drawX, drawY + extendedHeight, 0.0F).method_22913(0.0F, 1.0F);
@@ -241,47 +241,47 @@ package shame.nazuna.api.utils.render;
      buffer.method_22918(matrix, drawX + extendedWidth, drawY, 0.0F).method_22913(1.0F, 0.0F);
      
      RenderSystem.setShader(ShaderUtils.shadowRect);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.disableBlend();
    }
  
    
-   public static void drawShadow(class_4587 matrices, float x, float y, float width, float height, float radius, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
+   public static void drawShadow(MatrixStack matrices, float x, float y, float width, float height, float radius, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
      drawShadow(matrices, x, y, width, height, radius, 10.0F, topLeftColor, topRightColor, bottomLeftColor, bottomRightColor);
    }
  
    
-   public static void drawShadow(class_4587 matrices, float x, float y, float width, float height, float radius, float softness, int color) {
+   public static void drawShadow(MatrixStack matrices, float x, float y, float width, float height, float radius, float softness, int color) {
      drawShadow(matrices, x, y, width, height, radius, softness, color, color, color, color);
    }
    
-   public static void drawShadow(class_4587 matrices, float x, float y, float width, float height, float radius, int color) {
+   public static void drawShadow(MatrixStack matrices, float x, float y, float width, float height, float radius, int color) {
      drawShadow(matrices, x, y, width, height, radius, 10.0F, color, color, color, color);
    }
    
-   public static void drawShadow(class_4587 matrices, float x, float y, float width, float height, int color) {
+   public static void drawShadow(MatrixStack matrices, float x, float y, float width, float height, int color) {
      drawShadow(matrices, x, y, width, height, 0.0F, 10.0F, color, color, color, color);
    }
  
    
-   public static void drawShadow(class_4587 matrices, float x, float y, float width, float height, float radius, float softness, int topColor, int bottomColor) {
+   public static void drawShadow(MatrixStack matrices, float x, float y, float width, float height, float radius, float softness, int topColor, int bottomColor) {
      drawShadow(matrices, x, y, width, height, radius, softness, topColor, topColor, bottomColor, bottomColor);
    }
  
    
-   public static void drawShadowHorizontal(class_4587 matrices, float x, float y, float width, float height, float radius, float softness, int leftColor, int rightColor) {
+   public static void drawShadowHorizontal(MatrixStack matrices, float x, float y, float width, float height, float radius, float softness, int leftColor, int rightColor) {
      drawShadow(matrices, x, y, width, height, radius, softness, leftColor, rightColor, leftColor, rightColor);
    }
  
    
-   public static void drawShadow(class_4587 matrices, float x, float y, float width, float height, float radius, float softness, float offsetX, float offsetY, int color) {
+   public static void drawShadow(MatrixStack matrices, float x, float y, float width, float height, float radius, float softness, float offsetX, float offsetY, int color) {
      drawShadow(matrices, x + offsetX, y + offsetY, width, height, radius, softness, color, color, color, color);
    }
  
  
    
-   public static void drawShadow(class_4587 matrices, float x, float y, float width, float height, float radius, float softness, float offsetX, float offsetY, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
+   public static void drawShadow(MatrixStack matrices, float x, float y, float width, float height, float radius, float softness, float offsetX, float offsetY, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
      drawShadow(matrices, x + offsetX, y + offsetY, width, height, radius, softness, topLeftColor, topRightColor, bottomLeftColor, bottomRightColor);
    }
  
@@ -290,11 +290,11 @@ package shame.nazuna.api.utils.render;
  
  
    
-   public static void drawShadow6(class_4587 matrices, float x, float y, float width, float height, float radius, float softness, int leftTopColor, int leftBottomColor, int centerTopColor, int centerBottomColor, int rightTopColor, int rightBottomColor) {
+   public static void drawShadow6(MatrixStack matrices, float x, float y, float width, float height, float radius, float softness, int leftTopColor, int leftBottomColor, int centerTopColor, int centerBottomColor, int rightTopColor, int rightBottomColor) {
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.shadow6Rect);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.shadow6Rect);
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      
@@ -303,15 +303,15 @@ package shame.nazuna.api.utils.render;
      float drawX = x - softness;
      float drawY = y - softness;
      
-     class_284 sizeUniform = shader.method_34582("Size");
-     class_284 softnessUniform = shader.method_34582("Softness");
-     class_284 radiusUniform = shader.method_34582("Radius");
-     class_284 leftTopColorUniform = shader.method_34582("LeftTopColor");
-     class_284 leftBottomColorUniform = shader.method_34582("LeftBottomColor");
-     class_284 centerTopColorUniform = shader.method_34582("CenterTopColor");
-     class_284 centerBottomColorUniform = shader.method_34582("CenterBottomColor");
-     class_284 rightTopColorUniform = shader.method_34582("RightTopColor");
-     class_284 rightBottomColorUniform = shader.method_34582("RightBottomColor");
+     GlUniform sizeUniform = shader.method_34582("Size");
+     GlUniform softnessUniform = shader.method_34582("Softness");
+     GlUniform radiusUniform = shader.method_34582("Radius");
+     GlUniform leftTopColorUniform = shader.method_34582("LeftTopColor");
+     GlUniform leftBottomColorUniform = shader.method_34582("LeftBottomColor");
+     GlUniform centerTopColorUniform = shader.method_34582("CenterTopColor");
+     GlUniform centerBottomColorUniform = shader.method_34582("CenterBottomColor");
+     GlUniform rightTopColorUniform = shader.method_34582("RightTopColor");
+     GlUniform rightBottomColorUniform = shader.method_34582("RightBottomColor");
      
      if (sizeUniform != null) sizeUniform.method_1255(extendedWidth, extendedHeight); 
      if (softnessUniform != null) softnessUniform.method_1251(softness); 
@@ -383,7 +383,7 @@ package shame.nazuna.api.utils.render;
  
  
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1585);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1585);
      
      buffer.method_22918(matrix, drawX, drawY, 0.0F).method_22913(0.0F, 0.0F);
      buffer.method_22918(matrix, drawX, drawY + extendedHeight, 0.0F).method_22913(0.0F, 1.0F);
@@ -391,12 +391,12 @@ package shame.nazuna.api.utils.render;
      buffer.method_22918(matrix, drawX + extendedWidth, drawY, 0.0F).method_22913(1.0F, 0.0F);
      
      RenderSystem.setShader(ShaderUtils.shadow6Rect);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.disableBlend();
    }
    
-   public static void drawTexture(class_4587 matrices, class_2960 texture, float x, float y, float width, float height, float u1, float v1, float u2, float v2, int color) {
+   public static void drawTexture(MatrixStack matrices, Identifier texture, float x, float y, float width, float height, float u1, float v1, float u2, float v2, int color) {
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      RenderSystem.setShaderTexture(0, texture);
@@ -410,97 +410,97 @@ package shame.nazuna.api.utils.render;
      float b = (color & 0xFF) / 255.0F;
      float a = alpha / 255.0F;
      
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      buffer.method_22918(matrix, x, y, 0.0F).method_22913(u1, v1).method_22915(r, g, b, a);
      buffer.method_22918(matrix, x, y + height, 0.0F).method_22913(u1, v2).method_22915(r, g, b, a);
      buffer.method_22918(matrix, x + width, y + height, 0.0F).method_22913(u2, v2).method_22915(r, g, b, a);
      buffer.method_22918(matrix, x + width, y, 0.0F).method_22913(u2, v1).method_22915(r, g, b, a);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.setShaderTexture(0, 0);
      RenderSystem.disableBlend();
    }
    
-   public static void drawImage(class_4587 matrices, class_2960 texture, float x, float y, float width, float height, int color) {
+   public static void drawImage(MatrixStack matrices, Identifier texture, float x, float y, float width, float height, int color) {
      drawTexture(matrices, texture, x, y, width, height, 0.0F, 0.0F, 1.0F, 1.0F, color);
    }
    
-   public static void drawImage(class_4587 matrices, String namespace, String path, float x, float y, float width, float height, int color) {
-     drawImage(matrices, class_2960.method_60655(namespace, path), x, y, width, height, color);
+   public static void drawImage(MatrixStack matrices, String namespace, String path, float x, float y, float width, float height, int color) {
+     drawImage(matrices, Identifier.method_60655(namespace, path), x, y, width, height, color);
    }
    
-   public static void drawSprite(class_4587 matrices, class_1058 sprite, float x, float y, float size, int color) {
+   public static void drawSprite(MatrixStack matrices, Sprite sprite, float x, float y, float size, int color) {
      drawTexture(matrices, sprite.method_45852(), x, y, size, size, sprite
          .method_4594(), sprite.method_4593(), sprite.method_4577(), sprite.method_4575(), color);
    }
    
-   public static void drawPlayerHead(class_4587 matrices, class_1657 player, float x, float y, float size, float radius, float hurtPercent) {
+   public static void drawPlayerHead(MatrixStack matrices, PlayerEntity player, float x, float y, float size, float radius, float hurtPercent) {
      if (player == null)
-       return;  class_2960 skinTexture = getSkinTexture(player);
+       return;  Identifier skinTexture = getSkinTexture(player);
      drawHeadInternal(matrices, skinTexture, x, y, size, radius, 1.0F, hurtPercent);
    }
    
-   public static void drawPlayerHead(class_4587 matrices, String username, float x, float y, float size, float radius) {
+   public static void drawPlayerHead(MatrixStack matrices, String username, float x, float y, float size, float radius) {
      drawPlayerHead(matrices, username, x, y, size, radius, 1.0F, 0.0F);
    }
    
-   public static void drawPlayerHead(class_4587 matrices, String username, float x, float y, float size, float radius, float alpha, float hurtPercent) {
+   public static void drawPlayerHead(MatrixStack matrices, String username, float x, float y, float size, float radius, float alpha, float hurtPercent) {
      if (username == null || username.isEmpty())
-       return;  class_2960 skinTexture = getSkinTextureByName(username);
+       return;  Identifier skinTexture = getSkinTextureByName(username);
      drawHeadInternal(matrices, skinTexture, x, y, size, radius, alpha, hurtPercent);
    }
    
-   public static void drawPlayerHead(class_4587 matrices, UUID uuid, float x, float y, float size, float radius) {
+   public static void drawPlayerHead(MatrixStack matrices, UUID uuid, float x, float y, float size, float radius) {
      drawPlayerHead(matrices, uuid, x, y, size, radius, 1.0F, 0.0F);
    }
    
-   public static void drawPlayerHead(class_4587 matrices, UUID uuid, float x, float y, float size, float radius, float alpha, float hurtPercent) {
+   public static void drawPlayerHead(MatrixStack matrices, UUID uuid, float x, float y, float size, float radius, float alpha, float hurtPercent) {
      if (uuid == null)
-       return;  class_2960 skinTexture = getSkinTextureByUUID(uuid);
+       return;  Identifier skinTexture = getSkinTextureByUUID(uuid);
      drawHeadInternal(matrices, skinTexture, x, y, size, radius, alpha, hurtPercent);
    }
    
-   public static void drawPlayerHead(class_4587 matrices, class_640 entry, float x, float y, float size, float radius) {
+   public static void drawPlayerHead(MatrixStack matrices, PlayerListEntry entry, float x, float y, float size, float radius) {
      drawPlayerHead(matrices, entry, x, y, size, radius, 1.0F, 0.0F);
    }
    
-   public static void drawPlayerHead(class_4587 matrices, class_640 entry, float x, float y, float size, float radius, float alpha, float hurtPercent) {
+   public static void drawPlayerHead(MatrixStack matrices, PlayerListEntry entry, float x, float y, float size, float radius, float alpha, float hurtPercent) {
      if (entry == null)
-       return;  class_2960 skinTexture = entry.method_52810().comp_1626();
+       return;  Identifier skinTexture = entry.method_52810().comp_1626();
      if (skinTexture == null) {
-       skinTexture = class_1068.method_4648(entry.method_2966().getId()).comp_1626();
+       skinTexture = DefaultSkinHelper.method_4648(entry.method_2966().getId()).comp_1626();
      }
      drawHeadInternal(matrices, skinTexture, x, y, size, radius, alpha, hurtPercent);
    }
    
-   public static void drawPlayerHead(class_4587 matrices, class_2960 skinTexture, float x, float y, float size, float radius) {
+   public static void drawPlayerHead(MatrixStack matrices, Identifier skinTexture, float x, float y, float size, float radius) {
      drawHeadInternal(matrices, skinTexture, x, y, size, radius, 1.0F, 0.0F);
    }
    
-   private static void drawHeadInternal(class_4587 matrices, class_2960 skinTexture, float x, float y, float size, float radius, float alpha, float hurtPercent) {
+   private static void drawHeadInternal(MatrixStack matrices, Identifier skinTexture, float x, float y, float size, float radius, float alpha, float hurtPercent) {
      if (skinTexture == null) {
-       skinTexture = class_1068.method_4648(DEFAULT_SKIN_UUID).comp_1626();
+       skinTexture = DefaultSkinHelper.method_4648(DEFAULT_SKIN_UUID).comp_1626();
      }
      
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      RenderSystem.setShaderTexture(0, skinTexture);
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.face);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.face);
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      
-     class_284 locationUniform = shader.method_34582("location");
-     class_284 sizeUniform = shader.method_34582("size");
-     class_284 radiusUniform = shader.method_34582("radius");
-     class_284 alphaUniform = shader.method_34582("alpha");
-     class_284 uUniform = shader.method_34582("u");
-     class_284 vUniform = shader.method_34582("v");
-     class_284 wUniform = shader.method_34582("w");
-     class_284 hUniform = shader.method_34582("h");
-     class_284 hurtPercentUniform = shader.method_34582("hurtPercent");
+     GlUniform locationUniform = shader.method_34582("location");
+     GlUniform sizeUniform = shader.method_34582("size");
+     GlUniform radiusUniform = shader.method_34582("radius");
+     GlUniform alphaUniform = shader.method_34582("alpha");
+     GlUniform uUniform = shader.method_34582("u");
+     GlUniform vUniform = shader.method_34582("v");
+     GlUniform wUniform = shader.method_34582("w");
+     GlUniform hUniform = shader.method_34582("h");
+     GlUniform hurtPercentUniform = shader.method_34582("hurtPercent");
      
      if (locationUniform != null) locationUniform.method_1255(x, y); 
      if (sizeUniform != null) sizeUniform.method_1255(size, size); 
@@ -512,7 +512,7 @@ package shame.nazuna.api.utils.render;
      if (hUniform != null) hUniform.method_1251(0.125F); 
      if (hurtPercentUniform != null) hurtPercentUniform.method_1251(hurtPercent);
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1585);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1585);
      
      buffer.method_22918(matrix, x, y, 0.0F).method_22913(0.0F, 0.0F);
      buffer.method_22918(matrix, x, y + size, 0.0F).method_22913(0.0F, 1.0F);
@@ -520,7 +520,7 @@ package shame.nazuna.api.utils.render;
      buffer.method_22918(matrix, x + size, y, 0.0F).method_22913(1.0F, 0.0F);
      
      RenderSystem.setShader(ShaderUtils.face);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      drawHeadOverlay(matrices, skinTexture, x, y, size, radius, alpha, hurtPercent);
      
@@ -528,21 +528,21 @@ package shame.nazuna.api.utils.render;
      RenderSystem.disableBlend();
    }
    
-   private static void drawHeadOverlay(class_4587 matrices, class_2960 skinTexture, float x, float y, float size, float radius, float alpha, float hurtPercent) {
+   private static void drawHeadOverlay(MatrixStack matrices, Identifier skinTexture, float x, float y, float size, float radius, float alpha, float hurtPercent) {
      RenderSystem.setShaderTexture(0, skinTexture);
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.face);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.face);
      Matrix4f matrix = matrices.method_23760().method_23761();
      
-     class_284 locationUniform = shader.method_34582("location");
-     class_284 sizeUniform = shader.method_34582("size");
-     class_284 radiusUniform = shader.method_34582("radius");
-     class_284 alphaUniform = shader.method_34582("alpha");
-     class_284 uUniform = shader.method_34582("u");
-     class_284 vUniform = shader.method_34582("v");
-     class_284 wUniform = shader.method_34582("w");
-     class_284 hUniform = shader.method_34582("h");
-     class_284 hurtPercentUniform = shader.method_34582("hurtPercent");
+     GlUniform locationUniform = shader.method_34582("location");
+     GlUniform sizeUniform = shader.method_34582("size");
+     GlUniform radiusUniform = shader.method_34582("radius");
+     GlUniform alphaUniform = shader.method_34582("alpha");
+     GlUniform uUniform = shader.method_34582("u");
+     GlUniform vUniform = shader.method_34582("v");
+     GlUniform wUniform = shader.method_34582("w");
+     GlUniform hUniform = shader.method_34582("h");
+     GlUniform hurtPercentUniform = shader.method_34582("hurtPercent");
      
      if (locationUniform != null) locationUniform.method_1255(x, y); 
      if (sizeUniform != null) sizeUniform.method_1255(size, size); 
@@ -554,7 +554,7 @@ package shame.nazuna.api.utils.render;
      if (hUniform != null) hUniform.method_1251(0.125F); 
      if (hurtPercentUniform != null) hurtPercentUniform.method_1251(hurtPercent);
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1585);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1585);
      
      buffer.method_22918(matrix, x, y, 0.0F).method_22913(0.0F, 0.0F);
      buffer.method_22918(matrix, x, y + size, 0.0F).method_22913(0.0F, 1.0F);
@@ -562,55 +562,55 @@ package shame.nazuna.api.utils.render;
      buffer.method_22918(matrix, x + size, y, 0.0F).method_22913(1.0F, 0.0F);
      
      RenderSystem.setShader(ShaderUtils.face);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
    
-   private static class_2960 getSkinTexture(class_1657 player) {
+   private static Identifier getSkinTexture(PlayerEntity player) {
      if (mc.method_1562() == null) {
-       return class_1068.method_4648(player.method_5667()).comp_1626();
+       return DefaultSkinHelper.method_4648(player.method_5667()).comp_1626();
      }
      
-     class_640 entry = mc.method_1562().method_2871(player.method_5667());
+     PlayerListEntry entry = mc.method_1562().method_2871(player.method_5667());
      if (entry != null) {
        return entry.method_52810().comp_1626();
      }
      
-     return class_1068.method_4648(player.method_5667()).comp_1626();
+     return DefaultSkinHelper.method_4648(player.method_5667()).comp_1626();
    }
    
-   private static class_2960 getSkinTextureByName(String username) {
+   private static Identifier getSkinTextureByName(String username) {
      String key = username.toLowerCase(Locale.ROOT);
-     class_2960 cachedTexture = skinCache.get(key);
+     Identifier cachedTexture = skinCache.get(key);
      if (cachedTexture != null) {
        return cachedTexture;
      }
      
      if (mc.method_1562() != null) {
-       for (class_640 entry : mc.method_1562().method_2880()) {
+       for (PlayerListEntry entry : mc.method_1562().method_2880()) {
          if (entry.method_2966().getName().equalsIgnoreCase(username)) {
-           class_2960 class_2960 = entry.method_52810().comp_1626();
-           skinCache.put(key, class_2960);
-           return class_2960;
+           Identifier Identifier = entry.method_52810().comp_1626();
+           skinCache.put(key, Identifier);
+           return Identifier;
          } 
        } 
      }
      
      if (mc.field_1687 != null) {
-       for (class_1657 player : mc.field_1687.method_18456()) {
+       for (PlayerEntity player : mc.field_1687.method_18456()) {
          if (player.method_5477().getString().equalsIgnoreCase(username)) {
-           class_2960 class_2960 = getSkinTexture(player);
-           skinCache.put(key, class_2960);
-           return class_2960;
+           Identifier Identifier = getSkinTexture(player);
+           skinCache.put(key, Identifier);
+           return Identifier;
          } 
        } 
      }
      
-     class_2960 texture = class_1068.method_4648(UUID.nameUUIDFromBytes(username.getBytes())).comp_1626();
+     Identifier texture = DefaultSkinHelper.method_4648(UUID.nameUUIDFromBytes(username.getBytes())).comp_1626();
      skinCache.put(key, texture);
      return texture;
    }
    
-   private static class_2960 getSkinTextureByUUID(UUID uuid) {
+   private static Identifier getSkinTextureByUUID(UUID uuid) {
      String key = uuid.toString();
      
      if (skinCache.containsKey(key)) {
@@ -618,24 +618,24 @@ package shame.nazuna.api.utils.render;
      }
      
      if (mc.method_1562() != null) {
-       class_640 entry = mc.method_1562().method_2871(uuid);
+       PlayerListEntry entry = mc.method_1562().method_2871(uuid);
        if (entry != null) {
-         class_2960 texture = entry.method_52810().comp_1626();
+         Identifier texture = entry.method_52810().comp_1626();
          skinCache.put(key, texture);
          return texture;
        } 
      } 
      
      if (mc.field_1687 != null) {
-       class_1657 player = mc.field_1687.method_18470(uuid);
+       PlayerEntity player = mc.field_1687.method_18470(uuid);
        if (player != null) {
-         class_2960 texture = getSkinTexture(player);
+         Identifier texture = getSkinTexture(player);
          skinCache.put(key, texture);
          return texture;
        } 
      } 
      
-     return class_1068.method_4648(uuid).comp_1626();
+     return DefaultSkinHelper.method_4648(uuid).comp_1626();
    }
    
    public static void clearSkinCache() {
@@ -646,15 +646,15 @@ package shame.nazuna.api.utils.render;
      skinCache.remove(username.toLowerCase(Locale.ROOT));
    }
    
-   public static void drawRoundedRect(class_4587 matrices, float x, float y, float width, float height, float radius, int color) {
+   public static void drawRoundedRect(MatrixStack matrices, float x, float y, float width, float height, float radius, int color) {
      drawRoundedRect(matrices, x, y, width, height, radius, radius, radius, radius, color);
    }
    
-   public static void drawDefaultHudElementRects(class_4587 matrices, float x, float y, float width, float height, int themeColor) {
+   public static void drawDefaultHudElementRects(MatrixStack matrices, float x, float y, float width, float height, int themeColor) {
      drawDefaultHudElementRects(matrices, x, y, width, height, themeColor, true);
    }
    
-   public static void drawDefaultHudElementRects(class_4587 matrices, float x, float y, float width, float height, int themeColor, boolean drawPattern) {
+   public static void drawDefaultHudElementRects(MatrixStack matrices, float x, float y, float width, float height, int themeColor, boolean drawPattern) {
      drawDefaultHudThemedPanel(matrices, x, y, width, height, 3.0F, 3.5F, themeColor);
      if (drawPattern) {
        drawHudSquarePattern(matrices, x, y, width, height, themeColor);
@@ -662,7 +662,7 @@ package shame.nazuna.api.utils.render;
      drawRoundedRect(matrices, x + width - 14.5F, y + 3.0F, 10.0F, 10.0F, 2.0F, ColorUtils.darken(themeColor, 0.4F));
    }
    
-   public static void drawHudSquarePattern(class_4587 matrices, float x, float y, float width, float height, int themeColor) {
+   public static void drawHudSquarePattern(MatrixStack matrices, float x, float y, float width, float height, int themeColor) {
      if (width <= 6.0F || height <= 6.0F)
        return; 
      float clipX = x - 1.0F;
@@ -813,20 +813,20 @@ package shame.nazuna.api.utils.render;
    
    }
    
-   public static void drawDefaultHudInfoBox(class_4587 matrices, float x, float y, float width, int outerColor, int innerColor) {
+   public static void drawDefaultHudInfoBox(MatrixStack matrices, float x, float y, float width, int outerColor, int innerColor) {
      drawRoundedRect(matrices, x - 0.25F, y - 1.25F, width + 0.5F, 9.0F, 1.3F, outerColor);
      drawRoundedRect(matrices, x, y - 1.0F, width, 8.5F, 1.0F, innerColor);
    }
  
  
    
-   public static void drawDefaultHudPanel(class_4587 matrices, float x, float y, float width, float height, float gradientRadius, float borderRadius, int borderColor, int topColor, int bottomColor) {
+   public static void drawDefaultHudPanel(MatrixStack matrices, float x, float y, float width, float height, float gradientRadius, float borderRadius, int borderColor, int topColor, int bottomColor) {
      drawRoundedRect(matrices, x - 0.5F, y - 0.5F, width + 1.0F, height + 1.0F, borderRadius, borderColor);
      drawGradientRect(matrices, x, y, width, height, gradientRadius, topColor, bottomColor);
    }
  
    
-   public static void drawDefaultHudThemedPanel(class_4587 matrices, float x, float y, float width, float height, float gradientRadius, float borderRadius, int themeColor) {
+   public static void drawDefaultHudThemedPanel(MatrixStack matrices, float x, float y, float width, float height, float gradientRadius, float borderRadius, int themeColor) {
      drawDefaultHudPanel(matrices, x, y, width, height, gradientRadius, borderRadius, 
          
          ColorUtils.rgba(50, 50, 50, 255), 
@@ -837,7 +837,7 @@ package shame.nazuna.api.utils.render;
  
  
    
-   public static void drawWaveHudHeader(class_4587 matrices, float x, float y, float width, float height, float radius, float shadowRadius, float shadowSoftness, int leftTop, int leftBottom, int centerTop, int centerBottom, int rightTop, int rightBottom) {
+   public static void drawWaveHudHeader(MatrixStack matrices, float x, float y, float width, float height, float radius, float shadowRadius, float shadowSoftness, int leftTop, int leftBottom, int centerTop, int centerBottom, int rightTop, int rightBottom) {
      drawShadow6(matrices, x, y, width, height, shadowRadius, shadowSoftness, leftTop, leftBottom, centerTop, centerBottom, rightTop, rightBottom);
      
      drawGradient6Rect(matrices, x, y, width, height, radius, leftTop, leftBottom, centerTop, centerBottom, rightTop, rightBottom);
@@ -846,64 +846,64 @@ package shame.nazuna.api.utils.render;
  
  
    
-   public static void drawWaveHudPanel(class_4587 matrices, float x, float y, float width, float height, int bgColor, float headerHeight, float headerRadius, float shadowRadius, float shadowSoftness, int leftTop, int leftBottom, int centerTop, int centerBottom, int rightTop, int rightBottom) {
+   public static void drawWaveHudPanel(MatrixStack matrices, float x, float y, float width, float height, int bgColor, float headerHeight, float headerRadius, float shadowRadius, float shadowSoftness, int leftTop, int leftBottom, int centerTop, int centerBottom, int rightTop, int rightBottom) {
      drawRoundedRect(matrices, x, y, width, height, 0.0F, bgColor);
      drawWaveHudHeader(matrices, x, y, width, headerHeight, headerRadius, shadowRadius, shadowSoftness, leftTop, leftBottom, centerTop, centerBottom, rightTop, rightBottom);
    }
  
  
    
-   public static void drawTargetHudWaveFrame(class_4587 matrices, float x, float y, float width, float height, float padding, float entityBoxSize, float alpha) {
+   public static void drawTargetHudWaveFrame(MatrixStack matrices, float x, float y, float width, float height, float padding, float entityBoxSize, float alpha) {
      drawRoundedRect(matrices, x, y, width, height, 0.0F, ColorUtils.applyAlpha(ColorUtils.rgba(40, 40, 40, 255), alpha));
      drawRoundedRect(matrices, x + padding, y + padding, width - padding * 2.0F, height - padding * 2.0F, 0.0F, ColorUtils.applyAlpha(ColorUtils.rgba(20, 20, 20, 255), alpha));
      drawRoundedRect(matrices, x + padding + 2.0F, y + padding + 2.0F, entityBoxSize, entityBoxSize, 0.0F, ColorUtils.applyAlpha(ColorUtils.rgba(40, 40, 40, 255), alpha));
      drawRoundedRect(matrices, x + padding + 3.0F, y + padding + 3.0F, entityBoxSize - 2.0F, entityBoxSize - 2.0F, 0.0F, ColorUtils.applyAlpha(ColorUtils.rgba(25, 25, 25, 255), alpha));
    }
    
-   public static void drawTargetHudDefaultPlaceholder(class_4587 matrices, float x, float y, float alpha) {
+   public static void drawTargetHudDefaultPlaceholder(MatrixStack matrices, float x, float y, float alpha) {
      drawRoundedRect(matrices, x - 1.0F, y - 1.0F, 22.0F, 22.0F, 1.0F, ColorUtils.applyAlpha(ColorUtils.rgba(21, 21, 21, 255), alpha));
    }
    
-   public static void drawTargetHudHealthBars(class_4587 matrices, float x, float y, float width, float trailProgress, float progress, int themeColor, int themecolor2, float alpha) {
+   public static void drawTargetHudHealthBars(MatrixStack matrices, float x, float y, float width, float trailProgress, float progress, int themeColor, int themecolor2, float alpha) {
      drawRoundedRect(matrices, x, y, width, 5.5F, 1.25F, ColorUtils.applyAlpha(ColorUtils.darken(themeColor, 0.5F), alpha * 0.8F));
      drawRoundedRect(matrices, x, y, width * trailProgress, 5.5F, 1.25F, ColorUtils.applyAlpha(ColorUtils.darken(themeColor, 0.8F), alpha * 0.8F));
      drawGradientRect(matrices, x, y, width * progress, 5.5F, 1.25F, ColorUtils.applyAlpha(themeColor, alpha), ColorUtils.applyAlpha(themecolor2, alpha), true);
    }
    
-   public static void drawTargetHudGoldenBars(class_4587 matrices, float x, float y, float width, float height, float trailProgress, float progress, float alpha, float goldenAlpha) {
+   public static void drawTargetHudGoldenBars(MatrixStack matrices, float x, float y, float width, float height, float trailProgress, float progress, float alpha, float goldenAlpha) {
      int goldenColor = ColorUtils.rgba(255, 215, 0, 255);
      drawRoundedRect(matrices, x, y, width * trailProgress, height, 1.25F, ColorUtils.applyAlpha(ColorUtils.darken(goldenColor, 0.65F), alpha * goldenAlpha * 0.8F));
      drawGradientRect(matrices, x, y, width * progress, height, 1.25F, ColorUtils.applyAlpha(ColorUtils.darken(goldenColor, 0.55F), alpha * goldenAlpha), ColorUtils.applyAlpha(goldenColor, alpha * goldenAlpha), true);
    }
    
-   public static void drawTargetHudHeartBase(class_4587 matrices, float x, float y, float alpha) {
+   public static void drawTargetHudHeartBase(MatrixStack matrices, float x, float y, float alpha) {
      drawRoundedRect(matrices, x, y, 6.2F, 4.5F, 0.0F, ColorUtils.applyAlpha(ColorUtils.rgba(0, 0, 0, 255), alpha));
    }
    
-   public static void drawTargetHudHeartFill(class_4587 matrices, float x, float y, float width, int heartColor, int shadowColor) {
+   public static void drawTargetHudHeartFill(MatrixStack matrices, float x, float y, float width, int heartColor, int shadowColor) {
      drawShadow(matrices, x + 1.0F, y + 1.0F, width, 2.0F, 0.0F, 8.0F, shadowColor);
      drawRoundedRect(matrices, x, y, width + 1.2F, 4.5F, 0.0F, heartColor);
    }
    
-   public static void drawKeyStrokeRect(class_4587 matrices, float x, float y, float width, float height, float radius, int color) {
+   public static void drawKeyStrokeRect(MatrixStack matrices, float x, float y, float width, float height, float radius, int color) {
      drawRoundedRect(matrices, x, y, width, height, radius, color);
    }
    
-   public static void drawRoundedRect(class_4587 matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, int color) {
+   public static void drawRoundedRect(MatrixStack matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, int color) {
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.roundedRect);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.roundedRect);
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      
-     class_284 sizeUniform = shader.method_34582("Size");
-     class_284 radiusUniform = shader.method_34582("Radius");
+     GlUniform sizeUniform = shader.method_34582("Size");
+     GlUniform radiusUniform = shader.method_34582("Radius");
      
      if (sizeUniform != null) sizeUniform.method_1255(width, height); 
      if (radiusUniform != null) radiusUniform.method_35657(topLeft, topRight, bottomRight, bottomLeft);
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1576);
      
      int alpha = color >> 24 & 0xFF;
      if (alpha == 0) alpha = 255; 
@@ -918,17 +918,17 @@ package shame.nazuna.api.utils.render;
      buffer.method_22918(matrix, x + width, y, 0.0F).method_22915(r, g, b, a);
      
      RenderSystem.setShader(ShaderUtils.roundedRect);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.disableBlend();
    }
    
-   public static void drawRoundCircle(class_4587 matrices, float x, float y, float radius, int color) {
+   public static void drawRoundCircle(MatrixStack matrices, float x, float y, float radius, int color) {
      Matrix4f matrix = matrices.method_23760().method_23761();
      drawRoundedRect(matrices, x - radius / 2.0F, y - radius / 2.0F, radius, radius, radius / 2.0F - 0.5F, color);
    }
    
-   public static void drawRingArc(class_4587 matrices, float x, float y, float size, float thickness, float startDeg, float endDeg, int color) {
+   public static void drawRingArc(MatrixStack matrices, float x, float y, float size, float thickness, float startDeg, float endDeg, int color) {
      if (size <= 0.0F || thickness <= 0.0F)
        return; 
      float radius = size / 2.0F;
@@ -945,15 +945,15 @@ package shame.nazuna.api.utils.render;
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.ringArc);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.ringArc);
      
-     class_284 sizeUniform = shader.method_34582("Size");
-     class_284 radiusUniform = shader.method_34582("Radius");
-     class_284 thicknessUniform = shader.method_34582("Thickness");
-     class_284 startUniform = shader.method_34582("StartAngle");
-     class_284 endUniform = shader.method_34582("EndAngle");
-     class_284 smoothnessUniform = shader.method_34582("Smoothness");
-     class_284 colorModulatorUniform = shader.method_34582("ColorModulator");
+     GlUniform sizeUniform = shader.method_34582("Size");
+     GlUniform radiusUniform = shader.method_34582("Radius");
+     GlUniform thicknessUniform = shader.method_34582("Thickness");
+     GlUniform startUniform = shader.method_34582("StartAngle");
+     GlUniform endUniform = shader.method_34582("EndAngle");
+     GlUniform smoothnessUniform = shader.method_34582("Smoothness");
+     GlUniform colorModulatorUniform = shader.method_34582("ColorModulator");
      
      if (sizeUniform != null) sizeUniform.method_1255(size, size); 
      if (radiusUniform != null) radiusUniform.method_1251(radius); 
@@ -964,7 +964,7 @@ package shame.nazuna.api.utils.render;
      if (colorModulatorUniform != null) colorModulatorUniform.method_35657(1.0F, 1.0F, 1.0F, 1.0F);
      
      Matrix4f matrix = matrices.method_23760().method_23761();
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1576);
      
      int alpha = color >> 24 & 0xFF;
      if (alpha == 0) alpha = 255; 
@@ -979,27 +979,27 @@ package shame.nazuna.api.utils.render;
      buffer.method_22918(matrix, x + size, y, 0.0F).method_22915(r, g, b, a);
      
      RenderSystem.setShader(ShaderUtils.ringArc);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.disableBlend();
    }
    
-   public static void drawGradientRect(class_4587 matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
+   public static void drawGradientRect(MatrixStack matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.gradientRect);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.gradientRect);
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      
-     class_284 sizeUniform = shader.method_34582("Size");
-     class_284 radiusUniform = shader.method_34582("Radius");
-     class_284 smoothnessUniform = shader.method_34582("Smoothness");
-     class_284 colorModulatorUniform = shader.method_34582("ColorModulator");
-     class_284 topLeftColorUniform = shader.method_34582("TopLeftColor");
-     class_284 bottomLeftColorUniform = shader.method_34582("BottomLeftColor");
-     class_284 topRightColorUniform = shader.method_34582("TopRightColor");
-     class_284 bottomRightColorUniform = shader.method_34582("BottomRightColor");
+     GlUniform sizeUniform = shader.method_34582("Size");
+     GlUniform radiusUniform = shader.method_34582("Radius");
+     GlUniform smoothnessUniform = shader.method_34582("Smoothness");
+     GlUniform colorModulatorUniform = shader.method_34582("ColorModulator");
+     GlUniform topLeftColorUniform = shader.method_34582("TopLeftColor");
+     GlUniform bottomLeftColorUniform = shader.method_34582("BottomLeftColor");
+     GlUniform topRightColorUniform = shader.method_34582("TopRightColor");
+     GlUniform bottomRightColorUniform = shader.method_34582("BottomRightColor");
      
      if (sizeUniform != null) sizeUniform.method_1255(width, height); 
      if (radiusUniform != null) radiusUniform.method_35657(topLeft, topRight, bottomRight, bottomLeft); 
@@ -1042,7 +1042,7 @@ package shame.nazuna.api.utils.render;
  
  
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      
      buffer.method_22918(matrix, x, y, 0.0F).method_22913(0.0F, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      buffer.method_22918(matrix, x, y + height, 0.0F).method_22913(0.0F, 1.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1050,24 +1050,24 @@ package shame.nazuna.api.utils.render;
      buffer.method_22918(matrix, x + width, y, 0.0F).method_22913(1.0F, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      
      RenderSystem.setShader(ShaderUtils.gradientRect);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.disableBlend();
    }
    
-   public static void drawGradientRect(class_4587 matrices, float x, float y, float width, float height, float radius, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
+   public static void drawGradientRect(MatrixStack matrices, float x, float y, float width, float height, float radius, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
      drawGradientRect(matrices, x, y, width, height, radius, radius, radius, radius, topLeftColor, topRightColor, bottomLeftColor, bottomRightColor);
    }
    
-   public static void drawGradientRect(class_4587 matrices, float x, float y, float width, float height, float radius, int topColor, int bottomColor) {
+   public static void drawGradientRect(MatrixStack matrices, float x, float y, float width, float height, float radius, int topColor, int bottomColor) {
      drawGradientRect(matrices, x, y, width, height, radius, radius, radius, radius, topColor, topColor, bottomColor, bottomColor);
    }
    
-   public static void drawGradientRect(class_4587 matrices, float x, float y, float width, float height, int topColor, int bottomColor) {
+   public static void drawGradientRect(MatrixStack matrices, float x, float y, float width, float height, int topColor, int bottomColor) {
      drawGradientRect(matrices, x, y, width, height, 0.0F, 0.0F, 0.0F, 0.0F, topColor, topColor, bottomColor, bottomColor);
    }
    
-   public static void drawGradientRect(class_4587 matrices, float x, float y, float width, float height, float radius, int leftColor, int rightColor, boolean horizontal) {
+   public static void drawGradientRect(MatrixStack matrices, float x, float y, float width, float height, float radius, int leftColor, int rightColor, boolean horizontal) {
      if (horizontal) {
        drawGradientRect(matrices, x, y, width, height, radius, radius, radius, radius, leftColor, rightColor, leftColor, rightColor);
      } else {
@@ -1077,38 +1077,38 @@ package shame.nazuna.api.utils.render;
  
  
    
-   public static void drawRoundedRectOutline(class_4587 matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, float outline, int outlineColor) {
+   public static void drawRoundedRectOutline(MatrixStack matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, float outline, int outlineColor) {
      drawRoundedRectOutline(matrices, x, y, width, height, topLeft, topRight, bottomRight, bottomLeft, outline, outlineColor, outlineColor, outlineColor, outlineColor);
    }
  
  
    
-   public static void drawRoundedRectOutline(class_4587 matrices, float x, float y, float width, float height, float radius, float outline, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
+   public static void drawRoundedRectOutline(MatrixStack matrices, float x, float y, float width, float height, float radius, float outline, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
      drawRoundedRectOutline(matrices, x, y, width, height, radius, radius, radius, radius, outline, topLeftColor, topRightColor, bottomLeftColor, bottomRightColor);
    }
  
  
  
    
-   public static void drawRoundedRectOutline(class_4587 matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, float outline, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
+   public static void drawRoundedRectOutline(MatrixStack matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, float outline, int topLeftColor, int topRightColor, int bottomLeftColor, int bottomRightColor) {
      if (outline <= 0.0F)
        return; 
      RenderSystem.enableBlend();
      RenderSystem.defaultBlendFunc();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.roundedRectOutline);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.roundedRectOutline);
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      
-     class_284 sizeUniform = shader.method_34582("Size");
-     class_284 radiusUniform = shader.method_34582("Radius");
-     class_284 smoothnessUniform = shader.method_34582("Smoothness");
-     class_284 colorModulatorUniform = shader.method_34582("ColorModulator");
-     class_284 outlineUniform = shader.method_34582("Outline");
-     class_284 topLeftColorUniform = shader.method_34582("TopLeftColor");
-     class_284 bottomLeftColorUniform = shader.method_34582("BottomLeftColor");
-     class_284 topRightColorUniform = shader.method_34582("TopRightColor");
-     class_284 bottomRightColorUniform = shader.method_34582("BottomRightColor");
+     GlUniform sizeUniform = shader.method_34582("Size");
+     GlUniform radiusUniform = shader.method_34582("Radius");
+     GlUniform smoothnessUniform = shader.method_34582("Smoothness");
+     GlUniform colorModulatorUniform = shader.method_34582("ColorModulator");
+     GlUniform outlineUniform = shader.method_34582("Outline");
+     GlUniform topLeftColorUniform = shader.method_34582("TopLeftColor");
+     GlUniform bottomLeftColorUniform = shader.method_34582("BottomLeftColor");
+     GlUniform topRightColorUniform = shader.method_34582("TopRightColor");
+     GlUniform bottomRightColorUniform = shader.method_34582("BottomRightColor");
      
      if (sizeUniform != null) sizeUniform.method_1255(width, height); 
      if (radiusUniform != null) radiusUniform.method_35657(topLeft, topRight, bottomRight, bottomLeft); 
@@ -1157,7 +1157,7 @@ package shame.nazuna.api.utils.render;
  
  
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1576);
      
      buffer.method_22918(matrix, x, y, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      buffer.method_22918(matrix, x, y + height, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1165,13 +1165,13 @@ package shame.nazuna.api.utils.render;
      buffer.method_22918(matrix, x + width, y, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F);
      
      RenderSystem.setShader(ShaderUtils.roundedRectOutline);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.disableBlend();
    }
  
    
-   public static void drawBlur(class_4587 matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, int color) {
+   public static void drawBlur(MatrixStack matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, int color) {
      if (BlurProgram.getBuffer2() == null)
        return; 
      RenderSystem.enableBlend();
@@ -1179,12 +1179,12 @@ package shame.nazuna.api.utils.render;
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.roundedTexture);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.roundedTexture);
      
-     class_284 sizeUniform = shader.method_34582("Size");
-     class_284 radiusUniform = shader.method_34582("Radius");
-     class_284 smoothnessUniform = shader.method_34582("Smoothness");
-     class_284 colorModulatorUniform = shader.method_34582("ColorModulator");
+     GlUniform sizeUniform = shader.method_34582("Size");
+     GlUniform radiusUniform = shader.method_34582("Radius");
+     GlUniform smoothnessUniform = shader.method_34582("Smoothness");
+     GlUniform colorModulatorUniform = shader.method_34582("ColorModulator");
      
      if (sizeUniform != null) sizeUniform.method_1255(width, height); 
      if (radiusUniform != null) radiusUniform.method_35657(topLeft, topRight, bottomRight, bottomLeft); 
@@ -1209,22 +1209,22 @@ package shame.nazuna.api.utils.render;
      float b = (color & 0xFF) / 255.0F;
      float a = alpha / 255.0F;
      
-     class_287 builder = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder builder = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      builder.method_22918(matrix, x, y, 0.0F).method_22913(u1, v1).method_22915(r, g, b, a);
      builder.method_22918(matrix, x, y + height, 0.0F).method_22913(u1, v2).method_22915(r, g, b, a);
      builder.method_22918(matrix, x + width, y + height, 0.0F).method_22913(u2, v2).method_22915(r, g, b, a);
      builder.method_22918(matrix, x + width, y, 0.0F).method_22913(u2, v1).method_22915(r, g, b, a);
-     class_286.method_43433(builder.method_60800());
+     BufferRenderer.method_43433(builder.method_60800());
      
      RenderSystem.setShaderTexture(0, 0);
      RenderSystem.disableBlend();
    }
    
-   public static void drawBlur(class_4587 matrices, float x, float y, float width, float height, float radius, int color) {
+   public static void drawBlur(MatrixStack matrices, float x, float y, float width, float height, float radius, int color) {
      drawBlur(matrices, x, y, width, height, radius, radius, radius, radius, color);
    }
    
-   public static void startGlow(float radius, int color, GlowCallback callback, class_4587 matrices) {
+   public static void startGlow(float radius, int color, GlowCallback callback, MatrixStack matrices) {
      int a = color >> 24 & 0xFF;
      int r = color >> 16 & 0xFF;
      int g = color >> 8 & 0xFF;
@@ -1235,7 +1235,7 @@ package shame.nazuna.api.utils.render;
      GlowProgram.getInstance().end(matrices, callback);
    }
    
-   public static void startGlow(float radius, float intensity, int color, GlowCallback callback, class_4587 matrices) {
+   public static void startGlow(float radius, float intensity, int color, GlowCallback callback, MatrixStack matrices) {
      int a = color >> 24 & 0xFF;
      int r = color >> 16 & 0xFF;
      int g = color >> 8 & 0xFF;
@@ -1246,7 +1246,7 @@ package shame.nazuna.api.utils.render;
      GlowProgram.getInstance().end(matrices, callback);
    }
    
-   public static void drawBlur(class_4587 matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, float blurStrength, int color) {
+   public static void drawBlur(MatrixStack matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, float blurStrength, int color) {
      BlurProgram.getInstance().request();
      if (BlurProgram.getBuffer2() == null)
        return; 
@@ -1257,12 +1257,12 @@ package shame.nazuna.api.utils.render;
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.roundedTexture);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.roundedTexture);
      
-     class_284 sizeUniform = shader.method_34582("Size");
-     class_284 radiusUniform = shader.method_34582("Radius");
-     class_284 smoothnessUniform = shader.method_34582("Smoothness");
-     class_284 colorModulatorUniform = shader.method_34582("ColorModulator");
+     GlUniform sizeUniform = shader.method_34582("Size");
+     GlUniform radiusUniform = shader.method_34582("Radius");
+     GlUniform smoothnessUniform = shader.method_34582("Smoothness");
+     GlUniform colorModulatorUniform = shader.method_34582("ColorModulator");
      
      if (sizeUniform != null) sizeUniform.method_1255(width, height); 
      if (radiusUniform != null) radiusUniform.method_35657(topLeft, topRight, bottomRight, bottomLeft); 
@@ -1287,22 +1287,22 @@ package shame.nazuna.api.utils.render;
      float b = (color & 0xFF) / 255.0F;
      float a = alpha / 255.0F;
      
-     class_287 builder = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder builder = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      builder.method_22918(matrix, x, y, 0.0F).method_22913(u1, v1).method_22915(r, g, b, a);
      builder.method_22918(matrix, x, y + height, 0.0F).method_22913(u1, v2).method_22915(r, g, b, a);
      builder.method_22918(matrix, x + width, y + height, 0.0F).method_22913(u2, v2).method_22915(r, g, b, a);
      builder.method_22918(matrix, x + width, y, 0.0F).method_22913(u2, v1).method_22915(r, g, b, a);
-     class_286.method_43433(builder.method_60800());
+     BufferRenderer.method_43433(builder.method_60800());
      
      RenderSystem.setShaderTexture(0, 0);
      RenderSystem.disableBlend();
    }
    
-   public static void drawBlur(class_4587 matrices, float x, float y, float width, float height, float radius, float blurStrength, int color) {
+   public static void drawBlur(MatrixStack matrices, float x, float y, float width, float height, float radius, float blurStrength, int color) {
      drawBlur(matrices, x, y, width, height, radius, radius, radius, radius, blurStrength, color);
    }
    
-   public static void drawLiquidGlass(class_4587 matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, int color, float globalAlpha, float fresnelPower, int fresnelColor, float baseAlpha, boolean fresnelInvert, float fresnelMix, float distortStrength, float squirt, boolean clean) {
+   public static void drawLiquidGlass(MatrixStack matrices, float x, float y, float width, float height, float topLeft, float topRight, float bottomRight, float bottomLeft, int color, float globalAlpha, float fresnelPower, int fresnelColor, float baseAlpha, boolean fresnelInvert, float fresnelMix, float distortStrength, float squirt, boolean clean) {
      int textureId;
      if (clean) {
        textureId = mc.method_1522().method_30277();
@@ -1319,20 +1319,20 @@ package shame.nazuna.api.utils.render;
      
      RenderSystem.setShaderTexture(0, textureId);
      
-     class_5944 shader = mc.method_62887().method_62947(ShaderUtils.liquidGlass);
+     ShaderProgram shader = mc.method_62887().method_62947(ShaderUtils.liquidGlass);
      
-     class_284 globalAlphaUniform = shader.method_34582("GlobalAlpha");
-     class_284 sizeUniform = shader.method_34582("Size");
-     class_284 radiusUniform = shader.method_34582("Radius");
-     class_284 smoothnessUniform = shader.method_34582("Smoothness");
-     class_284 fresnelPowerUniform = shader.method_34582("FresnelPower");
-     class_284 fresnelColorUniform = shader.method_34582("FresnelColor");
-     class_284 fresnelAlphaUniform = shader.method_34582("FresnelAlpha");
-     class_284 baseAlphaUniform = shader.method_34582("BaseAlpha");
-     class_284 fresnelInvertUniform = shader.method_34582("FresnelInvert");
-     class_284 fresnelMixUniform = shader.method_34582("FresnelMix");
-     class_284 distortStrengthUniform = shader.method_34582("DistortStrength");
-     class_284 cornerSmoothnessUniform = shader.method_34582("CornerSmoothness");
+     GlUniform globalAlphaUniform = shader.method_34582("GlobalAlpha");
+     GlUniform sizeUniform = shader.method_34582("Size");
+     GlUniform radiusUniform = shader.method_34582("Radius");
+     GlUniform smoothnessUniform = shader.method_34582("Smoothness");
+     GlUniform fresnelPowerUniform = shader.method_34582("FresnelPower");
+     GlUniform fresnelColorUniform = shader.method_34582("FresnelColor");
+     GlUniform fresnelAlphaUniform = shader.method_34582("FresnelAlpha");
+     GlUniform baseAlphaUniform = shader.method_34582("BaseAlpha");
+     GlUniform fresnelInvertUniform = shader.method_34582("FresnelInvert");
+     GlUniform fresnelMixUniform = shader.method_34582("FresnelMix");
+     GlUniform distortStrengthUniform = shader.method_34582("DistortStrength");
+     GlUniform cornerSmoothnessUniform = shader.method_34582("CornerSmoothness");
      
      if (globalAlphaUniform != null) globalAlphaUniform.method_1251(globalAlpha); 
      if (sizeUniform != null) sizeUniform.method_1255(width, height); 
@@ -1379,12 +1379,12 @@ package shame.nazuna.api.utils.render;
      
      RenderSystem.setShader(ShaderUtils.liquidGlass);
      
-     class_287 builder = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder builder = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      builder.method_22918(matrix, x, y, 0.0F).method_22913(u1, v1).method_22915(r, g, b, a);
      builder.method_22918(matrix, x, y + height, 0.0F).method_22913(u1, v2).method_22915(r, g, b, a);
      builder.method_22918(matrix, x + width, y + height, 0.0F).method_22913(u2, v2).method_22915(r, g, b, a);
      builder.method_22918(matrix, x + width, y, 0.0F).method_22913(u2, v1).method_22915(r, g, b, a);
-     class_286.method_43433(builder.method_60800());
+     BufferRenderer.method_43433(builder.method_60800());
      
      RenderSystem.setShaderTexture(0, 0);
      RenderSystem.enableCull();

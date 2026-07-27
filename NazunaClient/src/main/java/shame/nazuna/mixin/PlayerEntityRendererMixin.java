@@ -1,26 +1,26 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_10055;
- import net.minecraft.class_1007;
- import net.minecraft.class_3883;
- import net.minecraft.class_3887;
- import net.minecraft.class_5617;
- import net.minecraft.class_591;
+ import net.minecraft.PlayerEntityRenderState;
+ import net.minecraft.PlayerEntityRenderer;
+ import net.minecraft.FeatureRendererContext;
+ import net.minecraft.FeatureRenderer;
+ import net.minecraft.EntityRendererFactory;
+ import net.minecraft.PlayerEntityModel;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
  import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  import shame.nazuna.client.modules.impl.render.SatelliteFeatureRenderer;
  
- @Mixin({class_1007.class})
+ @Mixin({PlayerEntityRenderer.class})
  public abstract class PlayerEntityRendererMixin
  {
    @Inject(method = {"<init>"}, at = {@At("TAIL")})
-   private void astra$addShoulderPetFeature(class_5617.class_5618 context, boolean slim, CallbackInfo ci) {
-     class_3883<class_10055, class_591> rendererContext = (class_3883<class_10055, class_591>)this;
+   private void astra$addShoulderPetFeature(EntityRendererFactory.class_5618 context, boolean slim, CallbackInfo ci) {
+     FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> rendererContext = (FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel>)this;
  
      
-     ((LivingEntityRendererAccessor)this).astra$addFeature((class_3887<?, ?>)new SatelliteFeatureRenderer(rendererContext, context));
+     ((LivingEntityRendererAccessor)this).astra$addFeature((FeatureRenderer<?, ?>)new SatelliteFeatureRenderer(rendererContext, context));
    }
  }
 

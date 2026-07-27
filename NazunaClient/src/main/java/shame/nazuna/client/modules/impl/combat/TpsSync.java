@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_3532;
+ import net.minecraft.MathHelper;
  import shame.nazuna.astra;
  import shame.nazuna.client.modules.Module;
  
@@ -17,7 +17,7 @@ package shame.nazuna.client.modules.impl.combat;
        return 20.0F;
      }
      float tps = astra.INSTANCE.tpsCalc.getTPS();
-     return class_3532.method_15363(tps, 0.1F, 20.0F);
+     return MathHelper.method_15363(tps, 0.1F, 20.0F);
    }
    
    public long getAdjustedCooldown(long baseCooldown) {

@@ -11,11 +11,11 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
  import java.util.ArrayList;
  import java.util.List;
  import java.util.concurrent.ThreadLocalRandom;
- import net.minecraft.class_1309;
- import net.minecraft.class_238;
- import net.minecraft.class_241;
- import net.minecraft.class_243;
- import net.minecraft.class_3532;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Box;
+ import net.minecraft.Vec2f;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.storages.implement.RotationStorage;
  import shame.nazuna.api.utils.rotate.Rotation;
@@ -32,11 +32,11 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
    
    private final List<DatasetFrame> frames = new ArrayList<>();
    
-   private class_1309 trackedTarget;
+   private LivingEntity trackedTarget;
    
-   private class_1309 trackedRotationTarget;
-   private class_243 currentAimPoint;
-   private class_243 targetAimPoint;
+   private LivingEntity trackedRotationTarget;
+   private Vec3d currentAimPoint;
+   private Vec3d targetAimPoint;
    private long lastModified = Long.MIN_VALUE;
    
    private long lastLoadAttempt;
@@ -75,19 +75,19 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
  
  
    
-   public void updateRotations(class_1309 target) {
+   public void updateRotations(LivingEntity target) {
      if (mc.field_1724 == null || target == null) {
        return;
      }
      
      boolean focus = shouldFocus();
      ensureDatasetLoaded();
-     class_243 aimPoint = selectAimPoint(target, focus);
-     class_241 rot = RotationUtils.getRotations(aimPoint);
+     Vec3d aimPoint = selectAimPoint(target, focus);
+     Vec2f rot = RotationUtils.getRotations(aimPoint);
      
      if (!this.datasetReady || this.frames.isEmpty()) {
        RotationStorage.update(new Rotation(rot.field_1343, 
-             class_3532.method_15363(rot.field_1342, -89.0F, 89.0F)), 360.0F, 360.0F, 45.0F, 45.0F, 0, 1, Aura.clientLook
+             MathHelper.method_15363(rot.field_1342, -89.0F, 89.0F)), 360.0F, 360.0F, 45.0F, 45.0F, 0, 1, Aura.clientLook
            
            .isState());
        
@@ -98,7 +98,7 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      float currentPitch = mc.field_1724.method_36455();
      syncRotationState(target, currentYaw, currentPitch);
      
-     float remainingYaw = class_3532.method_15393(rot.field_1343 - this.smoothYaw);
+     float remainingYaw = MathHelper.method_15393(rot.field_1343 - this.smoothYaw);
      float remainingPitch = rot.field_1342 - this.smoothPitch;
      
      DatasetFrame frame = pickFrame(remainingYaw, remainingPitch, focus);
@@ -117,8 +117,8 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      float quantizedYawStep = quantizeDelta(this.smoothYawStep, remainingYaw, gcd, true);
      float quantizedPitchStep = quantizeDelta(this.smoothPitchStep, remainingPitch, gcd, false);
      
-     this.smoothYaw = class_3532.method_15393(this.smoothYaw + quantizedYawStep);
-     this.smoothPitch = class_3532.method_15363(this.smoothPitch + quantizedPitchStep, -89.0F, 89.0F);
+     this.smoothYaw = MathHelper.method_15393(this.smoothYaw + quantizedYawStep);
+     this.smoothPitch = MathHelper.method_15363(this.smoothPitch + quantizedPitchStep, -89.0F, 89.0F);
      
      RotationStorage.update(new Rotation(this.smoothYaw, this.smoothPitch), 360.0F, 360.0F, 45.0F, 45.0F, 0, 1, Aura.clientLook
  
@@ -199,7 +199,7 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      float fromPitch = getFloat(object, "fromPitch");
      float toPitch = getFloat(object, "toPitch");
      
-     float signedYaw = class_3532.method_15393(toYaw - fromYaw);
+     float signedYaw = MathHelper.method_15393(toYaw - fromYaw);
      float signedPitch = toPitch - fromPitch;
      float absYaw = Math.abs(signedYaw);
      float absPitch = Math.abs(signedPitch);
@@ -277,8 +277,8 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
        return;
      } 
      ThreadLocalRandom random = ThreadLocalRandom.current();
-     float pressure = class_3532.method_15363((Math.abs(remainingYaw) + Math.abs(remainingPitch)) / 32.0F, 0.0F, 1.0F);
-     float timePressure = class_3532.method_15363((float)frame.timeDeltaMs / 120.0F, 0.0F, 1.0F);
+     float pressure = MathHelper.method_15363((Math.abs(remainingYaw) + Math.abs(remainingPitch)) / 32.0F, 0.0F, 1.0F);
+     float timePressure = MathHelper.method_15363((float)frame.timeDeltaMs / 120.0F, 0.0F, 1.0F);
      
      float yawMin = focus ? 0.94F : 0.86F;
      float yawMax = focus ? 1.12F : 1.04F;
@@ -303,8 +303,8 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      }
      
      float template = yawAxis ? frame.deltaYaw : frame.deltaPitch;
-     float speedBoost = 0.3F + class_3532.method_15363(frame.rotationSpeed * (yawAxis ? 3.4F : 2.8F), 0.0F, yawAxis ? 0.2F : 0.16F);
-     float pressureBoost = class_3532.method_15363(desiredAbs / (yawAxis ? 105.0F : 82.0F), 0.09F, yawAxis ? 0.52F : 0.46F);
+     float speedBoost = 0.3F + MathHelper.method_15363(frame.rotationSpeed * (yawAxis ? 3.4F : 2.8F), 0.0F, yawAxis ? 0.2F : 0.16F);
+     float pressureBoost = MathHelper.method_15363(desiredAbs / (yawAxis ? 105.0F : 82.0F), 0.09F, yawAxis ? 0.52F : 0.46F);
      float step = Math.max(template * Math.max(speedBoost, pressureBoost), yawAxis ? 0.03F : 0.024F);
      
      if (frame.instantSnap) {
@@ -338,8 +338,8 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      }
      
      float speed = yawAxis ? frame.jitterYawSpeed : frame.jitterPitchSpeed;
-     float base = gcd * class_3532.method_15363(frame.jitterScore * 0.01F, 0.0F, yawAxis ? 0.15F : 0.11F);
-     base += gcd * class_3532.method_15363(speed * (yawAxis ? 1.3F : 1.0F), 0.0F, yawAxis ? 0.1F : 0.07F);
+     float base = gcd * MathHelper.method_15363(frame.jitterScore * 0.01F, 0.0F, yawAxis ? 0.15F : 0.11F);
+     base += gcd * MathHelper.method_15363(speed * (yawAxis ? 1.3F : 1.0F), 0.0F, yawAxis ? 0.1F : 0.07F);
      
      if (frame.isJittering) {
        base *= 1.05F;
@@ -358,7 +358,7 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      return jitter;
    }
    
-   private void syncRotationState(class_1309 target, float currentYaw, float currentPitch) {
+   private void syncRotationState(LivingEntity target, float currentYaw, float currentPitch) {
      if (!this.hasRotationState || this.trackedRotationTarget != target) {
        this.trackedRotationTarget = target;
        this.smoothYaw = currentYaw;
@@ -382,21 +382,21 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      
      float baseAlpha = yawAxis ? (focus ? 0.092F : 0.06F) : (focus ? 0.082F : 0.055F);
      float alpha = baseAlpha * (yawAxis ? this.yawSmoothFactor : this.pitchSmoothFactor);
-     float smoothed = currentStep + (desiredStep - currentStep) * class_3532.method_15363(alpha, 0.025F, 0.16F);
+     float smoothed = currentStep + (desiredStep - currentStep) * MathHelper.method_15363(alpha, 0.025F, 0.16F);
      
      float minCap = yawAxis ? 0.13F : 0.1F;
  
      
      float capScale = yawAxis ? (focus ? 0.056F : 0.036F) : (focus ? 0.046F : 0.032F);
      float randomFactor = yawAxis ? this.yawSmoothFactor : this.pitchSmoothFactor;
-     float maxCap = minCap + desiredAbs * capScale * class_3532.method_15363(randomFactor, 0.88F, 1.18F);
+     float maxCap = minCap + desiredAbs * capScale * MathHelper.method_15363(randomFactor, 0.88F, 1.18F);
      
      float finishThreshold = yawAxis ? 5.5F : 3.8F;
      if (desiredAbs < finishThreshold) {
        maxCap *= 1.12F;
      }
      
-     smoothed = class_3532.method_15363(smoothed, -maxCap, maxCap);
+     smoothed = MathHelper.method_15363(smoothed, -maxCap, maxCap);
      if (Math.abs(remaining) < Math.abs(smoothed) && Math.signum(remaining) == Math.signum(smoothed)) {
        smoothed = remaining;
      }
@@ -420,13 +420,13 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      }
      
      if (!yawAxis) {
-       quantized = class_3532.method_15363(quantized, -89.0F, 89.0F);
+       quantized = MathHelper.method_15363(quantized, -89.0F, 89.0F);
      }
      return quantized;
    }
  
    
-   private class_243 selectAimPoint(class_1309 target, boolean focus) {
+   private Vec3d selectAimPoint(LivingEntity target, boolean focus) {
      if (this.trackedTarget != target || this.currentAimPoint == null || this.targetAimPoint == null) {
        this.trackedTarget = target;
        this.targetAimPoint = createAimPoint(target, focus);
@@ -446,7 +446,7 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      this
  
        
-       .currentAimPoint = new class_243(class_3532.method_16436(lerp, this.currentAimPoint.field_1352, this.targetAimPoint.field_1352), class_3532.method_16436(lerp, this.currentAimPoint.field_1351, this.targetAimPoint.field_1351), class_3532.method_16436(lerp, this.currentAimPoint.field_1350, this.targetAimPoint.field_1350));
+       .currentAimPoint = new Vec3d(MathHelper.method_16436(lerp, this.currentAimPoint.field_1352, this.targetAimPoint.field_1352), MathHelper.method_16436(lerp, this.currentAimPoint.field_1351, this.targetAimPoint.field_1351), MathHelper.method_16436(lerp, this.currentAimPoint.field_1350, this.targetAimPoint.field_1350));
      
      return this.currentAimPoint;
    }
@@ -455,13 +455,13 @@ package shame.nazuna.client.modules.impl.combat.components.rotations;
      return ThreadLocalRandom.current().nextInt(focus ? 7 : 10, focus ? 13 : 18);
    }
    
-   private class_243 createAimPoint(class_1309 target, boolean focus) {
-     class_238 box = getPredictedBox(target);
+   private Vec3d createAimPoint(LivingEntity target, boolean focus) {
+     Box box = getPredictedBox(target);
      ThreadLocalRandom random = ThreadLocalRandom.current();
-     double x = class_3532.method_16436(random.nextDouble(0.45D, 0.55D), box.field_1323, box.field_1320);
-     double y = class_3532.method_16436(random.nextDouble(focus ? 0.53D : 0.49D, focus ? 0.7D : 0.76D), box.field_1322, box.field_1325);
-     double z = class_3532.method_16436(random.nextDouble(0.45D, 0.55D), box.field_1321, box.field_1324);
-     return new class_243(x, y, z);
+     double x = MathHelper.method_16436(random.nextDouble(0.45D, 0.55D), box.field_1323, box.field_1320);
+     double y = MathHelper.method_16436(random.nextDouble(focus ? 0.53D : 0.49D, focus ? 0.7D : 0.76D), box.field_1322, box.field_1325);
+     double z = MathHelper.method_16436(random.nextDouble(0.45D, 0.55D), box.field_1321, box.field_1324);
+     return new Vec3d(x, y, z);
    }
    
    private float getFloat(JsonObject object, String key) {

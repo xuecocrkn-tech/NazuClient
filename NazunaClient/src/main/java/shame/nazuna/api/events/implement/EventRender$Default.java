@@ -1,6 +1,6 @@
 package shame.nazuna.api.events.implement;
  
- import net.minecraft.class_332;
+ import net.minecraft.DrawContext;
  import shame.nazuna.api.events.Event;
  
  
@@ -8,10 +8,10 @@ package shame.nazuna.api.events.implement;
  public class Default
    extends Event
  {
-   private final class_332 context;
+   private final DrawContext context;
    private final float partialTicks;
    
-   public Default(class_332 context, float partialTicks) {
+   public Default(DrawContext context, float partialTicks) {
      this.context = context; this.partialTicks = partialTicks;
    public float getPartialTicks() { return this.partialTicks; }
  

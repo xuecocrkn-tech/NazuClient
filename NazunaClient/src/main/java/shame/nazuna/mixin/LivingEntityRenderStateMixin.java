@@ -1,11 +1,11 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_10042;
+ import net.minecraft.LivingEntityRenderState;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.Unique;
  import shame.nazuna.client.modules.impl.render.SeeInvisiblesRenderState;
  
- @Mixin({class_10042.class})
+ @Mixin({LivingEntityRenderState.class})
  public class LivingEntityRenderStateMixin
    implements SeeInvisiblesRenderState
  {

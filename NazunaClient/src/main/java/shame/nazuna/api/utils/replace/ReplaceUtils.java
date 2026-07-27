@@ -1,61 +1,61 @@
 package shame.nazuna.api.utils.replace;
- import net.minecraft.class_124;
- import net.minecraft.class_2561;
- import net.minecraft.class_5250;
+ import net.minecraft.Formatting;
+ import net.minecraft.Text;
+ import net.minecraft.MutableText;
  
  public class ReplaceUtils {
-   public static class_2561 replace(class_2561 input, String target, String replacement) {
+   public static Text replace(Text input, String target, String replacement) {
      if (input == null || target == null || replacement == null) return input; 
-     class_5250 result = class_2561.method_43473().method_10862(input.method_10866());
+     MutableText result = Text.method_43473().method_10862(input.method_10866());
      appendReplaced(result, input, target, replacement);
-     return (class_2561)result;
+     return (Text)result;
    }
    
-   private static void appendReplaced(class_5250 result, class_2561 current, String target, String replacement) {
-     class_7417 content = current.method_10851();
-     class_2583 style = current.method_10866();
+   private static void appendReplaced(MutableText result, Text current, String target, String replacement) {
+     TextContent content = current.method_10851();
+     Style style = current.method_10866();
      
-     if (content instanceof class_8828.class_2585) { class_8828.class_2585 literal = (class_8828.class_2585)content;
+     if (content instanceof PlainTextContent.class_2585) { PlainTextContent.class_2585 literal = (PlainTextContent.class_2585)content;
        Pattern pattern = Pattern.compile(Pattern.quote(target), 2);
        String replaced = pattern.matcher(literal.comp_737()).replaceAll(replacement);
-       result.method_10852((class_2561)class_2561.method_43470(replaced).method_10862(style)); }
+       result.method_10852((Text)Text.method_43470(replaced).method_10862(style)); }
  
      
-     for (class_2561 sibling : current.method_10855()) {
+     for (Text sibling : current.method_10855()) {
        appendReplaced(result, sibling, target, replacement);
      }
    }
    
    public static String replaceSymbols(String string) {
      return string
-       .replaceAll("ꔗ", String.valueOf(class_124.field_1078) + "MODER")
-       .replaceAll("ꔥ", String.valueOf(class_124.field_1078) + "ST.MODER")
-       .replaceAll("ꔡ", String.valueOf(class_124.field_1076) + "MODER+")
-       .replaceAll("ꔀ", String.valueOf(class_124.field_1080) + "PLAYER")
-       .replaceAll("ꔉ", String.valueOf(class_124.field_1054) + "HELPER")
+       .replaceAll("ꔗ", String.valueOf(Formatting.field_1078) + "MODER")
+       .replaceAll("ꔥ", String.valueOf(Formatting.field_1078) + "ST.MODER")
+       .replaceAll("ꔡ", String.valueOf(Formatting.field_1076) + "MODER+")
+       .replaceAll("ꔀ", String.valueOf(Formatting.field_1080) + "PLAYER")
+       .replaceAll("ꔉ", String.valueOf(Formatting.field_1054) + "HELPER")
        .replaceAll("◆", "@")
        .replaceAll("┃", "|")
-       .replaceAll("ꕆ", String.valueOf(class_124.field_1054) + "PEGAS")
-       .replaceAll("ꔸ", String.valueOf(class_124.field_1054) + "GOD")
-       .replaceAll("ꔳ", String.valueOf(class_124.field_1075) + "Ml.admin")
-       .replaceAll("ꔅ", String.valueOf(class_124.field_1061) + "Y" + String.valueOf(class_124.field_1061) + "T")
-       .replaceAll("ꔂ", String.valueOf(class_124.field_1078) + "D.MODER")
-       .replaceAll("ꕠ", String.valueOf(class_124.field_1054) + "D.HELPER")
-       .replaceAll("ꕄ", String.valueOf(class_124.field_1061) + "VAMPIRE")
-       .replaceAll("ꔖ", String.valueOf(class_124.field_1075) + "OVERLORD")
-       .replaceAll("ꕈ", String.valueOf(class_124.field_1060) + "COBRA")
-       .replaceAll("ꔨ", String.valueOf(class_124.field_1076) + "DRAGON")
-       .replaceAll("ꔤ", String.valueOf(class_124.field_1061) + "IMPERATOR")
-       .replaceAll("ꔠ", String.valueOf(class_124.field_1065) + "MAGISTER")
-       .replaceAll("ꔄ", String.valueOf(class_124.field_1078) + "HERO")
-       .replaceAll("ꔒ", String.valueOf(class_124.field_1060) + "AVENGER")
-       .replaceAll("ꕒ", String.valueOf(class_124.field_1068) + "RABBIT")
-       .replaceAll("ꔈ", String.valueOf(class_124.field_1054) + "TITAN")
-       .replaceAll("ꕀ", String.valueOf(class_124.field_1077) + "HYDRA")
-       .replaceAll("ꔶ", String.valueOf(class_124.field_1065) + "TIGER")
-       .replaceAll("ꔲ", String.valueOf(class_124.field_1064) + "BULL")
-       .replaceAll("ꕖ", String.valueOf(class_124.field_1074) + "BUNNY")
-       .replaceAll("ꕗꕘ", String.valueOf(class_124.field_1054) + "SPONSOR")
+       .replaceAll("ꕆ", String.valueOf(Formatting.field_1054) + "PEGAS")
+       .replaceAll("ꔸ", String.valueOf(Formatting.field_1054) + "GOD")
+       .replaceAll("ꔳ", String.valueOf(Formatting.field_1075) + "Ml.admin")
+       .replaceAll("ꔅ", String.valueOf(Formatting.field_1061) + "Y" + String.valueOf(Formatting.field_1061) + "T")
+       .replaceAll("ꔂ", String.valueOf(Formatting.field_1078) + "D.MODER")
+       .replaceAll("ꕠ", String.valueOf(Formatting.field_1054) + "D.HELPER")
+       .replaceAll("ꕄ", String.valueOf(Formatting.field_1061) + "VAMPIRE")
+       .replaceAll("ꔖ", String.valueOf(Formatting.field_1075) + "OVERLORD")
+       .replaceAll("ꕈ", String.valueOf(Formatting.field_1060) + "COBRA")
+       .replaceAll("ꔨ", String.valueOf(Formatting.field_1076) + "DRAGON")
+       .replaceAll("ꔤ", String.valueOf(Formatting.field_1061) + "IMPERATOR")
+       .replaceAll("ꔠ", String.valueOf(Formatting.field_1065) + "MAGISTER")
+       .replaceAll("ꔄ", String.valueOf(Formatting.field_1078) + "HERO")
+       .replaceAll("ꔒ", String.valueOf(Formatting.field_1060) + "AVENGER")
+       .replaceAll("ꕒ", String.valueOf(Formatting.field_1068) + "RABBIT")
+       .replaceAll("ꔈ", String.valueOf(Formatting.field_1054) + "TITAN")
+       .replaceAll("ꕀ", String.valueOf(Formatting.field_1077) + "HYDRA")
+       .replaceAll("ꔶ", String.valueOf(Formatting.field_1065) + "TIGER")
+       .replaceAll("ꔲ", String.valueOf(Formatting.field_1064) + "BULL")
+       .replaceAll("ꕖ", String.valueOf(Formatting.field_1074) + "BUNNY")
+       .replaceAll("ꕗꕘ", String.valueOf(Formatting.field_1054) + "SPONSOR")
        .replaceAll("🔥", "@")
        .replaceAll("ᴀ", "A")
        .replaceAll("ʙ", "B")
@@ -87,33 +87,33 @@ package shame.nazuna.api.utils.replace;
        .replaceAll("ᴢ", "Z");
    }
    
-   public static class_2561 replaceSymbols(class_2561 text) {
-     if (text.getString().contains("ꔗ")) text = replace(text, "ꔗ", String.valueOf(class_124.field_1078) + "MODER"); 
-     if (text.getString().contains("ꔥ")) text = replace(text, "ꔥ", String.valueOf(class_124.field_1078) + "ST.MODER"); 
-     if (text.getString().contains("ꔡ")) text = replace(text, "ꔡ", String.valueOf(class_124.field_1076) + "MODER+"); 
-     if (text.getString().contains("ꔀ")) text = replace(text, "ꔀ", String.valueOf(class_124.field_1080) + "PLAYER"); 
-     if (text.getString().contains("ꔉ")) text = replace(text, "ꔉ", String.valueOf(class_124.field_1054) + "HELPER"); 
+   public static Text replaceSymbols(Text text) {
+     if (text.getString().contains("ꔗ")) text = replace(text, "ꔗ", String.valueOf(Formatting.field_1078) + "MODER"); 
+     if (text.getString().contains("ꔥ")) text = replace(text, "ꔥ", String.valueOf(Formatting.field_1078) + "ST.MODER"); 
+     if (text.getString().contains("ꔡ")) text = replace(text, "ꔡ", String.valueOf(Formatting.field_1076) + "MODER+"); 
+     if (text.getString().contains("ꔀ")) text = replace(text, "ꔀ", String.valueOf(Formatting.field_1080) + "PLAYER"); 
+     if (text.getString().contains("ꔉ")) text = replace(text, "ꔉ", String.valueOf(Formatting.field_1054) + "HELPER"); 
      if (text.getString().contains("◆")) text = replace(text, "◆", "@"); 
      if (text.getString().contains("┃")) text = replace(text, "┃", "|"); 
-     if (text.getString().contains("ꔳ")) text = replace(text, "ꔳ", String.valueOf(class_124.field_1075) + "Ml.admin"); 
-     if (text.getString().contains("ꔅ")) text = replace(text, "ꔅ", String.valueOf(class_124.field_1061) + "Y" + String.valueOf(class_124.field_1061) + "T"); 
-     if (text.getString().contains("ꔂ")) text = replace(text, "ꔂ", String.valueOf(class_124.field_1078) + "D.MODER"); 
-     if (text.getString().contains("ꕠ")) text = replace(text, "ꕠ", String.valueOf(class_124.field_1054) + "D.HELPER"); 
-     if (text.getString().contains("ꕄ")) text = replace(text, "ꕄ", String.valueOf(class_124.field_1061) + "DRACULA"); 
-     if (text.getString().contains("ꔖ")) text = replace(text, "ꔖ", String.valueOf(class_124.field_1075) + "OVERLORD"); 
-     if (text.getString().contains("ꕈ")) text = replace(text, "ꕈ", String.valueOf(class_124.field_1060) + "COBRA"); 
-     if (text.getString().contains("ꔨ")) text = replace(text, "ꔨ", String.valueOf(class_124.field_1076) + "DRAGON"); 
-     if (text.getString().contains("ꔤ")) text = replace(text, "ꔤ", String.valueOf(class_124.field_1061) + "IMPERATOR"); 
-     if (text.getString().contains("ꔠ")) text = replace(text, "ꔠ", String.valueOf(class_124.field_1065) + "MAGISTER"); 
-     if (text.getString().contains("ꔄ")) text = replace(text, "ꔄ", String.valueOf(class_124.field_1078) + "HERO"); 
-     if (text.getString().contains("ꔒ")) text = replace(text, "ꔒ", String.valueOf(class_124.field_1060) + "AVENGER"); 
-     if (text.getString().contains("ꕒ")) text = replace(text, "ꕒ", String.valueOf(class_124.field_1068) + "RABBIT"); 
-     if (text.getString().contains("ꔈ")) text = replace(text, "ꔈ", String.valueOf(class_124.field_1054) + "TITAN"); 
-     if (text.getString().contains("ꕀ")) text = replace(text, "ꕀ", String.valueOf(class_124.field_1077) + "HYDRA"); 
-     if (text.getString().contains("ꔶ")) text = replace(text, "ꔶ", String.valueOf(class_124.field_1065) + "TIGER"); 
-     if (text.getString().contains("ꔲ")) text = replace(text, "ꔲ", String.valueOf(class_124.field_1064) + "BULL"); 
-     if (text.getString().contains("ꕖ")) text = replace(text, "ꕖ", String.valueOf(class_124.field_1074) + "BUNNY"); 
-     if (text.getString().contains("ꕗꕘ")) text = replace(text, "ꕗꕘ", String.valueOf(class_124.field_1054) + "SPONSOR"); 
+     if (text.getString().contains("ꔳ")) text = replace(text, "ꔳ", String.valueOf(Formatting.field_1075) + "Ml.admin"); 
+     if (text.getString().contains("ꔅ")) text = replace(text, "ꔅ", String.valueOf(Formatting.field_1061) + "Y" + String.valueOf(Formatting.field_1061) + "T"); 
+     if (text.getString().contains("ꔂ")) text = replace(text, "ꔂ", String.valueOf(Formatting.field_1078) + "D.MODER"); 
+     if (text.getString().contains("ꕠ")) text = replace(text, "ꕠ", String.valueOf(Formatting.field_1054) + "D.HELPER"); 
+     if (text.getString().contains("ꕄ")) text = replace(text, "ꕄ", String.valueOf(Formatting.field_1061) + "DRACULA"); 
+     if (text.getString().contains("ꔖ")) text = replace(text, "ꔖ", String.valueOf(Formatting.field_1075) + "OVERLORD"); 
+     if (text.getString().contains("ꕈ")) text = replace(text, "ꕈ", String.valueOf(Formatting.field_1060) + "COBRA"); 
+     if (text.getString().contains("ꔨ")) text = replace(text, "ꔨ", String.valueOf(Formatting.field_1076) + "DRAGON"); 
+     if (text.getString().contains("ꔤ")) text = replace(text, "ꔤ", String.valueOf(Formatting.field_1061) + "IMPERATOR"); 
+     if (text.getString().contains("ꔠ")) text = replace(text, "ꔠ", String.valueOf(Formatting.field_1065) + "MAGISTER"); 
+     if (text.getString().contains("ꔄ")) text = replace(text, "ꔄ", String.valueOf(Formatting.field_1078) + "HERO"); 
+     if (text.getString().contains("ꔒ")) text = replace(text, "ꔒ", String.valueOf(Formatting.field_1060) + "AVENGER"); 
+     if (text.getString().contains("ꕒ")) text = replace(text, "ꕒ", String.valueOf(Formatting.field_1068) + "RABBIT"); 
+     if (text.getString().contains("ꔈ")) text = replace(text, "ꔈ", String.valueOf(Formatting.field_1054) + "TITAN"); 
+     if (text.getString().contains("ꕀ")) text = replace(text, "ꕀ", String.valueOf(Formatting.field_1077) + "HYDRA"); 
+     if (text.getString().contains("ꔶ")) text = replace(text, "ꔶ", String.valueOf(Formatting.field_1065) + "TIGER"); 
+     if (text.getString().contains("ꔲ")) text = replace(text, "ꔲ", String.valueOf(Formatting.field_1064) + "BULL"); 
+     if (text.getString().contains("ꕖ")) text = replace(text, "ꕖ", String.valueOf(Formatting.field_1074) + "BUNNY"); 
+     if (text.getString().contains("ꕗꕘ")) text = replace(text, "ꕗꕘ", String.valueOf(Formatting.field_1054) + "SPONSOR"); 
      if (text.getString().contains("🔥")) text = replace(text, "🔥", "@");
      
      if (text.getString().contains("ᴀ")) text = replace(text, "ᴀ", "A"); 

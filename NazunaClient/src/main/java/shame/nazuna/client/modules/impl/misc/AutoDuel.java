@@ -2,14 +2,14 @@ package shame.nazuna.client.modules.impl.misc;
  import java.util.ArrayList;
  import java.util.List;
  import java.util.regex.Pattern;
- import net.minecraft.class_1657;
- import net.minecraft.class_1713;
- import net.minecraft.class_243;
- import net.minecraft.class_2596;
- import net.minecraft.class_437;
- import net.minecraft.class_476;
- import net.minecraft.class_640;
- import net.minecraft.class_7439;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.Vec3d;
+ import net.minecraft.Packet;
+ import net.minecraft.Screen;
+ import net.minecraft.GenericContainerScreen;
+ import net.minecraft.PlayerListEntry;
+ import net.minecraft.GameMessageS2CPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventPacket;
  import shame.nazuna.api.events.implement.EventUpdate;
@@ -32,7 +32,7 @@ package shame.nazuna.client.modules.impl.misc;
    private final TimerUtils pickT = new TimerUtils();
    private final TimerUtils setT = new TimerUtils();
    
-   private class_243 lastPos;
+   private Vec3d lastPos;
    private boolean inDuel;
    
    public AutoDuel() {
@@ -87,7 +87,7 @@ package shame.nazuna.client.modules.impl.misc;
    public void onPacket(EventPacket e) {
      if (mc.field_1724 == null || mc.field_1687 == null)
        return; 
-     if (e.getType() == EventPacket.Type.RECEIVE) { class_2596 class_2596 = e.getPacket(); if (class_2596 instanceof class_7439) { class_7439 p = (class_7439)class_2596;
+     if (e.getType() == EventPacket.Type.RECEIVE) { Packet Packet = e.getPacket(); if (Packet instanceof GameMessageS2CPacket) { GameMessageS2CPacket p = (GameMessageS2CPacket)Packet;
          String msg = p.comp_763().getString().toLowerCase();
          if ((msg.contains("начало") && msg.contains("через") && msg.contains("секунд")) || msg
            .contains("поединок начался") || msg
@@ -109,16 +109,16 @@ package shame.nazuna.client.modules.impl.misc;
      } 
    }
    private void handleGui() {
-     class_476 s;
-     class_437 class_437 = mc.field_1755; if (class_437 instanceof class_476) { s = (class_476)class_437; } else { return; }
-      int id = ((class_1707)s.method_17577()).field_7763;
+     GenericContainerScreen s;
+     Screen Screen = mc.field_1755; if (Screen instanceof GenericContainerScreen) { s = (GenericContainerScreen)Screen; } else { return; }
+      int id = ((GenericContainerScreenHandler)s.method_17577()).field_7763;
      String t = s.method_25440().getString();
      
      if (t.contains("Выбор набора") && this.pickT.getElapsedTime() >= 150L) {
-       mc.field_1761.method_2906(id, getModeSlot(), 0, class_1713.field_7794, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(id, getModeSlot(), 0, SlotActionType.field_7794, (PlayerEntity)mc.field_1724);
        this.pickT.reset();
      } else if (t.contains("Настройка поединка") && this.setT.getElapsedTime() >= 150L) {
-       mc.field_1761.method_2906(id, 0, 0, class_1713.field_7794, (class_1657)mc.field_1724);
+       mc.field_1761.method_2906(id, 0, 0, SlotActionType.field_7794, (PlayerEntity)mc.field_1724);
        this.setT.reset();
      } 
    }
@@ -139,7 +139,7 @@ package shame.nazuna.client.modules.impl.misc;
    private List<String> getPlayers() {
      List<String> list = new ArrayList<>();
      if (mc.method_1562() == null) return list; 
-     for (class_640 e : mc.method_1562().method_2880()) {
+     for (PlayerListEntry e : mc.method_1562().method_2880()) {
        String n = e.method_2966().getName();
        if (NAME_PATTERN.matcher(n).matches()) {
          list.add(n);

@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.misc;
  
- import net.minecraft.class_1792;
+ import net.minecraft.Item;
  import shame.nazuna.client.modules.settings.implement.BindSetting;
  
  
@@ -85,7 +85,7 @@ package shame.nazuna.client.modules.impl.misc;
    extends Record
  {
    private final String name;
-   private final class_1792 item;
+   private final Item item;
    private final BindSetting bind;
    
    public final String toString() {
@@ -129,8 +129,8 @@ package shame.nazuna.client.modules.impl.misc;
      //   0	8	1	o	Ljava/lang/Object;
    }
    
-   public HelperBind(String name, class_1792 item, BindSetting bind) {
-     this.name = name; this.item = item; this.bind = bind; } public String name() { return this.name; } public class_1792 item() { return this.item; } public BindSetting bind() { return this.bind; }
+   public HelperBind(String name, Item item, BindSetting bind) {
+     this.name = name; this.item = item; this.bind = bind; } public String name() { return this.name; } public Item item() { return this.item; } public BindSetting bind() { return this.bind; }
  
  }
 

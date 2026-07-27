@@ -1,7 +1,7 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_2596;
- import net.minecraft.class_2828;
+ import net.minecraft.Packet;
+ import net.minecraft.PlayerMoveC2SPacket;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventAttackEntity;
  import shame.nazuna.api.utils.combat.IdealHitUtils;
@@ -26,8 +26,8 @@ package shame.nazuna.client.modules.impl.combat;
      double y = mc.field_1724.method_23318();
      double z = mc.field_1724.method_23321();
      if (inWeb) {
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2828.class_2829(x, y + 0.003D, z, false, false));
-       mc.field_1724.field_3944.method_52787((class_2596)new class_2828.class_2829(x, y, z, false, false));
+       mc.field_1724.field_3944.method_52787((Packet)new PlayerMoveC2SPacket.class_2829(x, y + 0.003D, z, false, false));
+       mc.field_1724.field_3944.method_52787((Packet)new PlayerMoveC2SPacket.class_2829(x, y, z, false, false));
      } 
    }
  }

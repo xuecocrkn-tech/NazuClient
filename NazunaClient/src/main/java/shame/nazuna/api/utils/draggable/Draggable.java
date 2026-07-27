@@ -2,10 +2,10 @@ package shame.nazuna.api.utils.draggable;
  
  import com.google.gson.annotations.Expose;
  import com.google.gson.annotations.SerializedName;
- import net.minecraft.class_1041;
- import net.minecraft.class_310;
- import net.minecraft.class_4587;
- import net.minecraft.class_7833;
+ import net.minecraft.Window;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.RotationAxis;
  import shame.nazuna.api.utils.math.HoveringUtils;
  import shame.nazuna.api.utils.math.MathUtils;
  import shame.nazuna.api.utils.render.RenderUtils;
@@ -90,13 +90,13 @@ package shame.nazuna.api.utils.draggable;
    }
    
    private Vec2i getMouse(int mouseX, int mouseY) {
-     class_310 client = class_310.method_1551();
-     class_1041 window = (client == null) ? null : client.method_22683();
+     MinecraftClient client = MinecraftClient.method_1551();
+     Window window = (client == null) ? null : client.method_22683();
      double scaleFactor = (window == null) ? 1.0D : window.method_4495();
      return new Vec2i((int)(mouseX * scaleFactor / 2.0D), (int)(mouseY * scaleFactor / 2.0D));
    }
    
-   public final void onDraw(int mouseX, int mouseY, class_1041 res, class_4587 ms) {
+   public final void onDraw(int mouseX, int mouseY, Window res, MatrixStack ms) {
      Vec2i fixed = getMouse(mouseX, mouseY);
      mouseX = fixed.getX();
      mouseY = fixed.getY();
@@ -239,7 +239,7 @@ package shame.nazuna.api.utils.draggable;
      }
    }
    
-   public void beginRenderTilt(class_4587 ms) {
+   public void beginRenderTilt(MatrixStack ms) {
      updateTilt();
      this.tiltMatrixPushed = false;
      if (Math.abs(this.dragTiltDegrees) < 0.05F && Math.abs(this.dragScale - 1.0F) < 0.002F) {
@@ -251,13 +251,13 @@ package shame.nazuna.api.utils.draggable;
      
      ms.method_22903();
      ms.method_46416(centerX, centerY, 0.0F);
-     ms.method_22907(class_7833.field_40718.rotationDegrees(this.dragTiltDegrees));
+     ms.method_22907(RotationAxis.field_40718.rotationDegrees(this.dragTiltDegrees));
      ms.method_22905(this.dragScale, this.dragScale, 1.0F);
      ms.method_46416(-centerX, -centerY, 0.0F);
      this.tiltMatrixPushed = true;
    }
    
-   public void endRenderTilt(class_4587 ms) {
+   public void endRenderTilt(MatrixStack ms) {
      if (this.tiltMatrixPushed) {
        ms.method_22909();
        this.tiltMatrixPushed = false;
@@ -285,7 +285,7 @@ package shame.nazuna.api.utils.draggable;
      } 
    }
    
-   private void drawCenterLines(class_4587 ms, class_1041 res) {
+   private void drawCenterLines(MatrixStack ms, Window res) {
      if (this.lineAlpha > 0.0F) {
        float centerX = res.method_4486() / 2.0F;
        float centerY = res.method_4502() / 2.0F;

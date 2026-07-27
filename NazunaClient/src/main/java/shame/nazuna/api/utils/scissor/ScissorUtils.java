@@ -3,8 +3,8 @@ package shame.nazuna.api.utils.scissor;
  import com.google.common.collect.Lists;
  import java.awt.Rectangle;
  import java.util.List;
- import net.minecraft.class_1041;
- import net.minecraft.class_310;
+ import net.minecraft.Window;
+ import net.minecraft.MinecraftClient;
  import org.lwjgl.opengl.GL30;
  
  public class ScissorUtils
@@ -54,18 +54,18 @@ package shame.nazuna.api.utils.scissor;
      state.enabled = false;
    }
    
-   private static class_1041 getWindow() {
-     class_310 client = class_310.method_1551();
+   private static Window getWindow() {
+     MinecraftClient client = MinecraftClient.method_1551();
      return (client == null) ? null : client.method_22683();
    }
    
    private static double getScaleFactor() {
-     class_1041 window = getWindow();
+     Window window = getWindow();
      return (window == null) ? 1.0D : window.method_4495();
    }
    
    public static void setFromComponentCoordinates(int x, int y, int width, int height) {
-     class_1041 window = getWindow();
+     Window window = getWindow();
      if (window == null) {
        return;
      }
@@ -80,7 +80,7 @@ package shame.nazuna.api.utils.scissor;
    }
    
    public static void setFromComponentCoordinates(double x, double y, double width, double height) {
-     class_1041 window = getWindow();
+     Window window = getWindow();
      if (window == null) {
        return;
      }
@@ -95,7 +95,7 @@ package shame.nazuna.api.utils.scissor;
    }
    
    public static void setFromComponentCoordinates(double x, double y, double width, double height, float scale) {
-     class_1041 window = getWindow();
+     Window window = getWindow();
      if (window == null) {
        return;
      }
@@ -120,7 +120,7 @@ package shame.nazuna.api.utils.scissor;
    }
    public static void set(int x, int y, int width, int height) {
      Rectangle current;
-     class_1041 window = getWindow();
+     Window window = getWindow();
      if (window == null) {
        return;
      }
@@ -153,7 +153,7 @@ package shame.nazuna.api.utils.scissor;
    }
    
    public static void translateFromComponentCoordinates(int x, int y) {
-     class_1041 window = getWindow();
+     Window window = getWindow();
      if (window == null) {
        return;
      }

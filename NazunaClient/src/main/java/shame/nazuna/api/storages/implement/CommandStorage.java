@@ -2,8 +2,8 @@ package shame.nazuna.api.storages.implement;
  import com.mojang.brigadier.CommandDispatcher;
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_2172;
- import net.minecraft.class_637;
+ import net.minecraft.CommandSource;
+ import net.minecraft.ClientCommandSource;
  import shame.nazuna.api.commands.Command;
  import shame.nazuna.api.commands.impl.AutoLesCommand;
  import shame.nazuna.api.commands.impl.BindCommand;
@@ -38,8 +38,8 @@ package shame.nazuna.api.storages.implement;
  
  
    
-   public class_2172 getSource() {
-     return (class_2172)new class_637(null, class_310.method_1551());
+   public CommandSource getSource() {
+     return (CommandSource)new ClientCommandSource(null, MinecraftClient.method_1551());
    }
    
    private void addCommands(Command... command) {

@@ -8,13 +8,13 @@ package shame.nazuna.client.modules.impl.render.base.implement;
  import java.util.Optional;
  import java.util.Set;
  import java.util.regex.Pattern;
- import net.minecraft.class_1934;
- import net.minecraft.class_2561;
- import net.minecraft.class_2583;
- import net.minecraft.class_268;
- import net.minecraft.class_310;
- import net.minecraft.class_4587;
- import net.minecraft.class_640;
+ import net.minecraft.GameMode;
+ import net.minecraft.Text;
+ import net.minecraft.Style;
+ import net.minecraft.Team;
+ import net.minecraft.MinecraftClient;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.PlayerListEntry;
  import shame.nazuna.api.events.implement.EventRender;
  import shame.nazuna.api.utils.animation.AnimationUtils;
  import shame.nazuna.api.utils.color.ColorUtils;
@@ -30,7 +30,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    private static final int STATUS_VANISH_COLOR = -47526;
    private static final int STATUS_GM3_COLOR = -9146;
    private static final int STATUS_ONLINE_COLOR = -10158216;
-   private final class_310 mc = class_310.method_1551();
+   private final MinecraftClient mc = MinecraftClient.method_1551();
    
    private final Map<String, StaffData> staffDataCache = new LinkedHashMap<>();
    private final Map<String, Float> staffAnimations = new HashMap<>();
@@ -129,10 +129,10 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      return false;
    }
    
-   private List<PrefixSegment> parsePrefix(class_2561 prefix) {
+   private List<PrefixSegment> parsePrefix(Text prefix) {
      List<PrefixSegment> segments = new ArrayList<>();
      
-     prefix.method_27658((style, string) -> { if (string == null || string.isEmpty()) return Optional.empty();  appendPrefixSegments(segments, string, (style.method_10973() != null) ? style.method_10973().method_27716() : 16777215); return Optional.empty(); }class_2583.field_24360);
+     prefix.method_27658((style, string) -> { if (string == null || string.isEmpty()) return Optional.empty();  appendPrefixSegments(segments, string, (style.method_10973() != null) ? style.method_10973().method_27716() : 16777215); return Optional.empty(); }Style.field_24360);
  
  
  
@@ -225,7 +225,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      this.activeStaff.clear();
      String selfName = this.mc.field_1724.method_5477().getString();
      
-     for (class_268 team : this.mc.field_1687.method_8428().method_1159()) {
+     for (Team team : this.mc.field_1687.method_8428().method_1159()) {
        Collection<String> players = team.method_1204();
        if (players.size() != 1)
          continue; 
@@ -233,11 +233,11 @@ package shame.nazuna.client.modules.impl.render.base.implement;
        if (!this.namePattern.matcher(name).matches() || 
          name.equals(selfName))
          continue; 
-       class_640 info = this.mc.method_1562().method_2874(name);
+       PlayerListEntry info = this.mc.method_1562().method_2874(name);
        boolean vanish = (info == null);
-       boolean isGM3 = (info != null && info.method_2958() == class_1934.field_9219);
+       boolean isGM3 = (info != null && info.method_2958() == GameMode.field_9219);
        
-       class_2561 prefixText = team.method_1144();
+       Text prefixText = team.method_1144();
        String prefixStr = prefixText.getString();
        boolean matchesPrefix = matchesStaffPrefix(prefixStr);
        boolean isInStaffList = astra.INSTANCE.staffStorage.isStaff(name);
@@ -272,11 +272,11 @@ package shame.nazuna.client.modules.impl.render.base.implement;
          continue; 
        this.activeStaff.add(staffName);
        
-       class_640 info = this.mc.method_1562().method_2874(staffName);
+       PlayerListEntry info = this.mc.method_1562().method_2874(staffName);
        
        if (info == null) {
          status = "VANISH";
-       } else if (info.method_2958() == class_1934.field_9219) {
+       } else if (info.method_2958() == GameMode.field_9219) {
          status = "GM3";
        } else {
          status = "ONLINE";
@@ -356,7 +356,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
      int colorTheme;
      float x = this.draggable.getX();
      float y = this.draggable.getY();
-     class_4587 matrices = eventRender.getContext().method_51448();
+     MatrixStack matrices = eventRender.getContext().method_51448();
  
      
      if (!astra.INSTANCE.themeStorage.getThemes().getTheme().getName().equals("Rainbow")) {
@@ -442,7 +442,7 @@ package shame.nazuna.client.modules.impl.render.base.implement;
    private void renderWaveStyle(EventRender.Default eventRender) {
      float x = this.draggable.getX();
      float y = this.draggable.getY();
-     class_4587 matrices = eventRender.getContext().method_51448();
+     MatrixStack matrices = eventRender.getContext().method_51448();
      
      int time = (int)((float)(System.currentTimeMillis() % 2000L) / 2000.0F * 360.0F);
      

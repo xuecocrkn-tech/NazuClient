@@ -3,20 +3,20 @@ package shame.nazuna.client.modules.impl.misc;
  import java.util.LinkedHashSet;
  import java.util.regex.Matcher;
  import java.util.regex.Pattern;
- import net.minecraft.class_1309;
- import net.minecraft.class_1657;
- import net.minecraft.class_2561;
- import net.minecraft.class_266;
- import net.minecraft.class_268;
- import net.minecraft.class_269;
- import net.minecraft.class_270;
- import net.minecraft.class_640;
- import net.minecraft.class_8646;
- import net.minecraft.class_9011;
- import net.minecraft.class_9013;
- import net.minecraft.class_9015;
- import net.minecraft.class_9022;
- import net.minecraft.class_9025;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.Text;
+ import net.minecraft.ScoreboardObjective;
+ import net.minecraft.Team;
+ import net.minecraft.Scoreboard;
+ import net.minecraft.AbstractTeam;
+ import net.minecraft.PlayerListEntry;
+ import net.minecraft.ScoreboardDisplaySlot;
+ import net.minecraft.ScoreboardEntry;
+ import net.minecraft.ReadableScoreboardScore;
+ import net.minecraft.ScoreHolder;
+ import net.minecraft.NumberFormat;
+ import net.minecraft.StyledNumberFormat;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.client.modules.Module;
  import shame.nazuna.client.modules.settings.Setting;
@@ -41,7 +41,7 @@ package shame.nazuna.client.modules.impl.misc;
  
  
    
-   private static boolean shouldHideHealth(class_1657 player) {
+   private static boolean shouldHideHealth(PlayerEntity player) {
      if (!INSTANCE.isEnable() || !INSTANCE.gulpvp.isState()) {
        return false;
      }
@@ -66,15 +66,15 @@ package shame.nazuna.client.modules.impl.misc;
  
  
    
-   private static boolean isHealthHiddenOnServer(class_1657 player) {
+   private static boolean isHealthHiddenOnServer(PlayerEntity player) {
      if (mc.field_1687 == null) return false;
      
      try {
-       class_269 scoreboard = mc.field_1687.method_8428();
+       Scoreboard scoreboard = mc.field_1687.method_8428();
  
        
-       class_266 belowName = scoreboard.method_1189(class_8646.field_45158);
-       class_266 list = scoreboard.method_1189(class_8646.field_45156);
+       ScoreboardObjective belowName = scoreboard.method_1189(ScoreboardDisplaySlot.field_45158);
+       ScoreboardObjective list = scoreboard.method_1189(ScoreboardDisplaySlot.field_45156);
  
        
        if (belowName == null && list == null) {
@@ -88,8 +88,8 @@ package shame.nazuna.client.modules.impl.misc;
        return true;
      } 
    }
-   public static float getHealth(class_1309 entity) {
-     class_1657 player;
+   public static float getHealth(LivingEntity entity) {
+     PlayerEntity player;
      if (entity == null) {
        return 0.0F;
      }
@@ -98,11 +98,11 @@ package shame.nazuna.client.modules.impl.misc;
        return entity.method_6032();
      }
      
-     if (entity instanceof net.minecraft.class_746) {
+     if (entity instanceof net.minecraft.ClientPlayerEntity) {
        return entity.method_6032();
      }
      
-     if (entity instanceof class_1657) { player = (class_1657)entity; }
+     if (entity instanceof PlayerEntity) { player = (PlayerEntity)entity; }
      else { return entity.method_6032(); }
  
  
@@ -124,8 +124,8 @@ package shame.nazuna.client.modules.impl.misc;
      
      return getObjectiveHealth(player);
    }
-   public static float getHealthWithAbsorption(class_1309 entity) {
-     class_1657 player;
+   public static float getHealthWithAbsorption(LivingEntity entity) {
+     PlayerEntity player;
      if (entity == null) {
        return 0.0F;
      }
@@ -134,11 +134,11 @@ package shame.nazuna.client.modules.impl.misc;
        return Math.max(0.0F, entity.method_6032() + entity.method_6067());
      }
      
-     if (entity instanceof net.minecraft.class_746) {
+     if (entity instanceof net.minecraft.ClientPlayerEntity) {
        return Math.max(0.0F, entity.method_6032() + entity.method_6067());
      }
      
-     if (entity instanceof class_1657) { player = (class_1657)entity; }
+     if (entity instanceof PlayerEntity) { player = (PlayerEntity)entity; }
      else { return Math.max(0.0F, getHealth(entity) + entity.method_6067()); }
  
  
@@ -147,7 +147,7 @@ package shame.nazuna.client.modules.impl.misc;
        return -1.0F;
      }
      
-     if (INSTANCE.gulpvp.isState() && entity instanceof class_1657) {
+     if (INSTANCE.gulpvp.isState() && entity instanceof PlayerEntity) {
        Float sidebarHp = getGulpVpSidebarHealth(player);
        if (sidebarHp != null) {
          return Math.max(0.0F, sidebarHp.floatValue());
@@ -159,26 +159,26 @@ package shame.nazuna.client.modules.impl.misc;
  
  
    
-   public static boolean shouldShowUnknownInTargetHud(class_1309 entity) {
-     class_1657 player;
-     if (entity instanceof class_1657) { player = (class_1657)entity; }
+   public static boolean shouldShowUnknownInTargetHud(LivingEntity entity) {
+     PlayerEntity player;
+     if (entity instanceof PlayerEntity) { player = (PlayerEntity)entity; }
      else { return false; }
      
      return shouldHideHealth(player);
    }
    
-   private static float getObjectiveHealth(class_1657 player) {
+   private static float getObjectiveHealth(PlayerEntity player) {
      try {
-       class_269 scoreboard = player.method_7327();
-       class_266 objective = scoreboard.method_1189(class_8646.field_45158);
+       Scoreboard scoreboard = player.method_7327();
+       ScoreboardObjective objective = scoreboard.method_1189(ScoreboardDisplaySlot.field_45158);
        if (objective == null) {
-         objective = scoreboard.method_1189(class_8646.field_45156);
+         objective = scoreboard.method_1189(ScoreboardDisplaySlot.field_45156);
        }
        if (objective == null) {
          return player.method_6032();
        }
        
-       class_9013 score = scoreboard.method_55430((class_9015)player, objective);
+       ReadableScoreboardScore score = scoreboard.method_55430((ScoreHolder)player, objective);
        if (score == null) {
          return player.method_6032();
        }
@@ -189,30 +189,30 @@ package shame.nazuna.client.modules.impl.misc;
      } 
    }
    
-   private static Float getGulpVpSidebarHealth(class_1657 player) {
+   private static Float getGulpVpSidebarHealth(PlayerEntity player) {
      if (mc.field_1687 == null) {
        return null;
      }
      
      try {
-       class_269 scoreboard = mc.field_1687.method_8428();
-       class_266 sidebar = scoreboard.method_1189(class_8646.field_45157);
+       Scoreboard scoreboard = mc.field_1687.method_8428();
+       ScoreboardObjective sidebar = scoreboard.method_1189(ScoreboardDisplaySlot.field_45157);
        if (sidebar == null) {
          return null;
        }
        
-       class_9022 numberFormat = sidebar.method_55380((class_9022)class_9025.field_47567);
+       NumberFormat numberFormat = sidebar.method_55380((NumberFormat)StyledNumberFormat.field_47567);
        String[] nameVariants = collectNameVariants(player);
        Float bestHp = null;
        int bestMatchScore = -1;
        
-       for (class_9011 entry : scoreboard.method_1184(sidebar)) {
+       for (ScoreboardEntry entry : scoreboard.method_1184(sidebar)) {
          if (entry.method_55385()) {
            continue;
          }
          
-         class_268 team = scoreboard.method_1164(entry.comp_2127());
-         String lineText = stripFormatting(class_268.method_1142((class_270)team, entry.method_55387()).getString());
+         Team team = scoreboard.method_1164(entry.comp_2127());
+         String lineText = stripFormatting(Team.method_1142((AbstractTeam)team, entry.method_55387()).getString());
          String ownerText = stripFormatting(entry.comp_2127());
          String scoreText = stripFormatting(entry.method_55386(numberFormat).getString());
          
@@ -238,7 +238,7 @@ package shame.nazuna.client.modules.impl.misc;
      } 
    }
    
-   private static Float extractSidebarHp(class_9011 entry, String scoreText, String lineText) {
+   private static Float extractSidebarHp(ScoreboardEntry entry, String scoreText, String lineText) {
      Float fromScoreColumn = parseHpNumber(scoreText);
      if (fromScoreColumn != null) {
        return fromScoreColumn;
@@ -256,7 +256,7 @@ package shame.nazuna.client.modules.impl.misc;
      return null;
    }
    
-   private static String[] collectNameVariants(class_1657 player) {
+   private static String[] collectNameVariants(PlayerEntity player) {
      String plainName = stripFormatting(player.method_5477().getString());
      String scoreboardName = stripFormatting(player.method_5820());
  
@@ -265,9 +265,9 @@ package shame.nazuna.client.modules.impl.misc;
      
      String tabName = "";
      if (mc.method_1562() != null) {
-       class_640 entry = mc.method_1562().method_2871(player.method_5667());
+       PlayerListEntry entry = mc.method_1562().method_2871(player.method_5667());
        if (entry != null) {
-         class_2561 displayName = entry.method_2971();
+         Text displayName = entry.method_2971();
          if (displayName != null) {
            tabName = stripFormatting(displayName.getString());
          }

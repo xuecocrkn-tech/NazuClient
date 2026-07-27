@@ -1,21 +1,21 @@
 package shame.nazuna.client.modules.impl.render;
  import com.mojang.blaze3d.systems.RenderSystem;
- import net.minecraft.class_10142;
- import net.minecraft.class_1304;
- import net.minecraft.class_1657;
- import net.minecraft.class_243;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_2960;
- import net.minecraft.class_3532;
- import net.minecraft.class_3882;
- import net.minecraft.class_4050;
- import net.minecraft.class_4587;
- import net.minecraft.class_4597;
- import net.minecraft.class_7833;
+ import net.minecraft.ShaderProgramKeys;
+ import net.minecraft.EquipmentSlot;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.Identifier;
+ import net.minecraft.MathHelper;
+ import net.minecraft.ModelWithHead;
+ import net.minecraft.EntityPose;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.VertexConsumerProvider;
+ import net.minecraft.RotationAxis;
  import org.joml.Matrix4f;
  import org.lwjgl.opengl.GL11;
  import shame.nazuna.api.events.EventLink;
@@ -107,9 +107,9 @@ package shame.nazuna.client.modules.impl.render;
      if (!renderButterfly && !renderClassic)
        return; 
      float tickDelta = event.getTickDelta();
-     class_4587 matrices = event.getMatrices();
-     class_243 cameraPos = event.getCamera().method_19326();
-     for (class_1657 player : mc.field_1687.method_18456()) {
+     MatrixStack matrices = event.getMatrices();
+     Vec3d cameraPos = event.getCamera().method_19326();
+     for (PlayerEntity player : mc.field_1687.method_18456()) {
        if (!shouldRenderCosmeticForPlayer(player) || (
          player == mc.field_1724 && mc.field_1690.method_31044().method_31034()))
          continue;  if (renderButterfly) {
@@ -121,40 +121,40 @@ package shame.nazuna.client.modules.impl.render;
      } 
    }
    
-   private void renderButterflyWings(class_1657 player, float tickDelta, class_4587 matrices, class_243 cameraPos) {
-     if (player.method_6128() || player.method_18376() == class_4050.field_18079 || player.method_20232()) {
+   private void renderButterflyWings(PlayerEntity player, float tickDelta, MatrixStack matrices, Vec3d cameraPos) {
+     if (player.method_6128() || player.method_18376() == EntityPose.field_18079 || player.method_20232()) {
        return;
      }
      
-     class_243 velocity = player.method_18798();
-     float bodyYaw = class_3532.method_16439(tickDelta, player.field_6220, player.field_6283);
+     Vec3d velocity = player.method_18798();
+     float bodyYaw = MathHelper.method_16439(tickDelta, player.field_6220, player.field_6283);
      float yawRad = bodyYaw * 0.017453292F;
-     class_243 forward = new class_243(-class_3532.method_15374(yawRad), 0.0D, class_3532.method_15362(yawRad));
-     class_243 sideways = new class_243(forward.field_1350, 0.0D, -forward.field_1352);
+     Vec3d forward = new Vec3d(-MathHelper.method_15374(yawRad), 0.0D, MathHelper.method_15362(yawRad));
+     Vec3d sideways = new Vec3d(forward.field_1350, 0.0D, -forward.field_1352);
      
      float forwardMove = (float)(velocity.field_1352 * forward.field_1352 + velocity.field_1350 * forward.field_1350);
      float strafeMove = (float)(velocity.field_1352 * sideways.field_1352 + velocity.field_1350 * sideways.field_1350);
      float verticalMove = (float)velocity.field_1351;
      
      boolean animated = this.butterflyWingAnimation.isState();
-     float smoothLean = animated ? class_3532.method_15363(-forwardMove * 140.0F - verticalMove * 48.0F, -24.0F, 26.0F) : 0.0F;
-     float smoothStrafe = animated ? class_3532.method_15363(strafeMove * 90.0F, -10.0F, 10.0F) : 0.0F;
+     float smoothLean = animated ? MathHelper.method_15363(-forwardMove * 140.0F - verticalMove * 48.0F, -24.0F, 26.0F) : 0.0F;
+     float smoothStrafe = animated ? MathHelper.method_15363(strafeMove * 90.0F, -10.0F, 10.0F) : 0.0F;
  
  
  
      
-     float wingSpring = animated ? class_3532.method_15363(Math.abs(forwardMove) * 0.95F + Math.abs(strafeMove) * 0.65F + Math.abs(verticalMove) * 0.75F, 0.0F, 1.7F) : 0.0F;
+     float wingSpring = animated ? MathHelper.method_15363(Math.abs(forwardMove) * 0.95F + Math.abs(strafeMove) * 0.65F + Math.abs(verticalMove) * 0.75F, 0.0F, 1.7F) : 0.0F;
      
      float anim = (player.field_6012 + tickDelta) * 0.22F * 1.6F + wingSpring * 0.4F;
-     float sin = animated ? class_3532.method_15374(anim) : 0.0F;
-     float cos = animated ? class_3532.method_15362(anim) : 0.0F;
+     float sin = animated ? MathHelper.method_15374(anim) : 0.0F;
+     float cos = animated ? MathHelper.method_15362(anim) : 0.0F;
      
      float spreadAngle = 18.0F + wingSpring * 5.0F;
      float pitchAngle = 13.0F + smoothLean * 0.3F + cos * 4.0F;
      float rollAngle = sin * 25.0F + smoothStrafe * 0.75F;
-     class_4050 pose = player.method_18376();
+     EntityPose pose = player.method_18376();
      boolean fallFlying = player.method_6128();
-     boolean horizontalPose = (pose == class_4050.field_18079 || fallFlying);
+     boolean horizontalPose = (pose == EntityPose.field_18079 || fallFlying);
      if (horizontalPose) {
        spreadAngle -= 4.0F;
        pitchAngle -= 6.0F;
@@ -166,13 +166,13 @@ package shame.nazuna.client.modules.impl.render;
        pitchAngle += 8.0F;
      } 
      
-     double px = class_3532.method_16436(tickDelta, player.field_6014, player.method_23317()) - cameraPos.field_1352;
-     double py = class_3532.method_16436(tickDelta, player.field_6036, player.method_23318()) - cameraPos.field_1351;
-     double pz = class_3532.method_16436(tickDelta, player.field_5969, player.method_23321()) - cameraPos.field_1350;
+     double px = MathHelper.method_16436(tickDelta, player.field_6014, player.method_23317()) - cameraPos.field_1352;
+     double py = MathHelper.method_16436(tickDelta, player.field_6036, player.method_23318()) - cameraPos.field_1351;
+     double pz = MathHelper.method_16436(tickDelta, player.field_5969, player.method_23321()) - cameraPos.field_1350;
      
      matrices.method_22903();
      matrices.method_22904(px, py, pz);
-     matrices.method_22907(class_7833.field_40716.rotationDegrees(-bodyYaw));
+     matrices.method_22907(RotationAxis.field_40716.rotationDegrees(-bodyYaw));
      applyBackPoseTransform(matrices, player, tickDelta, pose, fallFlying);
      
      int theme = resolveCosmeticThemeColor();
@@ -185,19 +185,19 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.enableDepthTest();
      RenderSystem.depthMask(false);
      RenderSystem.blendFunc(770, 771);
-     RenderSystem.setShader(class_10142.field_53876);
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
      
      float butterflyScale = 1.0F * this.butterflyWingSize.get();
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1576);
      renderButterflyWing(buffer, matrices, 1.0F, spreadAngle, pitchAngle, rollAngle, butterflyScale, topColor, bottomColor);
      renderButterflyWing(buffer, matrices, -1.0F, spreadAngle, pitchAngle, rollAngle, butterflyScale, topColor, bottomColor);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.lineWidth(1.9F);
-     class_287 outlineBuffer = class_289.method_1348().method_60827(class_293.class_5596.field_29344, class_290.field_1576);
+     BufferBuilder outlineBuffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_29344, VertexFormats.field_1576);
      renderButterflyWingOutline(outlineBuffer, matrices, 1.0F, spreadAngle, pitchAngle, rollAngle, butterflyScale, outlineColor);
      renderButterflyWingOutline(outlineBuffer, matrices, -1.0F, spreadAngle, pitchAngle, rollAngle, butterflyScale, outlineColor);
-     class_286.method_43433(outlineBuffer.method_60800());
+     BufferRenderer.method_43433(outlineBuffer.method_60800());
      
      RenderSystem.enableCull();
      RenderSystem.enableDepthTest();
@@ -207,47 +207,47 @@ package shame.nazuna.client.modules.impl.render;
      matrices.method_22909();
    }
    
-   private void renderClassicWings(class_1657 player, float tickDelta, class_4587 matrices, class_243 cameraPos) {
+   private void renderClassicWings(PlayerEntity player, float tickDelta, MatrixStack matrices, Vec3d cameraPos) {
      if (!player.method_5805() || player.method_5767()) {
        return;
      }
-     if (player.method_6128() || player.method_18376() == class_4050.field_18079 || player.method_20232()) {
+     if (player.method_6128() || player.method_18376() == EntityPose.field_18079 || player.method_20232()) {
        return;
      }
      
-     double px = class_3532.method_16436(tickDelta, player.field_6014, player.method_23317()) - cameraPos.field_1352;
-     double py = class_3532.method_16436(tickDelta, player.field_6036, player.method_23318()) - cameraPos.field_1351;
-     double pz = class_3532.method_16436(tickDelta, player.field_5969, player.method_23321()) - cameraPos.field_1350;
+     double px = MathHelper.method_16436(tickDelta, player.field_6014, player.method_23317()) - cameraPos.field_1352;
+     double py = MathHelper.method_16436(tickDelta, player.field_6036, player.method_23318()) - cameraPos.field_1351;
+     double pz = MathHelper.method_16436(tickDelta, player.field_5969, player.method_23321()) - cameraPos.field_1350;
      
      float bodyYaw = resolveClassicBodyYaw(player, tickDelta);
-     class_243 velocity = player.method_18798();
+     Vec3d velocity = player.method_18798();
      float yawRad = bodyYaw * 0.017453292F;
-     class_243 forward = new class_243(-class_3532.method_15374(yawRad), 0.0D, class_3532.method_15362(yawRad));
-     class_243 sideways = new class_243(forward.field_1350, 0.0D, -forward.field_1352);
+     Vec3d forward = new Vec3d(-MathHelper.method_15374(yawRad), 0.0D, MathHelper.method_15362(yawRad));
+     Vec3d sideways = new Vec3d(forward.field_1350, 0.0D, -forward.field_1352);
      
      float forwardMove = (float)(velocity.field_1352 * forward.field_1352 + velocity.field_1350 * forward.field_1350);
      float strafeMove = (float)(velocity.field_1352 * sideways.field_1352 + velocity.field_1350 * sideways.field_1350);
      float verticalMove = (float)velocity.field_1351;
      
      boolean animated = this.classicWingAnimation.isState();
-     float smoothLean = animated ? class_3532.method_15363(-forwardMove * 140.0F - verticalMove * 48.0F, -24.0F, 26.0F) : 0.0F;
-     float smoothStrafe = animated ? class_3532.method_15363(strafeMove * 90.0F, -10.0F, 10.0F) : 0.0F;
+     float smoothLean = animated ? MathHelper.method_15363(-forwardMove * 140.0F - verticalMove * 48.0F, -24.0F, 26.0F) : 0.0F;
+     float smoothStrafe = animated ? MathHelper.method_15363(strafeMove * 90.0F, -10.0F, 10.0F) : 0.0F;
  
  
  
      
-     float wingSpring = animated ? class_3532.method_15363(Math.abs(forwardMove) * 0.95F + Math.abs(strafeMove) * 0.65F + Math.abs(verticalMove) * 0.75F, 0.0F, 1.7F) : 0.0F;
+     float wingSpring = animated ? MathHelper.method_15363(Math.abs(forwardMove) * 0.95F + Math.abs(strafeMove) * 0.65F + Math.abs(verticalMove) * 0.75F, 0.0F, 1.7F) : 0.0F;
      
      float anim = (player.field_6012 + tickDelta) * 0.22F * 1.6F + wingSpring * 0.4F;
-     float sin = animated ? class_3532.method_15374(anim) : 0.0F;
-     float cos = animated ? class_3532.method_15362(anim) : 0.0F;
+     float sin = animated ? MathHelper.method_15374(anim) : 0.0F;
+     float cos = animated ? MathHelper.method_15362(anim) : 0.0F;
      
      float spreadAngle = 18.0F + wingSpring * 5.0F;
      float pitchAngle = 13.0F + smoothLean * 0.3F + cos * 4.0F;
      float rollAngle = sin * 25.0F + smoothStrafe * 0.75F;
-     class_4050 pose = player.method_18376();
+     EntityPose pose = player.method_18376();
      boolean fallFlying = player.method_6128();
-     boolean horizontalPose = (pose == class_4050.field_18079 || fallFlying);
+     boolean horizontalPose = (pose == EntityPose.field_18079 || fallFlying);
      if (horizontalPose) {
        spreadAngle -= 4.0F;
        pitchAngle -= 6.0F;
@@ -277,19 +277,19 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.enableDepthTest();
      RenderSystem.depthMask(false);
      RenderSystem.blendFunc(770, 771);
-     RenderSystem.setShader(class_10142.field_53876);
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
      
      matrices.method_22903();
      matrices.method_22904(px, py, pz);
-     matrices.method_22907(class_7833.field_40716.rotationDegrees(180.0F - bodyYaw));
+     matrices.method_22907(RotationAxis.field_40716.rotationDegrees(180.0F - bodyYaw));
      if (wingPose.preTranslateY != 0.0F || wingPose.preTranslateZ != 0.0F) {
        matrices.method_46416(0.0F, wingPose.preTranslateY, wingPose.preTranslateZ);
      }
      if (wingPose.pitchRotation != 0.0F) {
-       matrices.method_22907(class_7833.field_40714.rotationDegrees(wingPose.pitchRotation));
+       matrices.method_22907(RotationAxis.field_40714.rotationDegrees(wingPose.pitchRotation));
      }
      if (wingPose.rollRotation != 0.0F) {
-       matrices.method_22907(class_7833.field_40718.rotationDegrees(wingPose.rollRotation));
+       matrices.method_22907(RotationAxis.field_40718.rotationDegrees(wingPose.rollRotation));
      }
      matrices.method_46416(0.0F, wingPose.anchorY, wingPose.anchorZ);
      matrices.method_22905(scale, scale, scale);
@@ -311,10 +311,10 @@ package shame.nazuna.client.modules.impl.render;
      }
      
      float tickDelta = event.getTickDelta();
-     class_243 camera = event.getCamera().method_19326();
-     double x = class_3532.method_16436(tickDelta, mc.field_1724.field_6014, mc.field_1724.method_23317());
-     double y = class_3532.method_16436(tickDelta, mc.field_1724.field_6036, mc.field_1724.method_23318()) + mc.field_1724.method_17682() + 0.1D;
-     double z = class_3532.method_16436(tickDelta, mc.field_1724.field_5969, mc.field_1724.method_23321());
+     Vec3d camera = event.getCamera().method_19326();
+     double x = MathHelper.method_16436(tickDelta, mc.field_1724.field_6014, mc.field_1724.method_23317());
+     double y = MathHelper.method_16436(tickDelta, mc.field_1724.field_6036, mc.field_1724.method_23318()) + mc.field_1724.method_17682() + 0.1D;
+     double z = MathHelper.method_16436(tickDelta, mc.field_1724.field_5969, mc.field_1724.method_23321());
      
      int baseColor = resolveCosmeticThemeColor();
      long nowMs = System.currentTimeMillis();
@@ -325,10 +325,10 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.enableDepthTest();
      RenderSystem.depthMask(false);
      RenderSystem.blendFunc(770, 1);
-     RenderSystem.setShader(class_10142.field_53880);
+     RenderSystem.setShader(ShaderProgramKeys.field_53880);
      RenderSystem.setShaderTexture(0, getNimbusTexture());
      
-     class_4587 matrices = event.getMatrices();
+     MatrixStack matrices = event.getMatrices();
      for (int arm = 0; arm < 2; arm++) {
        double baseAngle = radiansPerMillisecond * nowMs + arm * Math.PI;
        for (int segment = 0; segment < 17; segment++) {
@@ -338,7 +338,7 @@ package shame.nazuna.client.modules.impl.render;
          
          float progress = segment / Math.max(1, 16);
          float size = 0.23F * (1.0F - progress * 0.7F);
-         int alpha = class_3532.method_15340(255 - segment * 9, 0, 255);
+         int alpha = MathHelper.method_15340(255 - segment * 9, 0, 255);
          int segmentColor = ColorUtils.setAlphaColor(baseColor, alpha);
          
          renderNimbusBillboard(matrices, event
@@ -362,14 +362,14 @@ package shame.nazuna.client.modules.impl.render;
    }
  
    
-   public void renderChinaHat(class_4587 matrixStack, class_4597 vertexConsumerProvider, class_1657 player, class_3882 model) {
+   public void renderChinaHat(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, PlayerEntity player, ModelWithHead model) {
      if (!isEnable() || !this.cosmetics.is("Китайская шляпа"))
        return;  if (mc.field_1724 == null || mc.field_1687 == null)
        return;  if (!shouldRenderCosmeticForPlayer(player))
        return;  if (player == mc.field_1724 && mc.field_1690.method_31044().method_31034())
        return; 
      double radius = (player.method_5829()).field_1320 - (player.method_5829()).field_1323;
-     float offset = player.method_6118(class_1304.field_6169).method_7960() ? 0.415F : 0.48F;
+     float offset = player.method_6118(EquipmentSlot.field_6169).method_7960() ? 0.415F : 0.48F;
      
      matrixStack.method_22903();
      model.method_2838().method_22703(matrixStack);
@@ -378,7 +378,7 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.enableDepthTest();
      RenderSystem.disableCull();
      RenderSystem.defaultBlendFunc();
-     RenderSystem.setShader(class_10142.field_53876);
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
      RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
      
      RenderSystem.lineWidth(2.0F);
@@ -386,13 +386,13 @@ package shame.nazuna.client.modules.impl.render;
      GL11.glHint(3154, 4354);
      
      matrixStack.method_46416(0.0F, -offset, 0.0F);
-     matrixStack.method_22907(class_7833.field_40717.rotationDegrees(180.0F));
-     matrixStack.method_22907(class_7833.field_40716.rotationDegrees(90.0F));
+     matrixStack.method_22907(RotationAxis.field_40717.rotationDegrees(180.0F));
+     matrixStack.method_22907(RotationAxis.field_40716.rotationDegrees(90.0F));
      Matrix4f matrix = matrixStack.method_23760().method_23761();
      
-     class_289 tessellator = class_289.method_1348();
+     Tessellator tessellator = Tessellator.method_1348();
      
-     class_287 buffer = tessellator.method_60827(class_293.class_5596.field_27380, class_290.field_1576);
+     BufferBuilder buffer = tessellator.method_60827(VertexFormat.class_5596.field_27380, VertexFormats.field_1576);
      float y = 0.0F;
      int colorTheme = resolveCosmeticThemeColor();
      int coneColor = ColorUtils.setAlphaColor(colorTheme, 125);
@@ -400,23 +400,23 @@ package shame.nazuna.client.modules.impl.render;
      for (int i = 0; i <= 180; i++) {
        float iPi = i * 0.06981317F;
        
-       float x = (float)(class_3532.method_15374(iPi) * radius);
-       float z = (float)(class_3532.method_15362(iPi) * radius);
+       float x = (float)(MathHelper.method_15374(iPi) * radius);
+       float z = (float)(MathHelper.method_15362(iPi) * radius);
        
        buffer.method_22918(matrix, x, y, z).method_39415(coneColor);
        buffer.method_22918(matrix, 0.0F, 0.3F, 0.0F).method_39415(colorTheme);
      } 
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.depthMask(false);
-     buffer = tessellator.method_60827(class_293.class_5596.field_27378, class_290.field_1576);
+     buffer = tessellator.method_60827(VertexFormat.class_5596.field_27378, VertexFormats.field_1576);
      float firstX = 0.0F;
      float firstZ = 0.0F;
      boolean firstSet = false;
      for (int j = 0; j <= 180; j++) {
        float iPi = j * 0.06981317F;
-       float x = (float)(class_3532.method_15374(iPi) * radius);
-       float z = (float)(class_3532.method_15362(iPi) * radius);
+       float x = (float)(MathHelper.method_15374(iPi) * radius);
+       float z = (float)(MathHelper.method_15362(iPi) * radius);
        buffer.method_22918(matrix, x, y, z).method_39415(outlineColor);
        if (!firstSet) {
          firstX = x;
@@ -427,7 +427,7 @@ package shame.nazuna.client.modules.impl.render;
      if (firstSet) {
        buffer.method_22918(matrix, firstX, y, firstZ).method_39415(outlineColor);
      }
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      RenderSystem.depthMask(true);
      
      RenderSystem.enableCull();
@@ -438,12 +438,12 @@ package shame.nazuna.client.modules.impl.render;
      matrixStack.method_22909();
    }
    
-   private class_2960 getNimbusTexture() {
-     return class_2960.method_60655("astra", "textures/targetesp/bloom.png");
+   private Identifier getNimbusTexture() {
+     return Identifier.method_60655("astra", "textures/targetesp/bloom.png");
    }
  
    
-   private void renderNimbusBillboard(class_4587 matrices, float cameraYaw, float cameraPitch, double x, double y, double z, float size, int color) {
+   private void renderNimbusBillboard(MatrixStack matrices, float cameraYaw, float cameraPitch, double x, double y, double z, float size, int color) {
      int a = color >> 24 & 0xFF;
      if (a <= 0) {
        return;
@@ -456,20 +456,20 @@ package shame.nazuna.client.modules.impl.render;
      
      matrices.method_22903();
      matrices.method_22904(x, y, z);
-     matrices.method_22907(class_7833.field_40716.rotationDegrees(-cameraYaw));
-     matrices.method_22907(class_7833.field_40714.rotationDegrees(cameraPitch));
+     matrices.method_22907(RotationAxis.field_40716.rotationDegrees(-cameraYaw));
+     matrices.method_22907(RotationAxis.field_40714.rotationDegrees(cameraPitch));
      
      Matrix4f matrix = matrices.method_23760().method_23761();
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27382, class_290.field_1575);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27382, VertexFormats.field_1575);
      buffer.method_22918(matrix, -half, -half, 0.0F).method_22913(0.0F, 1.0F).method_1336(r, g, b, a);
      buffer.method_22918(matrix, -half, half, 0.0F).method_22913(0.0F, 0.0F).method_1336(r, g, b, a);
      buffer.method_22918(matrix, half, half, 0.0F).method_22913(1.0F, 0.0F).method_1336(r, g, b, a);
      buffer.method_22918(matrix, half, -half, 0.0F).method_22913(1.0F, 1.0F).method_1336(r, g, b, a);
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      matrices.method_22909();
    }
    
-   private boolean shouldRenderCosmeticForPlayer(class_1657 player) {
+   private boolean shouldRenderCosmeticForPlayer(PlayerEntity player) {
      if (mc.field_1724 == null) return false; 
      if (player == mc.field_1724) return true; 
      return (astra.INSTANCE != null && astra.INSTANCE.friendStorage != null && astra.INSTANCE.friendStorage
@@ -519,38 +519,38 @@ package shame.nazuna.client.modules.impl.render;
      this.lastClassicSelected = classic;
    }
    
-   private void applyBackPoseTransform(class_4587 matrices, class_1657 player, float tickDelta, class_4050 pose, boolean fallFlying) {
+   private void applyBackPoseTransform(MatrixStack matrices, PlayerEntity player, float tickDelta, EntityPose pose, boolean fallFlying) {
      if (fallFlying) {
        float pitch = player.method_5695(tickDelta);
-       float clampedPitch = class_3532.method_15363(pitch, -65.0F, 65.0F);
+       float clampedPitch = MathHelper.method_15363(pitch, -65.0F, 65.0F);
        
        matrices.method_46416(0.0F, 0.3F, 0.0F);
-       matrices.method_22907(class_7833.field_40714.rotationDegrees(-(90.0F + clampedPitch)));
+       matrices.method_22907(RotationAxis.field_40714.rotationDegrees(-(90.0F + clampedPitch)));
        matrices.method_46416(0.0F, -0.15F, 0.12F);
        
        return;
      } 
-     if (pose == class_4050.field_18079) {
+     if (pose == EntityPose.field_18079) {
        float pitch = player.method_5695(tickDelta);
-       float clampedPitch = class_3532.method_15363(pitch, -65.0F, 65.0F);
+       float clampedPitch = MathHelper.method_15363(pitch, -65.0F, 65.0F);
        
        matrices.method_46416(0.0F, 0.3F, 0.0F);
-       matrices.method_22907(class_7833.field_40714.rotationDegrees(-(90.0F + clampedPitch)));
+       matrices.method_22907(RotationAxis.field_40714.rotationDegrees(-(90.0F + clampedPitch)));
        matrices.method_46416(0.0F, -0.15F, 0.12F);
        
        return;
      } 
      if (player.method_5715()) {
        matrices.method_46416(0.0F, 1.15F, 0.0F);
-       matrices.method_22907(class_7833.field_40714.rotationDegrees(24.0F));
+       matrices.method_22907(RotationAxis.field_40714.rotationDegrees(24.0F));
        matrices.method_46416(0.0F, 0.0F, 0.08F);
      } else {
        matrices.method_46416(0.0F, 1.3F, 0.08F);
      } 
    }
    
-   private float resolveClassicBodyYaw(class_1657 player, float tickDelta) {
-     float targetBodyYaw = class_3532.method_17821(tickDelta, player.field_6220, player.field_6283);
+   private float resolveClassicBodyYaw(PlayerEntity player, float tickDelta) {
+     float targetBodyYaw = MathHelper.method_17821(tickDelta, player.field_6220, player.field_6283);
      if (player != mc.field_1724) {
        return targetBodyYaw;
      }
@@ -561,22 +561,22 @@ package shame.nazuna.client.modules.impl.render;
        return this.selfClassicBodyYaw;
      } 
      
-     float delta = class_3532.method_15393(targetBodyYaw - this.selfClassicBodyYaw);
-     this.selfClassicBodyYaw += class_3532.method_15363(delta, -14.0F, 14.0F);
+     float delta = MathHelper.method_15393(targetBodyYaw - this.selfClassicBodyYaw);
+     this.selfClassicBodyYaw += MathHelper.method_15363(delta, -14.0F, 14.0F);
      return this.selfClassicBodyYaw;
    }
    
-   private ClassicWingPose resolveClassicWingPose(class_1657 player, float tickDelta, class_4050 pose) {
+   private ClassicWingPose resolveClassicWingPose(PlayerEntity player, float tickDelta, EntityPose pose) {
      float pitch = player.method_5695(tickDelta);
      
      if (player.method_6128()) {
-       float clampedPitch = class_3532.method_15363(pitch, -65.0F, 65.0F);
+       float clampedPitch = MathHelper.method_15363(pitch, -65.0F, 65.0F);
        return new ClassicWingPose(1.18F, 0.1F, 0.0F, 0.0F, -(90.0F + clampedPitch), 0.0F, 0.76F, 0.92F, 0.1F, 0.58F, 0.05F, 0.0F, 0.06F, -5.0F, -2.0F, 0.13F);
      } 
  
      
-     if (pose == class_4050.field_18079 || player.method_20232()) {
-       float clampedPitch = class_3532.method_15363(pitch, -65.0F, 65.0F);
+     if (pose == EntityPose.field_18079 || player.method_20232()) {
+       float clampedPitch = MathHelper.method_15363(pitch, -65.0F, 65.0F);
        float bodyShiftY = player.method_20232() ? 1.1F : 1.18F;
        float bodyShiftZ = player.method_20232() ? 0.18F : 0.12F;
        return new ClassicWingPose(bodyShiftY, bodyShiftZ, 0.18F, 0.48F, -(90.0F + clampedPitch), 0.0F, 0.84F, 0.96F, 0.12F, 0.7F, 0.03F, 0.0F, 0.01F, -7.0F, -3.0F, 0.16F);
@@ -594,12 +594,12 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void renderClassicWingSide(class_4587 matrices, float side, float open, float sidePitch, float sideRoll, int baseColor, int glowColor, int coreColor, int outlineColor, int ribsColor, ClassicWingPose pose) {
+   private void renderClassicWingSide(MatrixStack matrices, float side, float open, float sidePitch, float sideRoll, int baseColor, int glowColor, int coreColor, int outlineColor, int ribsColor, ClassicWingPose pose) {
      matrices.method_22903();
      matrices.method_46416(side * pose.sideOffset, pose.sideYOffset, pose.sideZOffset);
-     matrices.method_22907(class_7833.field_40716.rotationDegrees(side * open));
-     matrices.method_22907(class_7833.field_40718.rotationDegrees(side * sideRoll));
-     matrices.method_22907(class_7833.field_40714.rotationDegrees(sidePitch));
+     matrices.method_22907(RotationAxis.field_40716.rotationDegrees(side * open));
+     matrices.method_22907(RotationAxis.field_40718.rotationDegrees(side * sideRoll));
+     matrices.method_22907(RotationAxis.field_40714.rotationDegrees(sidePitch));
      
      RenderSystem.blendFunc(770, 1);
      drawClassicWingLayer(matrices, side, 1.22F, glowColor, ColorUtils.setAlphaColor(glowColor, 0));
@@ -614,9 +614,9 @@ package shame.nazuna.client.modules.impl.render;
      matrices.method_22909();
    }
    
-   private void drawClassicWingLayer(class_4587 matrices, float side, float scale, int rootColor, int edgeColor) {
+   private void drawClassicWingLayer(MatrixStack matrices, float side, float scale, int rootColor, int edgeColor) {
      Matrix4f matrix = matrices.method_23760().method_23761();
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27379, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27379, VertexFormats.field_1576);
      
      for (int i = 0; i < CLASSIC_WING_SHAPE.length; i++) {
        ClassicWingPoint current = CLASSIC_WING_SHAPE[i];
@@ -626,12 +626,12 @@ package shame.nazuna.client.modules.impl.render;
        vertex(buffer, matrix, side * next.x * scale, next.y * scale, 0.0F, applyClassicWingPointAlpha(edgeColor, next.alphaMultiplier));
      } 
      
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
    
-   private void drawClassicWingOutline(class_4587 matrices, float side, float scale, int color) {
+   private void drawClassicWingOutline(MatrixStack matrices, float side, float scale, int color) {
      Matrix4f matrix = matrices.method_23760().method_23761();
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_29344, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_29344, VertexFormats.field_1576);
      
      RenderSystem.lineWidth(1.35F);
      GL11.glEnable(2848);
@@ -644,13 +644,13 @@ package shame.nazuna.client.modules.impl.render;
  
  
      
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      GL11.glDisable(2848);
    }
    
-   private void drawClassicWingRibs(class_4587 matrices, float side, float scale, int color) {
+   private void drawClassicWingRibs(MatrixStack matrices, float side, float scale, int color) {
      Matrix4f matrix = matrices.method_23760().method_23761();
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_29344, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_29344, VertexFormats.field_1576);
      int[] ribIndices = { 2, 4, 7, 9, 11 };
      
      RenderSystem.lineWidth(0.9F);
@@ -661,7 +661,7 @@ package shame.nazuna.client.modules.impl.render;
        vertex(buffer, matrix, side * point.x * scale, point.y * scale, 0.0F, 
            applyClassicWingPointAlpha(color, point.alphaMultiplier));
      } 
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
    
    private int applyClassicWingPointAlpha(int color, float multiplier) {
@@ -669,12 +669,12 @@ package shame.nazuna.client.modules.impl.render;
      return ColorUtils.setAlphaColor(color, Math.max(0, Math.min(255, (int)(alpha * multiplier))));
    }
    
-   private void vertex(class_287 buffer, Matrix4f matrix, float x, float y, float z, int color) {
+   private void vertex(BufferBuilder buffer, Matrix4f matrix, float x, float y, float z, int color) {
      buffer.method_22918(matrix, x, y, z).method_39415(color);
    }
  
    
-   private void renderButterflyWing(class_287 buffer, class_4587 matrices, float side, float spread, float pitch, float roll, float scale, int topColor, int bottomColor) {
+   private void renderButterflyWing(BufferBuilder buffer, MatrixStack matrices, float side, float spread, float pitch, float roll, float scale, int topColor, int bottomColor) {
      float root = 0.12F * scale;
      float topW = 1.52F * scale;
      float topH = 0.64F * scale;
@@ -683,9 +683,9 @@ package shame.nazuna.client.modules.impl.render;
      
      matrices.method_22903();
      matrices.method_46416(0.15F * side, 0.0F, -0.17F);
-     matrices.method_22907(class_7833.field_40716.rotationDegrees(side * spread));
-     matrices.method_22907(class_7833.field_40714.rotationDegrees(pitch));
-     matrices.method_22907(class_7833.field_40718.rotationDegrees(side * roll));
+     matrices.method_22907(RotationAxis.field_40716.rotationDegrees(side * spread));
+     matrices.method_22907(RotationAxis.field_40714.rotationDegrees(pitch));
+     matrices.method_22907(RotationAxis.field_40718.rotationDegrees(side * roll));
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      addDoubleSidedGradientTriangle(buffer, matrix, side * root, 0.02F, -0.01F, side * (root + topW * 0.22F), topH * 0.98F, -0.06F, side * (root + topW * 0.88F), topH * 0.6F, -0.13F, topColor, bottomColor);
@@ -717,7 +717,7 @@ package shame.nazuna.client.modules.impl.render;
    }
  
    
-   private void renderButterflyWingOutline(class_287 buffer, class_4587 matrices, float side, float spread, float pitch, float roll, float scale, int outlineColor) {
+   private void renderButterflyWingOutline(BufferBuilder buffer, MatrixStack matrices, float side, float spread, float pitch, float roll, float scale, int outlineColor) {
      float root = 0.12F * scale;
      float topW = 1.52F * scale;
      float topH = 0.64F * scale;
@@ -727,9 +727,9 @@ package shame.nazuna.client.modules.impl.render;
      
      matrices.method_22903();
      matrices.method_46416(0.15F * side, 0.0F, -0.17F);
-     matrices.method_22907(class_7833.field_40716.rotationDegrees(side * spread));
-     matrices.method_22907(class_7833.field_40714.rotationDegrees(pitch));
-     matrices.method_22907(class_7833.field_40718.rotationDegrees(side * roll));
+     matrices.method_22907(RotationAxis.field_40716.rotationDegrees(side * spread));
+     matrices.method_22907(RotationAxis.field_40714.rotationDegrees(pitch));
+     matrices.method_22907(RotationAxis.field_40718.rotationDegrees(side * roll));
      
      Matrix4f matrix = matrices.method_23760().method_23761();
      addLine(buffer, matrix, side * root, 0.02F, -0.01F, side * (root + topW * 0.22F), topH * 0.98F, -0.06F, outlineColor);
@@ -775,7 +775,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void addDoubleSidedQuad(class_287 buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int r, int g, int b, int a) {
+   private void addDoubleSidedQuad(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int r, int g, int b, int a) {
      addQuad(buffer, matrix, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, r, g, b, a);
      addQuad(buffer, matrix, x4, y4, z4, x3, y3, z3, x2, y2, z2, x1, y1, z1, r, g, b, a);
    }
@@ -785,7 +785,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void addDoubleSidedGradientQuad(class_287 buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int nearColor, int farColor) {
+   private void addDoubleSidedGradientQuad(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int nearColor, int farColor) {
      int nr = nearColor >> 16 & 0xFF;
      int ng = nearColor >> 8 & 0xFF;
      int nb = nearColor & 0xFF;
@@ -810,7 +810,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void addDoubleSidedGradientTriangle(class_287 buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, int nearColor, int farColor) {
+   private void addDoubleSidedGradientTriangle(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, int nearColor, int farColor) {
      int nr = nearColor >> 16 & 0xFF;
      int ng = nearColor >> 8 & 0xFF;
      int nb = nearColor & 0xFF;
@@ -832,7 +832,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void renderWingBoneLine(class_287 buffer, Matrix4f matrix, float x0, float y0, float z0, float x1, float y1, float z1, float x2, float y2, float z2, float thickness, int colorA, int colorB) {
+   private void renderWingBoneLine(BufferBuilder buffer, Matrix4f matrix, float x0, float y0, float z0, float x1, float y1, float z1, float x2, float y2, float z2, float thickness, int colorA, int colorB) {
      float vx1 = x1 - x0;
      float vy1 = y1 - y0;
      float len1 = Math.max(1.0E-4F, (float)Math.sqrt((vx1 * vx1 + vy1 * vy1)));
@@ -876,7 +876,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void addQuad(class_287 buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int r, int g, int b, int a) {
+   private void addQuad(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, int r, int g, int b, int a) {
      buffer.method_22918(matrix, x1, y1, z1).method_1336(r, g, b, a);
      buffer.method_22918(matrix, x2, y2, z2).method_1336(r, g, b, a);
      buffer.method_22918(matrix, x3, y3, z3).method_1336(r, g, b, a);
@@ -886,7 +886,7 @@ package shame.nazuna.client.modules.impl.render;
  
  
    
-   private void addLine(class_287 buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, int color) {
+   private void addLine(BufferBuilder buffer, Matrix4f matrix, float x1, float y1, float z1, float x2, float y2, float z2, int color) {
      int r = color >> 16 & 0xFF;
      int g = color >> 8 & 0xFF;
      int b = color & 0xFF;

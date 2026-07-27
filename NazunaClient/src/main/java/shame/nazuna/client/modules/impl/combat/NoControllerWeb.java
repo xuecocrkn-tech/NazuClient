@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_2246;
+ import net.minecraft.Blocks;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventBlockCollide;
  import shame.nazuna.client.modules.Module;
@@ -16,7 +16,7 @@ package shame.nazuna.client.modules.impl.combat;
    @EventLink
    public void onBlockCollide(EventBlockCollide e) {
      if (mc.field_1687 == null || e.getPos() == null)
-       return;  if (mc.field_1687.method_8320(e.getPos()).method_26204() == class_2246.field_10343)
+       return;  if (mc.field_1687.method_8320(e.getPos()).method_26204() == Blocks.field_10343)
        e.setCancelled(true); 
    }
  }

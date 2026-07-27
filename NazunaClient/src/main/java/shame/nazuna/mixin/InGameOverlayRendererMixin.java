@@ -1,9 +1,9 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_1058;
- import net.minecraft.class_4587;
- import net.minecraft.class_4597;
- import net.minecraft.class_4603;
+ import net.minecraft.Sprite;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.VertexConsumerProvider;
+ import net.minecraft.InGameOverlayRenderer;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
@@ -11,11 +11,11 @@ package shame.nazuna.mixin;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
  import shame.nazuna.client.modules.impl.render.Removals;
  
- @Mixin({class_4603.class})
+ @Mixin({InGameOverlayRenderer.class})
  public class InGameOverlayRendererMixin
  {
    @Inject(method = {"method_23070"}, at = {@At("HEAD")}, cancellable = true)
-   private static void astra$renderFireOverlay(class_4587 matrices, class_4597 vertexConsumers, CallbackInfo ci) {
+   private static void astra$renderFireOverlay(MatrixStack matrices, VertexConsumerProvider vertexConsumers, CallbackInfo ci) {
      if (ModuleClass.INSTANCE == null)
        return; 
      Removals removals = ModuleClass.removals;
@@ -25,7 +25,7 @@ package shame.nazuna.mixin;
    }
    
    @Inject(method = {"method_23068"}, at = {@At("HEAD")}, cancellable = true)
-   private static void astra$renderInWallOverlay(class_1058 sprite, class_4587 matrices, class_4597 vertexConsumers, CallbackInfo ci) {
+   private static void astra$renderInWallOverlay(Sprite sprite, MatrixStack matrices, VertexConsumerProvider vertexConsumers, CallbackInfo ci) {
      if (ModuleClass.INSTANCE == null)
        return; 
      Removals removals = ModuleClass.removals;

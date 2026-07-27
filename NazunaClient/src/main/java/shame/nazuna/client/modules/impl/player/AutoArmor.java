@@ -1,9 +1,9 @@
 package shame.nazuna.client.modules.impl.player;
- import net.minecraft.class_1657;
- import net.minecraft.class_1713;
- import net.minecraft.class_1738;
- import net.minecraft.class_1792;
- import net.minecraft.class_1799;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.SlotActionType;
+ import net.minecraft.ArmorItem;
+ import net.minecraft.Item;
+ import net.minecraft.ItemStack;
  import shame.nazuna.api.events.implement.EventUpdate;
  import shame.nazuna.client.modules.Module;
  import shame.nazuna.client.modules.settings.Setting;
@@ -29,13 +29,13 @@ package shame.nazuna.client.modules.impl.player;
      if ((float)(currentTime - this.lastEquipTime) < this.delay.get())
        return; 
      for (int i = 0; i < 4; i++) {
-       class_1799 currentArmor = mc.field_1724.method_31548().method_7372(i);
+       ItemStack currentArmor = mc.field_1724.method_31548().method_7372(i);
        
        if (currentArmor.method_7960())
          for (int j = 0; j < 36; j++) {
-           class_1799 stack = mc.field_1724.method_31548().method_5438(j);
+           ItemStack stack = mc.field_1724.method_31548().method_5438(j);
            
-           if (!stack.method_7960()) { class_1792 class_1792 = stack.method_7909(); if (class_1792 instanceof class_1738) { class_1738 armorItem = (class_1738)class_1792;
+           if (!stack.method_7960()) { Item Item = stack.method_7909(); if (Item instanceof ArmorItem) { ArmorItem armorItem = (ArmorItem)Item;
                if (getArmorSlotIndex(armorItem) == i) {
                  int slotToEquip = j;
                  
@@ -43,7 +43,7 @@ package shame.nazuna.client.modules.impl.player;
                    slotToEquip = j + 36;
                  }
                  
-                 mc.field_1761.method_2906(0, slotToEquip, 0, class_1713.field_7794, (class_1657)mc.field_1724);
+                 mc.field_1761.method_2906(0, slotToEquip, 0, SlotActionType.field_7794, (PlayerEntity)mc.field_1724);
                  this.lastEquipTime = currentTime;
                  return;
                }  }
@@ -57,7 +57,7 @@ package shame.nazuna.client.modules.impl.player;
      return (mc.field_1724.field_3913.field_3905 != 0.0F || mc.field_1724.field_3913.field_3907 != 0.0F);
    }
    
-   private int getArmorSlotIndex(class_1738 armor) {
+   private int getArmorSlotIndex(ArmorItem armor) {
      String itemName = armor.toString().toLowerCase();
      
      if (itemName.contains("helmet") || itemName.contains("skull"))

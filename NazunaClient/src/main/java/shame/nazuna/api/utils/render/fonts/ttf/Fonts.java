@@ -3,7 +3,7 @@ package shame.nazuna.api.utils.render.fonts.ttf;
  import java.awt.Font;
  import java.util.HashMap;
  import java.util.Map;
- import net.minecraft.class_2960;
+ import net.minecraft.Identifier;
  
  
  
@@ -61,7 +61,7 @@ package shame.nazuna.api.utils.render.fonts.ttf;
      }
      
      Font font = FontUtil.getFontFromTTF(
-         class_2960.method_60655("astra", "fonts/ttf/" + fontName), size, 0);
+         Identifier.method_60655("astra", "fonts/ttf/" + fontName), size, 0);
  
  
  
@@ -85,7 +85,7 @@ package shame.nazuna.api.utils.render.fonts.ttf;
      }
      
      Font font = FontUtil.getFontFromTTF(
-         class_2960.method_60655("astra", "fonts/" + fontName), size, 0);
+         Identifier.method_60655("astra", "fonts/" + fontName), size, 0);
  
  
  

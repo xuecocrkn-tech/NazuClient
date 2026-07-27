@@ -1,10 +1,10 @@
 package shame.nazuna.client.modules.impl.combat;
  
- import net.minecraft.class_1297;
- import net.minecraft.class_1309;
- import net.minecraft.class_241;
- import net.minecraft.class_243;
- import net.minecraft.class_3532;
+ import net.minecraft.Entity;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.Vec2f;
+ import net.minecraft.Vec3d;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.storages.implement.RotationStorage;
  import shame.nazuna.api.utils.rotate.Rotation;
  import shame.nazuna.api.utils.rotate.RotationUtils;
@@ -450,19 +450,19 @@ package shame.nazuna.client.modules.impl.combat;
  class null
    extends RotationsSystem
  {
-   public void updateRotations(class_1309 target) {
+   public void updateRotations(LivingEntity target) {
      boolean focusRotation = Aura.this.shouldFocusDataRotation();
-     class_243 fallbackPoint = Aura.this.getDataRotationPoint(target);
-     class_241 fallbackRot = RotationUtils.getRotations(fallbackPoint);
+     Vec3d fallbackPoint = Aura.this.getDataRotationPoint(target);
+     Vec2f fallbackRot = RotationUtils.getRotations(fallbackPoint);
      float currentYaw = mc.field_1724.method_36454();
      float currentPitch = mc.field_1724.method_36455();
-     float yawDelta = Math.abs(class_3532.method_15393(fallbackRot.field_1343 - currentYaw));
+     float yawDelta = Math.abs(MathHelper.method_15393(fallbackRot.field_1343 - currentYaw));
      float pitchDelta = Math.abs(fallbackRot.field_1342 - currentPitch);
-     boolean hardAcquire = (yawDelta > 70.0F || (yawDelta > 42.0F && mc.field_1724.method_5858((class_1297)target) < 9.0D));
+     boolean hardAcquire = (yawDelta > 70.0F || (yawDelta > 42.0F && mc.field_1724.method_5858((Entity)target) < 9.0D));
      Rotation rotation = null;
      
      if (shouldUseElytraPredict(target)) {
-       class_241 rot = RotationUtils.getRotations(getPredictedPoint(target, fallbackPoint));
+       Vec2f rot = RotationUtils.getRotations(getPredictedPoint(target, fallbackPoint));
        rotation = new Rotation(rot.field_1343, rot.field_1342);
      } else if (!hardAcquire) {
        rotation = Aura.this.dataSystem.getNeuroRotation(target, currentYaw, currentPitch, focusRotation);
@@ -480,8 +480,8 @@ package shame.nazuna.client.modules.impl.combat;
        rotation = new Rotation(fallbackRot.field_1343, fallbackRot.field_1342);
      } 
      
-     Aura.this.targetRotations = new class_241(rotation.getYaw(), rotation.getPitch());
-     Aura.this.currentRotations = new class_241(currentYaw, currentPitch);
+     Aura.this.targetRotations = new Vec2f(rotation.getYaw(), rotation.getPitch());
+     Aura.this.currentRotations = new Vec2f(currentYaw, currentPitch);
      
      float yawSpeed = hardAcquire ? Math.max(95.0F, Math.min(180.0F, yawDelta * 1.45F)) : (focusRotation ? 24.0F : 11.5F);
      float pitchSpeed = hardAcquire ? Math.max(55.0F, Math.min(110.0F, Math.max(18.0F, pitchDelta * 1.35F))) : (focusRotation ? 18.0F : 9.0F);

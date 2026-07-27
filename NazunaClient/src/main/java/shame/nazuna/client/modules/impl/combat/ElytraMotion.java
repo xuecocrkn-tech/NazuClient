@@ -1,6 +1,6 @@
 package shame.nazuna.client.modules.impl.combat;
- import net.minecraft.class_1297;
- import net.minecraft.class_243;
+ import net.minecraft.Entity;
+ import net.minecraft.Vec3d;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventMove;
  import shame.nazuna.api.storages.implement.helpertstorages.enumvar.ModuleClass;
@@ -24,7 +24,7 @@ package shame.nazuna.client.modules.impl.combat;
        return; 
      Aura aura = ModuleClass.aura;
      if (mc.field_1724 == null || mc.field_1687 == null || aura.getTarget() == null)
-       return;  if (mc.field_1724.method_6128() && mc.field_1724.method_5739((class_1297)aura.getTarget()) < this.distance.getValue().floatValue())
+       return;  if (mc.field_1724.method_6128() && mc.field_1724.method_5739((Entity)aura.getTarget()) < this.distance.getValue().floatValue())
        if (this.bypass.isState()) {
          float yaw = mc.field_1724.method_36454();
          double rad = Math.toRadians(yaw);
@@ -35,9 +35,9 @@ package shame.nazuna.client.modules.impl.combat;
          double moveX = -Math.sin(rad) * forward;
          double moveZ = Math.cos(rad) * forward;
          
-         e.setMovePos(new class_243(moveX, down, moveZ));
+         e.setMovePos(new Vec3d(moveX, down, moveZ));
        } else {
-         e.setMovePos(class_243.field_1353);
+         e.setMovePos(Vec3d.field_1353);
        }  
    }
    

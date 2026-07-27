@@ -2,16 +2,16 @@ package shame.nazuna.client.modules.impl.render;
  import com.mojang.blaze3d.systems.RenderSystem;
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_1657;
- import net.minecraft.class_243;
- import net.minecraft.class_286;
- import net.minecraft.class_287;
- import net.minecraft.class_289;
- import net.minecraft.class_290;
- import net.minecraft.class_293;
- import net.minecraft.class_3532;
- import net.minecraft.class_4587;
- import net.minecraft.class_5498;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.Vec3d;
+ import net.minecraft.BufferRenderer;
+ import net.minecraft.BufferBuilder;
+ import net.minecraft.Tessellator;
+ import net.minecraft.VertexFormats;
+ import net.minecraft.VertexFormat;
+ import net.minecraft.MathHelper;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.Perspective;
  import org.joml.Matrix4f;
  import shame.nazuna.api.events.implement.Event3DRender;
  import shame.nazuna.api.utils.color.ColorUtils;
@@ -39,7 +39,7 @@ package shame.nazuna.client.modules.impl.render;
    
    @EventLink
    public void onRender(Event3DRender event) {
-     if (mc.field_1690.method_31044() == class_5498.field_26664) {
+     if (mc.field_1690.method_31044() == Perspective.field_26664) {
        return;
      }
      
@@ -49,37 +49,37 @@ package shame.nazuna.client.modules.impl.render;
      
      this.points.removeIf(p -> ((float)(currentTime - p.time) > this.duration.get()));
      
-     class_243 playerPos = interpolatePlayerPosition(event.getTickDelta());
+     Vec3d playerPos = interpolatePlayerPosition(event.getTickDelta());
      
      this.points.add(new Point(playerPos));
      
      render3DPoints(event.getMatrices());
    }
    
-   private class_243 interpolatePlayerPosition(float partialTicks) {
-     return new class_243(
-         class_3532.method_16436(partialTicks, mc.field_1724.field_6014, mc.field_1724.method_23317()), 
-         class_3532.method_16436(partialTicks, mc.field_1724.field_6036, mc.field_1724.method_23318()), 
-         class_3532.method_16436(partialTicks, mc.field_1724.field_5969, mc.field_1724.method_23321()));
+   private Vec3d interpolatePlayerPosition(float partialTicks) {
+     return new Vec3d(
+         MathHelper.method_16436(partialTicks, mc.field_1724.field_6014, mc.field_1724.method_23317()), 
+         MathHelper.method_16436(partialTicks, mc.field_1724.field_6036, mc.field_1724.method_23318()), 
+         MathHelper.method_16436(partialTicks, mc.field_1724.field_5969, mc.field_1724.method_23321()));
    }
  
    
-   private class_243 interpolatePlayerPosition(class_1657 playerEntity, float partialTicks) {
-     return new class_243(
-         class_3532.method_16436(partialTicks, playerEntity.field_6014, playerEntity.method_23317()), 
-         class_3532.method_16436(partialTicks, playerEntity.field_6036, playerEntity.method_23318()), 
-         class_3532.method_16436(partialTicks, playerEntity.field_5969, playerEntity.method_23321()));
+   private Vec3d interpolatePlayerPosition(PlayerEntity playerEntity, float partialTicks) {
+     return new Vec3d(
+         MathHelper.method_16436(partialTicks, playerEntity.field_6014, playerEntity.method_23317()), 
+         MathHelper.method_16436(partialTicks, playerEntity.field_6036, playerEntity.method_23318()), 
+         MathHelper.method_16436(partialTicks, playerEntity.field_5969, playerEntity.method_23321()));
    }
  
    
-   private void render3DPoints(class_4587 matrixStack) {
+   private void render3DPoints(MatrixStack matrixStack) {
      if (this.points.size() < 2)
        return; 
      startRendering();
      
      matrixStack.method_22903();
      
-     class_243 view = mc.field_1773.method_19418().method_19326();
+     Vec3d view = mc.field_1773.method_19418().method_19326();
      matrixStack.method_22904(-view.field_1352, -view.field_1351, -view.field_1350);
      
      Matrix4f matrix = matrixStack.method_23760().method_23761();
@@ -89,7 +89,7 @@ package shame.nazuna.client.modules.impl.render;
      float green = ColorUtils.greenf(themeColor);
      float blue = ColorUtils.bluef(themeColor);
      
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_27380, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_27380, VertexFormats.field_1576);
      
      int index = 0;
      for (Point p : this.points) {
@@ -103,7 +103,7 @@ package shame.nazuna.client.modules.impl.render;
        index++;
      } 
      
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
      
      RenderSystem.lineWidth(2.0F);
      
@@ -115,7 +115,7 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private void renderLineStrip(Matrix4f matrix, List<Point> points, boolean withHeight, float red, float green, float blue) {
-     class_287 buffer = class_289.method_1348().method_60827(class_293.class_5596.field_29345, class_290.field_1576);
+     BufferBuilder buffer = Tessellator.method_1348().method_60827(VertexFormat.class_5596.field_29345, VertexFormats.field_1576);
      
      int index = 0;
      for (Point p : points) {
@@ -129,7 +129,7 @@ package shame.nazuna.client.modules.impl.render;
        index++;
      } 
      
-     class_286.method_43433(buffer.method_60800());
+     BufferRenderer.method_43433(buffer.method_60800());
    }
    
    private void startRendering() {
@@ -138,7 +138,7 @@ package shame.nazuna.client.modules.impl.render;
      RenderSystem.enableDepthTest();
      RenderSystem.depthMask(false);
      RenderSystem.defaultBlendFunc();
-     RenderSystem.setShader(class_10142.field_53876);
+     RenderSystem.setShader(ShaderProgramKeys.field_53876);
    }
    
    private void stopRendering() {
@@ -148,10 +148,10 @@ package shame.nazuna.client.modules.impl.render;
    }
    
    private static class Point {
-     public class_243 pos;
+     public Vec3d pos;
      public long time;
      
-     public Point(class_243 pos) {
+     public Point(Vec3d pos) {
        this.pos = pos;
        this.time = System.currentTimeMillis();
      }

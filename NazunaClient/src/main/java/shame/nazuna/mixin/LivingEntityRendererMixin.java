@@ -1,14 +1,14 @@
 package shame.nazuna.mixin;
  
- import net.minecraft.class_10042;
- import net.minecraft.class_10055;
- import net.minecraft.class_1297;
- import net.minecraft.class_1309;
- import net.minecraft.class_1657;
- import net.minecraft.class_4587;
- import net.minecraft.class_4597;
- import net.minecraft.class_583;
- import net.minecraft.class_922;
+ import net.minecraft.LivingEntityRenderState;
+ import net.minecraft.PlayerEntityRenderState;
+ import net.minecraft.Entity;
+ import net.minecraft.LivingEntity;
+ import net.minecraft.PlayerEntity;
+ import net.minecraft.MatrixStack;
+ import net.minecraft.VertexConsumerProvider;
+ import net.minecraft.EntityModel;
+ import net.minecraft.LivingEntityRenderer;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.Unique;
  import org.spongepowered.asm.mixin.injection.At;
@@ -23,8 +23,8 @@ package shame.nazuna.mixin;
  
  
  
- @Mixin({class_922.class})
- public abstract class LivingEntityRendererMixin<T extends class_1309, S extends class_10042, M extends class_583<? super S>>
+ @Mixin({LivingEntityRenderer.class})
+ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>>
    implements QClient
  {
    @Inject(method = {"method_62355"}, at = {@At("TAIL")})
@@ -32,8 +32,8 @@ package shame.nazuna.mixin;
      boolean shouldRenderInvisible = astra$shouldRenderInvisible(entity);
      ((SeeInvisiblesRenderState)state).astra$setSeeInvisiblesTarget(shouldRenderInvisible);
      if (shouldRenderInvisible) {
-       ((class_10042)state).field_53333 = true;
-       ((class_10042)state).field_53461 = false;
+       ((LivingEntityRenderState)state).field_53333 = true;
+       ((LivingEntityRenderState)state).field_53461 = false;
      } 
    }
  
@@ -41,7 +41,7 @@ package shame.nazuna.mixin;
  
    
    @ModifyConstant(method = {"method_4054"}, constant = {@Constant(intValue = 654311423)})
-   private int astra$changeInvisibleAlpha(int original, S state, class_4587 matrices, class_4597 vertexConsumers, int light) {
+   private int astra$changeInvisibleAlpha(int original, S state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
      return ((SeeInvisiblesRenderState)state).astra$isSeeInvisiblesTarget() ? 
        SeeInvisibles.INVISIBLE_COLOR : 
        original;
@@ -49,7 +49,7 @@ package shame.nazuna.mixin;
    
    @Unique
    private boolean astra$shouldRenderInvisible(T entity) {
-     if (entity instanceof class_1657) { class_1657 player = (class_1657)entity; if (ModuleClass.INSTANCE != null) {
+     if (entity instanceof PlayerEntity) { PlayerEntity player = (PlayerEntity)entity; if (ModuleClass.INSTANCE != null) {
  
  
          
@@ -58,13 +58,13 @@ package shame.nazuna.mixin;
        }  }
      
      return false; } @Unique
-   private class_1657 astra$resolvePlayer(S state) {
-     if (state instanceof class_10055) { class_10055 playerState = (class_10055)state; if (mc.field_1687 != null) {
+   private PlayerEntity astra$resolvePlayer(S state) {
+     if (state instanceof PlayerEntityRenderState) { PlayerEntityRenderState playerState = (PlayerEntityRenderState)state; if (mc.field_1687 != null) {
  
  
          
-         class_1297 entity = mc.field_1687.method_8469(playerState.field_53528);
-         class_1657 player = (class_1657)entity; return (entity instanceof class_1657) ? player : null;
+         Entity entity = mc.field_1687.method_8469(playerState.field_53528);
+         PlayerEntity player = (PlayerEntity)entity; return (entity instanceof PlayerEntity) ? player : null;
        }  }
      
      return null;

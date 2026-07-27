@@ -1,5 +1,5 @@
 package shame.nazuna.api.storages.implement;
- import net.minecraft.class_3532;
+ import net.minecraft.MathHelper;
  import shame.nazuna.api.QClient;
  import shame.nazuna.api.events.EventLink;
  import shame.nazuna.api.events.implement.EventLook;
@@ -37,7 +37,7 @@ package shame.nazuna.api.storages.implement;
    }
    
    private void rotateTowards(double targetYaw, double targetPitch) {
-     freePitch = class_3532.method_15363((float)(freePitch + targetPitch * 0.15D), -90.0F, 90.0F);
+     freePitch = MathHelper.method_15363((float)(freePitch + targetPitch * 0.15D), -90.0F, 90.0F);
      freeYaw = (float)(freeYaw + targetYaw * 0.15D);
    }
  }

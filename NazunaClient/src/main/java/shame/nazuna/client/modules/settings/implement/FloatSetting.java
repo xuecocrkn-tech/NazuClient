@@ -20,11 +20,11 @@ package shame.nazuna.client.modules.settings.implement;
    }
    
    public Number getValue() {
-     return Float.valueOf(class_3532.method_15363(this.value, getMin(), getMax()));
+     return Float.valueOf(MathHelper.method_15363(this.value, getMin(), getMax()));
    }
    
    public void setValue(float value) {
-     this.value = class_3532.method_15363(value, getMin(), getMax());
+     this.value = MathHelper.method_15363(value, getMin(), getMax());
    }
    
    public float get() {

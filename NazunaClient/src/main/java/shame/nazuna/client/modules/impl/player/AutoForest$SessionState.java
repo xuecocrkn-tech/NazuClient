@@ -4,8 +4,8 @@ package shame.nazuna.client.modules.impl.player;
  import java.util.HashSet;
  import java.util.Map;
  import java.util.Set;
- import net.minecraft.class_2338;
- import net.minecraft.class_2680;
+ import net.minecraft.BlockPos;
+ import net.minecraft.BlockState;
  
  
  
@@ -675,15 +675,15 @@ package shame.nazuna.client.modules.impl.player;
    private float payAmount = 1000.0F;
    private float intervalSeconds = 20.0F;
    private String payTarget = "";
-   private class_2338 targetPos;
+   private BlockPos targetPos;
    private long lastBreakTime;
    private long lastPacketTime;
    private long lastSellTime;
    private long lastPayTime;
    private long lastNickReminderTime;
-   private Map<class_2338, class_2680> preservedBlocks = new HashMap<>();
-   private Map<class_2338, Long> lastUpdateTime = new HashMap<>();
-   private Set<class_2338> managedBlocks = new HashSet<>();
+   private Map<BlockPos, BlockState> preservedBlocks = new HashMap<>();
+   private Map<BlockPos, Long> lastUpdateTime = new HashMap<>();
+   private Set<BlockPos> managedBlocks = new HashSet<>();
    
    public boolean enabled() { return this.enabled; }
    public void enabled(boolean value) { this.enabled = value; }
@@ -707,8 +707,8 @@ package shame.nazuna.client.modules.impl.player;
    public void intervalSeconds(float value) { this.intervalSeconds = value; }
    public String payTarget() { return (this.payTarget == null) ? "" : this.payTarget; }
    public void payTarget(String value) { this.payTarget = (value == null) ? "" : value; }
-   public class_2338 targetPos() { return this.targetPos; }
-   public void targetPos(class_2338 value) { this.targetPos = value; }
+   public BlockPos targetPos() { return this.targetPos; }
+   public void targetPos(BlockPos value) { this.targetPos = value; }
    public long lastBreakTime() { return this.lastBreakTime; }
    public void lastBreakTime(long value) { this.lastBreakTime = value; }
    public long lastPacketTime() { return this.lastPacketTime; }
@@ -719,11 +719,11 @@ package shame.nazuna.client.modules.impl.player;
    public void lastPayTime(long value) { this.lastPayTime = value; }
    public long lastNickReminderTime() { return this.lastNickReminderTime; }
    public void lastNickReminderTime(long value) { this.lastNickReminderTime = value; }
-   public Map<class_2338, class_2680> preservedBlocks() { return this.preservedBlocks; }
-   public void preservedBlocks(Map<class_2338, class_2680> value) { this.preservedBlocks = (value == null) ? new HashMap<>() : value; }
-   public Map<class_2338, Long> lastUpdateTime() { return this.lastUpdateTime; }
-   public void lastUpdateTime(Map<class_2338, Long> value) { this.lastUpdateTime = (value == null) ? new HashMap<>() : value; }
-   public Set<class_2338> managedBlocks() { return this.managedBlocks; } public void managedBlocks(Set<class_2338> value) {
+   public Map<BlockPos, BlockState> preservedBlocks() { return this.preservedBlocks; }
+   public void preservedBlocks(Map<BlockPos, BlockState> value) { this.preservedBlocks = (value == null) ? new HashMap<>() : value; }
+   public Map<BlockPos, Long> lastUpdateTime() { return this.lastUpdateTime; }
+   public void lastUpdateTime(Map<BlockPos, Long> value) { this.lastUpdateTime = (value == null) ? new HashMap<>() : value; }
+   public Set<BlockPos> managedBlocks() { return this.managedBlocks; } public void managedBlocks(Set<BlockPos> value) {
      this.managedBlocks = (value == null) ? new HashSet<>() : value;
    }
  }

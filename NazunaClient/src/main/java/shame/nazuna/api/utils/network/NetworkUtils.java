@@ -2,7 +2,7 @@ package shame.nazuna.api.utils.network;
  
  import java.util.ArrayList;
  import java.util.List;
- import net.minecraft.class_2596;
+ import net.minecraft.Packet;
  import shame.nazuna.api.QClient;
  
  public final class NetworkUtils implements QClient {
@@ -10,12 +10,12 @@ package shame.nazuna.api.utils.network;
      throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
    }
    
-   public static void sendSilentPacket(class_2596<?> packet) {
+   public static void sendSilentPacket(Packet<?> packet) {
      silentPackets.add(packet);
      mc.method_1562().method_52787(packet);
    }
    
-   public static void sendPacket(class_2596<?> packet) {
+   public static void sendPacket(Packet<?> packet) {
      mc.method_1562().method_52787(packet);
    }
  }
