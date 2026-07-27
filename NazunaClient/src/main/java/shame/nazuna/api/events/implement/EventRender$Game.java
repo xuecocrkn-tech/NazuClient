@@ -31,6 +31,7 @@ package shame.nazuna.api.events.implement;
    
    public Game(WorldRenderer context, MatrixStack matrix, Matrix4f projectionMatrix, Camera camera, float partialTicks, long finishTimeNano) {
      this.context = context; this.matrix = matrix; this.projectionMatrix = projectionMatrix; this.camera = camera; this.partialTicks = partialTicks; this.finishTimeNano = finishTimeNano;
+  }
    public long getFinishTimeNano() { return this.finishTimeNano; }
  
  }

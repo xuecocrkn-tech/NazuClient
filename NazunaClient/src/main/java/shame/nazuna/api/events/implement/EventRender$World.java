@@ -21,6 +21,7 @@ package shame.nazuna.api.events.implement;
    
    public World(Window scaledResolution, float partialTicks, Matrix4f matrix, MatrixStack matrixStack) {
      this.scaledResolution = scaledResolution; this.partialTicks = partialTicks; this.matrix = matrix; this.matrixStack = matrixStack;
+  }
    public MatrixStack getMatrixStack() { return this.matrixStack; }
  
  }

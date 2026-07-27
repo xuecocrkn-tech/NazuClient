@@ -1,16 +1,21 @@
 package shame.nazuna.api.events.implement;
- 
- 
- public class EventChunkUpdate extends Event {
-   private final int chunkX;
-   
-   public int getChunkX() {
-   public int getChunkZ() { return this.chunkZ; }
- 
- }
 
+import shame.nazuna.api.events.Event;
 
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\api\events\implement\EventChunkUpdate.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */
+public class EventChunkUpdate extends Event {
+    private final int chunkX;
+    private final int chunkZ;
+
+    public EventChunkUpdate(int chunkX, int chunkZ) {
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
+    }
+
+    public int getChunkX() {
+        return this.chunkX;
+    }
+
+    public int getChunkZ() {
+        return this.chunkZ;
+    }
+}

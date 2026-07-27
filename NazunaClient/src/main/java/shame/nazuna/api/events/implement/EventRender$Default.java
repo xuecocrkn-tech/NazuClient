@@ -13,6 +13,7 @@ package shame.nazuna.api.events.implement;
    
    public Default(DrawContext context, float partialTicks) {
      this.context = context; this.partialTicks = partialTicks;
+  }
    public float getPartialTicks() { return this.partialTicks; }
  
  }

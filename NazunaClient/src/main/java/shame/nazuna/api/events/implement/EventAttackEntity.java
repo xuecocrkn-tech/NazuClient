@@ -1,17 +1,15 @@
 package shame.nazuna.api.events.implement;
- 
- import net.minecraft.PlayerEntity;
- 
- public class EventAttackEntity extends Event {
-   private final PlayerEntity player;
-   
-   public PlayerEntity getPlayer() {
-   public Entity getTarget() { return this.target; }
- 
- }
 
+import shame.nazuna.api.events.Event;
 
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\api\events\implement\EventAttackEntity.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */
+public class EventAttackEntity extends Event {
+    private final PlayerEntity target;
+
+    public EventAttackEntity(PlayerEntity target) {
+        this.target = target;
+    }
+
+    public PlayerEntity getTarget() {
+        return this.target;
+    }
+}

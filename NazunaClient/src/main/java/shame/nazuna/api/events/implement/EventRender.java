@@ -23,6 +23,8 @@ package shame.nazuna.api.events.implement;
    
    public static class Game extends Event { private final WorldRenderer context; private final MatrixStack matrix; private final Matrix4f projectionMatrix;
      public WorldRenderer getContext() {
+    return this.xxx;
+  }
      public long getFinishTimeNano() { return this.finishTimeNano; }
       }
  
