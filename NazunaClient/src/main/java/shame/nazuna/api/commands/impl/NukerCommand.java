@@ -1,0 +1,125 @@
+package shame.nazuna.api.commands.impl;
+ import com.mojang.brigadier.arguments.StringArgumentType;
+ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+ import com.mojang.brigadier.context.CommandContext;
+ import com.mojang.brigadier.exceptions.CommandSyntaxException;
+ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+ import java.util.Objects;
+ import java.util.Set;
+ import java.util.concurrent.CompletableFuture;
+ import java.util.stream.Collectors;
+ import net.minecraft.class_2172;
+ import net.minecraft.class_2248;
+ import net.minecraft.class_2960;
+ import net.minecraft.class_7923;
+ import shame.nazuna.api.utils.chat.ChatUtils;
+ import shame.nazuna.client.modules.impl.player.Nuker;
+ 
+ public class NukerCommand extends Command {
+   public NukerCommand() {
+     super("nuker");
+   }
+   
+   public NukerCommand(String command) {
+     super(command);
+   }
+ 
+   
+   public void execute(LiteralArgumentBuilder<class_2172> builder) {
+     ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)builder
+       .then(literal("add")
+         .then(arg("block", (ArgumentType)StringArgumentType.word())
+           .suggests((context, builder1) -> {
+               String input = Nuker.normalizeBlockName(builder1.getRemaining());
+               
+               Objects.requireNonNull(class_7923.field_41175);
+               
+               Objects.requireNonNull(builder1);
+               
+               class_7923.field_41175.method_10220().map(class_7923.field_41175::method_10221).map(class_2960::method_12832).filter(()).limit(20L).forEach(builder1::suggest);
+               
+               return builder1.buildFuture();
+             }).executes(context -> {
+               String blockName = Nuker.normalizeBlockName((String)context.getArgument("block", String.class));
+               
+               if (Nuker.INSTANCE.isTargetBlock(blockName)) {
+                 ChatUtils.sendMessage("§cБлок §e" + blockName + "§c уже в списке Nuker!");
+                 
+                 return 1;
+               } 
+               
+               if (!blockExists(blockName)) {
+                 ChatUtils.sendMessage("§cБлок §e" + blockName + "§c не найден!");
+                 
+                 return 1;
+               } 
+               
+               Nuker.INSTANCE.addBlock(blockName);
+               
+               ChatUtils.sendMessage("§aБлок §e" + blockName + "§a добавлен в Nuker!");
+               return 1;
+             })))).then(literal("remove")
+         .then(arg("block", (ArgumentType)StringArgumentType.word())
+           .suggests((context, builder1) -> {
+               String input = Nuker.normalizeBlockName(builder1.getRemaining());
+               
+               Objects.requireNonNull(builder1);
+               
+               Nuker.INSTANCE.getTargetBlocks().stream().sorted(String::compareTo).filter(()).forEach(builder1::suggest);
+               
+               return builder1.buildFuture();
+             }).executes(context -> {
+               String blockName = Nuker.normalizeBlockName((String)context.getArgument("block", String.class));
+               
+               if (!Nuker.INSTANCE.isTargetBlock(blockName)) {
+                 ChatUtils.sendMessage("§cБлока §e" + blockName + "§c нет в списке Nuker!");
+                 
+                 return 1;
+               } 
+               
+               Nuker.INSTANCE.removeBlock(blockName);
+               
+               ChatUtils.sendMessage("§aБлок §e" + blockName + "§a удален из Nuker!");
+               
+               return 1;
+             })))).then(literal("list")
+         .executes(context -> {
+             Set<String> blocks = Nuker.INSTANCE.getTargetBlocks();
+ 
+             
+             if (blocks.isEmpty()) {
+               ChatUtils.sendMessage("§cСписок Nuker пуст!");
+               
+               return 1;
+             } 
+             
+             String blockList = blocks.stream().sorted().collect(Collectors.joining("§7, §e"));
+             
+             ChatUtils.sendMessage("§aБлоки Nuker §7(§e" + blocks.size() + "§7)§a: §e" + blockList);
+             
+             return 1;
+           }))).then(literal("clear")
+         .executes(context -> {
+             if (Nuker.INSTANCE.getTargetBlocks().isEmpty()) {
+               ChatUtils.sendMessage("§cСписок Nuker уже пуст!");
+               return 1;
+             } 
+             Nuker.INSTANCE.clearBlocks();
+             ChatUtils.sendMessage("§aСписок Nuker очищен!");
+             return 1;
+           }));
+   }
+ 
+ 
+   
+   private boolean blockExists(String blockName) {
+     return class_7923.field_41175.method_10220()
+       .anyMatch(block -> class_7923.field_41175.method_10221(block).method_12832().equalsIgnoreCase(blockName));
+   }
+ }
+
+
+/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\api\commands\impl\NukerCommand.class
+ * Java compiler version: 21 (65.0)
+ * JD-Core Version:       1.1.3
+ */

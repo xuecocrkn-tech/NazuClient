@@ -1,0 +1,24 @@
+package shame.nazuna.mixin;
+ 
+ import net.minecraft.class_310;
+ import org.spongepowered.asm.mixin.Mixin;
+ import org.spongepowered.asm.mixin.injection.At;
+ import org.spongepowered.asm.mixin.injection.Inject;
+ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+ import shame.nazuna.api.utils.render.fonts.msdf.Fonts;
+ import shame.nazuna.api.utils.render.fonts.ttf.Fonts;
+ 
+ @Mixin({class_310.class})
+ public class FontInitMixin {
+   @Inject(method = {"method_53465"}, at = {@At("TAIL")})
+   private void onFinishedLoading(CallbackInfo ci) {
+     Fonts.init();
+     Fonts.init();
+   }
+ }
+
+
+/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\mixin\FontInitMixin.class
+ * Java compiler version: 21 (65.0)
+ * JD-Core Version:       1.1.3
+ */

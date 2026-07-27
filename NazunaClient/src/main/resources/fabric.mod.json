@@ -1,0 +1,27 @@
+{
+    "schemaVersion": 1,
+    "id": "nazuna",
+    "version": "${version}",
+    "name": "NazunaClient",
+    "description": "Advanced Minecraft utility mod",
+    "authors": ["Nazuna"],
+    "contact": {},
+    "license": "All Rights Reserved",
+    "icon": "assets/nazuna/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": ["shame.nazuna.NazunaClient"],
+        "main": ["shame.nazuna.NazunaClient"]
+    },
+    "mixins": [
+        "nazuna.mixins.json"
+    ],
+    "accessWidener": "nazuna.accesswidener",
+    "depends": {
+        "fabricloader": ">=0.16.0",
+        "fabric-api": "*",
+        "minecraft": "~1.21.4",
+        "java": ">=21"
+    },
+    "suggests": {}
+}
