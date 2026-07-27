@@ -1,24 +1,23 @@
 package me.delta.client.mixin;
 
 import me.delta.client.DeltaClient;
-import me.delta.client.module.modules.combat.Velocity;
-import me.delta.client.module.modules.movement.NoFall;
 import me.delta.client.module.modules.movement.Sprint;
-import me.delta.client.module.modules.movement.Step;
-import me.delta.client.module.modules.player.NoSlow;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerEntity.class)
 public class ClientPlayerEntityMixin {
 
-    // Sprint override
+    @Shadow
+    private void setStepHeight(float height) {}
+
+    // ✅ Sprint — простой cancellable inject, работает везде
     @Inject(method = "canStartSprinting", at = @At("HEAD"), cancellable = true)
     private void onCanStartSprinting(CallbackInfoReturnable<Boolean> cir) {
         Sprint sprint = DeltaClient.MODULE_MANAGER.getModule(Sprint.class);
@@ -27,42 +26,30 @@ public class ClientPlayerEntityMixin {
         }
     }
 
-    // NoFall — prevent fall damage
-    @ModifyVariable(method = "sendMovementPackets", at = @At("STORE"), ordinal = 0)
-    private boolean modifyOnGround(boolean onGround) {
-        NoFall noFall = DeltaClient.MODULE_MANAGER.getModule(NoFall.class);
-        if (noFall != null && noFall.isEnabled() && "Packet".equals(noFall.getCurrentMode())) {
-            return true;
-        }
-        return onGround;
-    }
-
-    // Step height modifier
-    @ModifyArg(method = "tickMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;setStepHeight(F)V"))
-    private float modifyStepHeight(float original) {
-        Step step = DeltaClient.MODULE_MANAGER.getModule(Step.class);
+    // ✅ Step — напрямую устанавливаем stepHeight после каждого tick
+    @Inject(method = "tickMovement", at = @At("TAIL"))
+    private void onTickMovementTail(CallbackInfo ci) {
+        me.delta.client.module.modules.movement.Step step =
+                DeltaClient.MODULE_MANAGER.getModule(me.delta.client.module.modules.movement.Step.class);
         if (step != null && step.isEnabled()) {
-            return step.getStepHeight();
+            setStepHeight(step.getStepHeight());
         }
-        return 0.6f;
     }
 
-    // NoSlow — prevent slowdown from items
-    @ModifyVariable(method = "tickMovement", at = @At("HEAD"))
-    private boolean modifySprintState(boolean sprinting) {
-        NoSlow noSlow = DeltaClient.MODULE_MANAGER.getModule(NoSlow.class);
-        if (noSlow != null && noSlow.isEnabled() && sprinting) {
-            // Keep sprinting even when using items
-        }
-        return sprinting;
-    }
-
-    @ModifyVariable(method = "tickMovement", at = @At("STORE"), ordinal = 2)
-    private boolean modifyItemSlowdown(boolean usingItem) {
-        NoSlow noSlow = DeltaClient.MODULE_MANAGER.getModule(NoSlow.class);
+    // ✅ NoSlow после tick — восстанавливаем скорость если slowed
+    @Inject(method = "tickMovement", at = @At("TAIL"))
+    private void onNoSlowTick(CallbackInfo ci) {
+        me.delta.client.module.modules.player.NoSlow noSlow =
+                DeltaClient.MODULE_MANAGER.getModule(me.delta.client.module.modules.player.NoSlow.class);
         if (noSlow != null && noSlow.isEnabled()) {
-            return false;
+            ClientPlayerEntity self = (ClientPlayerEntity) (Object) this;
+            if (self.isUsingItem() && self.isSprinting()) {
+                self.setVelocity(
+                        self.getVelocity().x * 1.4,
+                        self.getVelocity().y,
+                        self.getVelocity().z * 1.4
+                );
+            }
         }
-        return usingItem;
     }
 }
