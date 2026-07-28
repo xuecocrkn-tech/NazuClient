@@ -167,8 +167,3 @@ package shame.nazuna.api.utils.scissor;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\ap\\utils\scissor\ScissorUtils.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

@@ -11,8 +11,3 @@ public interface IEntity {
   Vec3d invokeAdjustMovementForCollisions(Vec3d paramclass_243);
 }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\mixin\IEntity.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

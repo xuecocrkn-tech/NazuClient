@@ -16,8 +16,3 @@ public interface ICameraMixin {
   void setCustomMoveBy(float paramFloat1, float paramFloat2, float paramFloat3);
 }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\mixin\ICameraMixin.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

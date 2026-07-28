@@ -76,8 +76,3 @@ package shame.nazuna.api.utils.notification;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\ap\\utils\notification\NotificationManager.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

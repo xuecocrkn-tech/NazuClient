@@ -228,8 +228,3 @@ package shame.nazuna.api.utils.render.fonts.msdf;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\ap\\utils\render\fonts\msdf\MsdfFont.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

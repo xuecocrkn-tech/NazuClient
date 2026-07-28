@@ -62,8 +62,3 @@ public interface HeldItemRendererAccessor {
   void invokeRenderItem(LivingEntity paramclass_1309, ItemStack paramclass_1799, ModelTransformationMode paramclass_811, boolean paramBoolean, MatrixStack paramclass_4587, VertexConsumerProvider paramclass_4597, int paramInt);
 }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\mixin\HeldItemRendererAccessor.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

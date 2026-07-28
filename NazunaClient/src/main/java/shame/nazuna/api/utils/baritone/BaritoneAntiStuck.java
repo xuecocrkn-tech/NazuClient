@@ -274,8 +274,3 @@ package shame.nazuna.api.utils.baritone;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\ap\\utils\baritone\BaritoneAntiStuck.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

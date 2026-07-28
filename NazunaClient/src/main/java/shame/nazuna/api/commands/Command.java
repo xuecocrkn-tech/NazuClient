@@ -33,8 +33,3 @@ package shame.nazuna.api.commands;
    public abstract void execute(LiteralArgumentBuilder<CommandSource> paramLiteralArgumentBuilder);
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\api\commands\Command.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

@@ -17,8 +17,13 @@ package shame.nazuna.client.modules.impl.movement;
    private static final long DEBUG_MESSAGE_INTERVAL_MS = 800L;
    public static ElytraBoost INSTANCE = new ElytraBoost();
    
-   
-   public BooleanSetting getDebug() { return this.debug; } private final BooleanSetting debug = (new BooleanSetting("Дебаг", false))
+   private int[] field_26775;
+   private final FloatSetting[] yawSpeeds = new FloatSetting[9];
+   private final FloatSetting[] pitchSpeeds = new FloatSetting[9];
+   private final ModeSetting mode = new ModeSetting("Mode", "Custom", new String[]{"Custom", "Default"});
+   public BooleanSetting getDebug() { return this.debug; }
+   private long lastDebugMessageAt = 0L;
+   private final BooleanSetting debug = (new BooleanSetting("Дебаг", false));
    public long getLastDebugMessageAt() { return this.lastDebugMessageAt; }
    
    public ElytraBoost() {
@@ -104,8 +109,3 @@ package shame.nazuna.client.modules.impl.movement;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\client\modules\impl\movement\ElytraBoost.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

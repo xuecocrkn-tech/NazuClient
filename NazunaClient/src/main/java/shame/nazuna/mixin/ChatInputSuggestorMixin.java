@@ -57,8 +57,3 @@ package shame.nazuna.mixin;
    public abstract void method_23920(boolean paramBoolean);
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\mixin\ChatInputSuggestorMixin.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

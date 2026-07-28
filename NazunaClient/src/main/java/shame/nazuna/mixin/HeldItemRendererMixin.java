@@ -251,7 +251,7 @@ package shame.nazuna.mixin;
      float f = player.method_6055(tickDelta);
      Hand hand = (Hand)MoreObjects.firstNonNull(player.field_6266, Hand.field_5808);
      float g = player.method_61414(tickDelta);
-     (HeldItemRenderer)this; HeldItemRenderer.class_5773 handRenderType = HeldItemRenderer.method_33303(player);
+     HeldItemRenderer.handRenderType handRenderType = HeldItemRenderer.method_33303(player);
      float h = MathHelper.method_16439(tickDelta, player.field_3914, player.field_3916);
      float i = MathHelper.method_16439(tickDelta, player.field_3931, player.field_3932);
  
@@ -361,8 +361,3 @@ package shame.nazuna.mixin;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\mixin\HeldItemRendererMixin.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

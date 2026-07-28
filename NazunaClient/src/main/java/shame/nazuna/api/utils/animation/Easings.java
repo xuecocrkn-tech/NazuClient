@@ -83,8 +83,3 @@ package shame.nazuna.api.utils.animation;public final class Easings { public sta
      return value -> (value < 0.5D) ? (Math.pow(2.0D, n - 1.0D) * Math.pow(value, n)) : (1.0D - Math.pow(-2.0D * value + 2.0D, n) / 2.0D);
    } }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\ap\\utils\animation\Easings.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

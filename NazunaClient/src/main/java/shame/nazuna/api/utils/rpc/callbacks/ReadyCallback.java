@@ -7,8 +7,3 @@ public interface ReadyCallback extends Callback {
   void apply(DiscordUser paramDiscordUser);
 }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\ap\\utils\rpc\callbacks\ReadyCallback.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

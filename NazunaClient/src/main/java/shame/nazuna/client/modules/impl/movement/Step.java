@@ -208,8 +208,3 @@ package shame.nazuna.client.modules.impl.movement;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\client\modules\impl\movement\Step.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

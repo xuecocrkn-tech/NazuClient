@@ -156,8 +156,3 @@ package shame.nazuna.api.utils.rpc.utils;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\ap\\utils\rp\\utils\DiscordRichPresence.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

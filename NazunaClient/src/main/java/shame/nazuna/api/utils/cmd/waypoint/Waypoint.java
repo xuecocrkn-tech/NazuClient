@@ -1,13 +1,21 @@
 package shame.nazuna.api.utils.cmd.waypoint;
- public class Waypoint {
-   private double x;
-   
-   public double getX() {
- 
- }
 
+public class Waypoint {
+    private double x;
+    private double y;
+    private double z;
 
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\ap\\utils\cmd\waypoint\Waypoint.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */
+    public Waypoint(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public double getX() { return x; }
+    public double getY() { return y; }
+    public double getZ() { return z; }
+
+    public void setX(double x) { this.x = x; }
+    public void setY(double y) { this.y = y; }
+    public void setZ(double z) { this.z = z; }
+}

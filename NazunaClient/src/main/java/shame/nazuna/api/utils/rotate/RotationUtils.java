@@ -95,8 +95,3 @@ package shame.nazuna.api.utils.rotate;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\ap\\utils\rotate\RotationUtils.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

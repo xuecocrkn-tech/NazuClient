@@ -20,8 +20,3 @@ package shame.nazuna.api.utils.namespaced;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\ap\\utils\namespaced\FileUtils.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

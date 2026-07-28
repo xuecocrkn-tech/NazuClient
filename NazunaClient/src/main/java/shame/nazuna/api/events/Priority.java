@@ -12,8 +12,3 @@ public class Priority {
   public static final int LOWEST = -200;
 }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\api\events\Priority.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */

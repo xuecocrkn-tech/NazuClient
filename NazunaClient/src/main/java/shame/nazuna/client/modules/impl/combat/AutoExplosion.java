@@ -39,22 +39,31 @@ package shame.nazuna.client.modules.impl.combat;
    
    public static AutoExplosion INSTANCE = new AutoExplosion();
    
-   public BindSetting getBind() { return this.bind; } private final BindSetting bind = (new BindSetting("Бинд", -1))
+   public BindSetting getBind() { return this.bind; }  private BlockPos targetPos;
+  private int targetSlot = -1;
+  private boolean needSync = false;
+  private int oldSlot = -1;
+  private Box crystalArea = null;
+  private boolean blocked = false;
+  private boolean internalInteract = false;
+  private final ModeSetting modeBaxa = new ModeSetting("Mode", "По бинду", new String[]{"По бинду", "Всегда"});
+  private final BooleanSetting explosionOnRightClick = new BooleanSetting("ExplosionOnRightClick", true);
+  private final BooleanSetting keepCrystal = new BooleanSetting("KeepCrystal", true);
+  
+  private final BindSetting bind = (new BindSetting("Бинд", -1))
      .visible(() -> Boolean.valueOf(this.modeBaxa.is("По бинду")));
    
-   public BlockPos getTargetPos() {
-     return this.targetPos;
+   public BlockPos getTargetPos() { return this.targetPos; }
    public boolean isInternalInteract() { return this.internalInteract; }
    
    public AutoExplosion() {
      super("AutoExplosion", "Автоматически взрывает кристалл", Module.ModuleCategory.COMBAT);
      addSettings(new Setting[] { (Setting)this.modeBaxa, (Setting)this.bind, (Setting)this.explosionOnRightClick, (Setting)this.keepCrystal });
-   }
-   
-   @EventLink
-   public void onBinding(EventBinding event) {
+   }  @EventLink
+  public void onBinding(EventBinding event) {
      if (mc.field_1724 == null || mc.field_1687 == null || mc.field_1755 != null)
-       return;  if (!this.modeBaxa.is("По бинду")) {
+       return;
+     if (!this.modeBaxa.is("По бинду")) {
        return;
      }
      
@@ -63,14 +72,14 @@ package shame.nazuna.client.modules.impl.combat;
      if (pressed) {
        placeObsidianByCrosshair();
      }
-   }
-   
-   @EventLink
-   public void onPacket(EventPacket event) {
+   }  @EventLink
+  public void onPacket(EventPacket event) {
      if (mc.field_1724 == null || mc.field_1687 == null)
-       return;  if (event.getType() != EventPacket.Type.SEND)
-       return;  if (this.internalInteract)
-       return; 
+       return;
+     if (event.getType() != EventPacket.Type.SEND)
+       return;
+     if (this.internalInteract)
+       return;
      Packet Packet = event.getPacket(); if (Packet instanceof PlayerInteractBlockC2SPacket) { PlayerInteractBlockC2SPacket packet = (PlayerInteractBlockC2SPacket)Packet;
        BlockHitResult hit = packet.method_12543();
        BlockPos clickedPos = hit.method_17777();
@@ -334,8 +343,3 @@ package shame.nazuna.client.modules.impl.combat;
    }
  }
 
-
-/* Location:              C:\User\\user\Downloads\astra-1.0.0.jar!\shame\astra\client\modules\impl\combat\AutoExplosion.class
- * Java compiler version: 21 (65.0)
- * JD-Core Version:       1.1.3
- */
